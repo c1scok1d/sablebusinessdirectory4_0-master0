@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/repository/sub_category_repository.dart';
-import 'package:fluttermulticity/viewobject/holder/item_parameter_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/sub_category_parameter_holder.dart';
-import 'package:fluttermulticity/viewobject/sub_category.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/repository/sub_category_repository.dart';
+import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/sub_category_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/sub_category.dart';
 
 class SubCategoryProvider extends PsProvider {
   SubCategoryProvider({@required SubCategoryRepository repo, int limit = 0})

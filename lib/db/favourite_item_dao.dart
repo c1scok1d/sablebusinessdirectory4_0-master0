@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/favourite_item.dart';
+import 'package:businesslistingapi/viewobject/favourite_item.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
 
 class FavouriteItemDao extends PsDao<FavouriteItem> {
   FavouriteItemDao._() {

@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/repository/delete_task_repository.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/repository/delete_task_repository.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/viewobject/user_login.dart';
+import 'package:businesslistingapi/viewobject/user_login.dart';
 
 class DeleteTaskProvider extends PsProvider {
   DeleteTaskProvider(

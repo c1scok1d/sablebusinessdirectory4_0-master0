@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/gallery/gallery_provider.dart';
-import 'package:fluttermulticity/repository/gallery_repository.dart';
-import 'package:fluttermulticity/ui/common/base/ps_widget_with_appbar_no_app_bar_title.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
-import 'package:fluttermulticity/viewobject/default_photo.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
+import 'package:businesslistingapi/repository/gallery_repository.dart';
+import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar_no_app_bar_title.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/viewobject/default_photo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view_gallery.dart';

@@ -1,7 +1,7 @@
-import 'package:fluttermulticity/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/ui/common/ps_button_widget_with_round_corner.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/ui/common/ps_button_widget_with_round_corner.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 
 class FilterDialog extends StatefulWidget {
   const FilterDialog({Key key, this.onDescendingTap, this.onAscendingTap})

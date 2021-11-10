@@ -1,5 +1,5 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
 
 class PsWidgetWithAppBarWithNoProvider extends StatefulWidget {

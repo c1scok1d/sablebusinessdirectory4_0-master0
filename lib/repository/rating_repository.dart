@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/db/rating_dao.dart';
-import 'package:fluttermulticity/viewobject/rating.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/db/rating_dao.dart';
+import 'package:businesslistingapi/viewobject/rating.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/api/ps_api_service.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/ps_api_service.dart';
 import 'package:sembast/sembast.dart';
 
 import 'Common/ps_repository.dart';

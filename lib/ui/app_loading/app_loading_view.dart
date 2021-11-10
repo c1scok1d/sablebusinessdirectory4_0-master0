@@ -2,29 +2,29 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/provider/clear_all/clear_all_data_provider.dart';
-import 'package:fluttermulticity/repository/clear_all_data_repository.dart';
-import 'package:fluttermulticity/ui/common/dialog/version_update_dialog.dart';
-import 'package:fluttermulticity/ui/common/dialog/warning_dialog_view.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/app_info_parameter_holder.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/provider/clear_all/clear_all_data_provider.dart';
+import 'package:businesslistingapi/repository/clear_all_data_repository.dart';
+import 'package:businesslistingapi/ui/common/dialog/version_update_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/warning_dialog_view.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/app_info_parameter_holder.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/app_info/app_info_provider.dart';
-import 'package:fluttermulticity/repository/app_info_repository.dart';
-import 'package:fluttermulticity/viewobject/ps_app_info.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/app_info/app_info_provider.dart';
+import 'package:businesslistingapi/repository/app_info_repository.dart';
+import 'package:businesslistingapi/viewobject/ps_app_info.dart';
 import 'package:provider/single_child_widget.dart';
 
 class AppLoadingView extends StatelessWidget {
@@ -172,14 +172,14 @@ class AppLoadingView extends StatelessWidget {
       PSAppInfo psAppInfo,
       AppInfoProvider appInfoProvider,
       ClearAllDataProvider clearAllDataProvider) async {
-    if (PsConfig.app_version != psAppInfo.psAppVersion.versionNo) {
-      if (psAppInfo.psAppVersion.versionNeedClearData == PsConst.ONE) {
-        await clearAllDataProvider.clearAllData();
-        checkForceUpdate(context, psAppInfo, appInfoProvider);
-      } else {
-        checkForceUpdate(context, psAppInfo, appInfoProvider);
-      }
-    } else {
+    // if (PsConfig.app_version != psAppInfo.psAppVersion.versionNo) {
+    //   if (psAppInfo.psAppVersion.versionNeedClearData == PsConst.ONE) {
+    //     await clearAllDataProvider.clearAllData();
+    //     checkForceUpdate(context, psAppInfo, appInfoProvider);
+    //   } else {
+    //     checkForceUpdate(context, psAppInfo, appInfoProvider);
+    //   }
+    // } else {
      await appInfoProvider.replaceVersionForceUpdateData(false);
 
       final PsValueHolder valueHolder =
@@ -194,7 +194,7 @@ class AppLoadingView extends StatelessWidget {
         RoutePaths.home,
         );
       }
-    }
+    // }
   }
 
   dynamic checkForceUpdate(BuildContext context, PSAppInfo psAppInfo,
@@ -351,12 +351,12 @@ class AppLoadingView extends StatelessWidget {
                         const SizedBox(
                           height: PsDimens.space8,
                         ),
-                        Text(
-                          Utils.getString(context, 'app_info__splash_name'),
-                          style: Theme.of(context).textTheme.subtitle2.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: PsColors.white),
-                        ),
+                        // Text(
+                        //   Utils.getString(context, 'app_info__splash_name'),
+                        //   style: Theme.of(context).textTheme.subtitle2.copyWith(
+                        //       fontWeight: FontWeight.bold,
+                        //       color: PsColors.white),
+                        // ),
                         Container(
                           padding: const EdgeInsets.all(PsDimens.space16),
                           child: SizedBox(

@@ -1,6 +1,6 @@
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
-import 'package:fluttermulticity/viewobject/noti.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
+import 'package:businesslistingapi/viewobject/noti.dart';
 
 class NotiDao extends PsDao<Noti> {
   NotiDao._() {

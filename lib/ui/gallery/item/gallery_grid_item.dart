@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
-import 'package:fluttermulticity/viewobject/default_photo.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/viewobject/default_photo.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

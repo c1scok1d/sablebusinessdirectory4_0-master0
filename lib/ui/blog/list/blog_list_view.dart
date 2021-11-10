@@ -1,13 +1,13 @@
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/provider/blog/blog_provider.dart';
-import 'package:fluttermulticity/repository/blog_repository.dart';
-import 'package:fluttermulticity/ui/blog/item/blog_list_item.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/provider/blog/blog_provider.dart';
+import 'package:businesslistingapi/repository/blog_repository.dart';
+import 'package:businesslistingapi/ui/blog/item/blog_list_item.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
 
 class BlogListView extends StatefulWidget {
   const BlogListView({Key key, @required this.animationController})

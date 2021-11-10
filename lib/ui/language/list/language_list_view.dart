@@ -1,13 +1,13 @@
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/language/language_provider.dart';
-import 'package:fluttermulticity/ui/common/base/ps_widget_with_appbar.dart';
-import 'package:fluttermulticity/ui/common/dialog/confirm_dialog_view.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/language/language_provider.dart';
+import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar.dart';
+import 'package:businesslistingapi/ui/common/dialog/confirm_dialog_view.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttermulticity/repository/language_repository.dart';
+import 'package:businesslistingapi/repository/language_repository.dart';
 
 import '../item/language_list_item.dart';
 

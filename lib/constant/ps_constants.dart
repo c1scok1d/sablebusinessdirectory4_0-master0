@@ -5,7 +5,7 @@
 /// www.panacea-soft.com
 ///
 
-import 'package:fluttermulticity/config/ps_config.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
 import 'package:intl/intl.dart';
 
 class PsConst {

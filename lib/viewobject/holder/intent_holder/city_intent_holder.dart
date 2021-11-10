@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/holder/city_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/city_parameter_holder.dart';
 
 class CityIntentHolder {
   const CityIntentHolder(

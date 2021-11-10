@@ -1,7 +1,7 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
 
-import 'package:fluttermulticity/viewobject/holder/tag_object_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/tag_object_holder.dart';
 import 'package:flutter/material.dart';
 
 class RelatedTagsHorizontalListItem extends StatelessWidget {

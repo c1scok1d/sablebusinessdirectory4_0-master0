@@ -1,16 +1,16 @@
 import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/item/added_item_provider.dart';
-import 'package:fluttermulticity/provider/user/user_provider.dart';
-import 'package:fluttermulticity/repository/user_repository.dart';
-import 'package:fluttermulticity/ui/common/ps_admob_banner_widget.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/item/added_item_provider.dart';
+import 'package:businesslistingapi/provider/user/user_provider.dart';
+import 'package:businesslistingapi/repository/user_repository.dart';
+import 'package:businesslistingapi/ui/common/ps_admob_banner_widget.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/intent_holder/user_item_intent_holder.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/intent_holder/user_item_intent_holder.dart';
 import 'package:provider/provider.dart';
 
 class MoreView extends StatefulWidget {

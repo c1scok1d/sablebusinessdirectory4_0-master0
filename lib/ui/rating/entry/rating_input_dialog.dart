@@ -1,20 +1,20 @@
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/item/item_provider.dart';
-import 'package:fluttermulticity/provider/rating/rating_provider.dart';
-import 'package:fluttermulticity/repository/rating_repository.dart';
-import 'package:fluttermulticity/ui/common/dialog/warning_dialog_view.dart';
-import 'package:fluttermulticity/ui/common/ps_button_widget.dart';
-import 'package:fluttermulticity/ui/common/ps_textfield_widget.dart';
-import 'package:fluttermulticity/ui/common/smooth_star_rating_widget.dart';
-import 'package:fluttermulticity/utils/ps_progress_dialog.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/holder/rating_holder.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/item/item_provider.dart';
+import 'package:businesslistingapi/provider/rating/rating_provider.dart';
+import 'package:businesslistingapi/repository/rating_repository.dart';
+import 'package:businesslistingapi/ui/common/dialog/warning_dialog_view.dart';
+import 'package:businesslistingapi/ui/common/ps_button_widget.dart';
+import 'package:businesslistingapi/ui/common/ps_textfield_widget.dart';
+import 'package:businesslistingapi/ui/common/smooth_star_rating_widget.dart';
+import 'package:businesslistingapi/utils/ps_progress_dialog.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/holder/rating_holder.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/rating.dart';
+import 'package:businesslistingapi/viewobject/rating.dart';
 import 'package:provider/provider.dart';
 
 class RatingInputDialog extends StatefulWidget {

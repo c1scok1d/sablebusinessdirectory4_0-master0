@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/status.dart';
+import 'package:businesslistingapi/viewobject/status.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart' show PsDao;
+import 'package:businesslistingapi/db/common/ps_dao.dart' show PsDao;
 
 class StatusDao extends PsDao<Status> {
   StatusDao._() {

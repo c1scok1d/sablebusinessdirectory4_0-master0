@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/comment_header.dart';
+import 'package:businesslistingapi/viewobject/comment_header.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart' show PsDao;
+import 'package:businesslistingapi/db/common/ps_dao.dart' show PsDao;
 
 class CommentHeaderDao extends PsDao<CommentHeader> {
   CommentHeaderDao._() {

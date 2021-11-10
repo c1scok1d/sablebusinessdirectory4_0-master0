@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/credit_card_model.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/promotion/item_promotion_provider.dart';
-import 'package:fluttermulticity/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
-import 'package:fluttermulticity/ui/common/dialog/error_dialog.dart';
-import 'package:fluttermulticity/ui/common/dialog/success_dialog.dart';
-import 'package:fluttermulticity/ui/common/dialog/warning_dialog_view.dart';
-import 'package:fluttermulticity/ui/common/ps_button_widget.dart';
-import 'package:fluttermulticity/utils/ps_progress_dialog.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/holder/item_paid_history_parameter_holder.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
-import 'package:fluttermulticity/viewobject/item_paid_history.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/promotion/item_promotion_provider.dart';
+import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
+import 'package:businesslistingapi/ui/common/dialog/error_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/success_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/warning_dialog_view.dart';
+import 'package:businesslistingapi/ui/common/ps_button_widget.dart';
+import 'package:businesslistingapi/utils/ps_progress_dialog.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/holder/item_paid_history_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/item_paid_history.dart';
 
 
 class CreditCardView extends StatefulWidget {

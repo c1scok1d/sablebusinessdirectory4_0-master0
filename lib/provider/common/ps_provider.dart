@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/repository/Common/ps_repository.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/repository/Common/ps_repository.dart';
 
 class PsProvider extends ChangeNotifier {
   PsProvider(this.psRepository, int limit) {

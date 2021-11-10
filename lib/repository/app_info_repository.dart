@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/api/ps_api_service.dart';
-import 'package:fluttermulticity/repository/Common/ps_repository.dart';
-import 'package:fluttermulticity/viewobject/ps_app_info.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/ps_api_service.dart';
+import 'package:businesslistingapi/repository/Common/ps_repository.dart';
+import 'package:businesslistingapi/viewobject/ps_app_info.dart';
 
 class AppInfoRepository extends PsRepository {
   AppInfoRepository({

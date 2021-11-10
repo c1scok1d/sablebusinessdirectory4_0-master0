@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/viewobject/basket_selected_attribute.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/basket_selected_attribute.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class BasketIntentHolder {
   const BasketIntentHolder({

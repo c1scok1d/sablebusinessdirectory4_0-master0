@@ -5,7 +5,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 
 class PsColors {
   PsColors._();
@@ -89,11 +89,14 @@ class PsColors {
   static const Color _l_base_dark_color = Color(0xFFFFFFFF);
   static const Color _l_base_light_color = Color(0xFFEFEFEF);
 
-  static const Color _l_text_primary_color = Color(0xFF445E76);
+  static const Color _l_text_primary_color = Color(0xFF212121);
   static const Color _l_text_primary_light_color = Color(0xFFadadad);
-  static const Color _l_text_primary_dark_color = Color(0xFF25425D);
+  static const Color _l_text_primary_dark_color = Color(0xFF212121);
+  // static const Color _l_text_primary_color = Color(0xFF445E76);
+  // static const Color _l_text_primary_light_color = Color(0xFFadadad);
+  // static const Color _l_text_primary_dark_color = Color(0xFF25425D);
 
-  static const Color _l_icon_color = Color(0xFF445E76);
+  static const Color _l_icon_color = Color(0xFF212121);
 
   static const Color _l_divider_color = Color(0x15505050);
 
@@ -115,9 +118,13 @@ class PsColors {
   ///
   /// Common Theme
   ///
-  static const Color _c_main_color = Color(0xFF2AB050);
-  static const Color _c_main_light_color = Color(0xFFA0FABA);
-  static const Color _c_main_dark_color = Color(0xFF137931);
+  // static const Color _c_main_color = Colors.white;
+  static const Color _c_main_color = Colors.black;
+  static const Color _c_main_light_color = Colors.grey;
+  static const Color _c_main_dark_color = Colors.black;
+  // static const Color _c_main_color = Color(0xFF2AB050);
+  // static const Color _c_main_light_color = Color(0xFFA0FABA);
+  // static const Color _c_main_dark_color = Color(0xFF137931);
 
   static const Color _c_white_color = Colors.white;
   static const Color _c_black_color = Colors.black;

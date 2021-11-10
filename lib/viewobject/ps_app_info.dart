@@ -1,7 +1,7 @@
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
-import 'package:fluttermulticity/viewobject/delete_object.dart';
-import 'package:fluttermulticity/viewobject/ps_app_version.dart';
-import 'package:fluttermulticity/viewobject/user_info.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/delete_object.dart';
+import 'package:businesslistingapi/viewobject/ps_app_version.dart';
+import 'package:businesslistingapi/viewobject/user_info.dart';
 
 class PSAppInfo extends PsObject<PSAppInfo> {
   PSAppInfo({

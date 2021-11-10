@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/ps_app_version.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/ps_app_version.dart';
 import 'package:flutter/material.dart';
 
 class ForceUpdateView extends StatelessWidget {

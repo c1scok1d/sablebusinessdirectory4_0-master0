@@ -1,5 +1,5 @@
-import 'package:fluttermulticity/viewobject/city.dart';
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/city.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 import 'package:quiver/core.dart';
 import 'default_photo.dart';
 

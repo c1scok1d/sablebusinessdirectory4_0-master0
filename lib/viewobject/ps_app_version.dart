@@ -1,5 +1,5 @@
 import 'package:quiver/core.dart';
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 
 class PSAppVersion extends PsObject<PSAppVersion> {
   PSAppVersion(

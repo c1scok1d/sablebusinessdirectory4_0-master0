@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/item/paid_ad_item_provider.dart';
-import 'package:fluttermulticity/repository/paid_ad_item_repository.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
-import 'package:fluttermulticity/ui/paid_ad/paid_ad_item_vertical_list_item.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/intent_holder/item_detail_intent_holder.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/item/paid_ad_item_provider.dart';
+import 'package:businesslistingapi/repository/paid_ad_item_repository.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/ui/paid_ad/paid_ad_item_vertical_list_item.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/intent_holder/item_detail_intent_holder.dart';
 import 'package:provider/provider.dart';
 
 class PaidAdItemListView extends StatefulWidget {

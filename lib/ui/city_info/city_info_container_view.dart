@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/ui/city_info/city_info_view.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/city.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/ui/city_info/city_info_view.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/city.dart';
 
 class CityInfoContainerView extends StatefulWidget {
   const CityInfoContainerView({

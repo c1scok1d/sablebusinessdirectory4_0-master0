@@ -1,5 +1,5 @@
-import 'package:fluttermulticity/db/common/ps_dao.dart';
-import 'package:fluttermulticity/viewobject/about_app.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
+import 'package:businesslistingapi/viewobject/about_app.dart';
 import 'package:sembast/sembast.dart';
 
 class AboutAppDao extends PsDao<AboutApp> {

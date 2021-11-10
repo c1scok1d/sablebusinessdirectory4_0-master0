@@ -1,5 +1,5 @@
 import 'package:quiver/core.dart';
-import 'package:fluttermulticity/viewobject/common/ps_map_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_map_object.dart';
 
 class FavouriteItem extends PsMapObject<FavouriteItem> {
   FavouriteItem({this.id, int sorting}) {

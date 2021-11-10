@@ -1,7 +1,7 @@
 // import 'package:admob_flutter/admob_flutter.dart';
 // import 'package:flutter/material.dart';
-// import 'package:fluttermulticity/config/ps_config.dart';
-// import 'package:fluttermulticity/utils/utils.dart';
+// import 'package:businesslistingapi/config/ps_config.dart';
+// import 'package:businesslistingapi/utils/utils.dart';
 
 // class PsAdMobBannerWidget extends StatefulWidget {
 //   const PsAdMobBannerWidget({this.admobBannerSize});

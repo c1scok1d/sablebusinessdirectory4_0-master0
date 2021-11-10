@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/rating.dart';
+import 'package:businesslistingapi/viewobject/rating.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart' show PsDao;
+import 'package:businesslistingapi/db/common/ps_dao.dart' show PsDao;
 
 class RatingDao extends PsDao<Rating> {
   RatingDao._() {

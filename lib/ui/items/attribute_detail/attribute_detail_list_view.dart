@@ -1,11 +1,11 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/ui/items/attribute_detail/attribute_detail_list_item_view.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/AttributeDetail.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/ui/items/attribute_detail/attribute_detail_list_item_view.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/AttributeDetail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class AttributeDetailListView extends StatefulWidget {
   const AttributeDetailListView(

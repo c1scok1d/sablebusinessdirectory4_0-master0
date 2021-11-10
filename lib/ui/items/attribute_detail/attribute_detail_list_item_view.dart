@@ -1,9 +1,9 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/AttributeDetail.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/AttributeDetail.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class AttributeDetailListItem extends StatelessWidget {
   const AttributeDetailListItem(

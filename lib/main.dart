@@ -3,20 +3,20 @@ import 'dart:io';
 // import 'package:admob_flutter/admob_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:fluttermulticity/config/router.dart' as router;
+import 'package:businesslistingapi/config/router.dart' as router;
 import 'package:dynamic_theme/dynamic_theme.dart';
-import 'package:fluttermulticity/provider/ps_provider_dependencies.dart';
-import 'package:fluttermulticity/viewobject/common/language.dart';
+import 'package:businesslistingapi/provider/ps_provider_dependencies.dart';
+import 'package:businesslistingapi/viewobject/common/language.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttermulticity/config/ps_theme_data.dart';
-import 'package:fluttermulticity/provider/common/ps_theme_provider.dart';
-import 'package:fluttermulticity/repository/ps_theme_repository.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_theme_data.dart';
+import 'package:businesslistingapi/provider/common/ps_theme_provider.dart';
+import 'package:businesslistingapi/repository/ps_theme_repository.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
@@ -202,12 +202,14 @@ class _PSAppState extends State<PSApp> {
         child: DynamicTheme(
             defaultBrightness: Brightness.light,
             data: (Brightness brightness) {
+              // return themeData(ThemeData.dark());
               if (brightness == Brightness.light) {
                 return themeData(ThemeData.light());
               } else {
                 return themeData(ThemeData.dark());
               }
             },
+
             themedWidgetBuilder: (BuildContext context, ThemeData theme) {
               return MaterialApp(
                 debugShowCheckedModeBanner: false,

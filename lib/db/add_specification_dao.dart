@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/add_specification.dart';
+import 'package:businesslistingapi/viewobject/add_specification.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
 
 class AddSpecificationDao extends PsDao<AddSpecification> {
   AddSpecificationDao._() {

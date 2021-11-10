@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/viewobject/common/ps_holder.dart';
+import 'package:businesslistingapi/viewobject/common/ps_holder.dart';
 
 class ItemPaidHistoryParameterHolder
     extends PsHolder<ItemPaidHistoryParameterHolder> {

@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/category_map.dart';
+import 'package:businesslistingapi/viewobject/category_map.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
 
 class CategoryMapDao extends PsDao<CategoryMap> {
   CategoryMapDao._() {

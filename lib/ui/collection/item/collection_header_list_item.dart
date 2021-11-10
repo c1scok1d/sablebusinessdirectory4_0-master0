@@ -1,9 +1,9 @@
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/item_collection_header.dart';
+import 'package:businesslistingapi/viewobject/item_collection_header.dart';
 
 class CollectionHeaderListItem extends StatelessWidget {
   const CollectionHeaderListItem(

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/viewobject/comment_header.dart';
+import 'package:businesslistingapi/viewobject/comment_header.dart';
 
 class CommentDetailHolder {
   const CommentDetailHolder({

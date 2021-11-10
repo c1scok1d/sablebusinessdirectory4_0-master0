@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/product_collection.dart';
+import 'package:businesslistingapi/viewobject/product_collection.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
 
 class ItemCollectionDao extends PsDao<ItemCollection> {
   ItemCollectionDao._() {

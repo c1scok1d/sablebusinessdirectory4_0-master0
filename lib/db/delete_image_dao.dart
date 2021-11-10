@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/gallery_image.dart';
+import 'package:businesslistingapi/viewobject/gallery_image.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
 
 class DeleteImageDao extends PsDao<GalleryImage> {
   DeleteImageDao._() {

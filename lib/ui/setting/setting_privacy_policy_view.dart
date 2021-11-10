@@ -1,9 +1,9 @@
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/city_info/city_info_provider.dart';
-import 'package:fluttermulticity/repository/city_info_repository.dart';
-import 'package:fluttermulticity/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/city_info/city_info_provider.dart';
+import 'package:businesslistingapi/repository/city_info_repository.dart';
+import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:flutter/material.dart';
 
 class SettingPrivacyPolicyView extends StatefulWidget {

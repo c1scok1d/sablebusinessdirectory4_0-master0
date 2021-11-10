@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/gallery/gallery_provider.dart';
-import 'package:fluttermulticity/ui/common/dialog/error_dialog.dart';
-import 'package:fluttermulticity/ui/common/dialog/success_dialog.dart';
-import 'package:fluttermulticity/ui/common/dialog/warning_dialog_view.dart';
-import 'package:fluttermulticity/ui/common/ps_button_widget.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
-import 'package:fluttermulticity/utils/ps_progress_dialog.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/default_photo.dart';
-import 'package:fluttermulticity/viewobject/holder/delete_imge_parameter_holder.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
+import 'package:businesslistingapi/ui/common/dialog/error_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/success_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/warning_dialog_view.dart';
+import 'package:businesslistingapi/ui/common/ps_button_widget.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/utils/ps_progress_dialog.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/default_photo.dart';
+import 'package:businesslistingapi/viewobject/holder/delete_imge_parameter_holder.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ItemImageUploadView extends StatefulWidget {

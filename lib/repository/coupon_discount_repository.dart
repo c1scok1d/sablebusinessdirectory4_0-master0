@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'package:fluttermulticity/viewobject/coupon_discount.dart';
+import 'package:businesslistingapi/viewobject/coupon_discount.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/api/ps_api_service.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/ps_api_service.dart';
 
 import 'Common/ps_repository.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/provider/specification/specification_provider.dart';
+import 'package:businesslistingapi/provider/specification/specification_provider.dart';
 
 class SpecificationIntentHolder {
   const SpecificationIntentHolder({

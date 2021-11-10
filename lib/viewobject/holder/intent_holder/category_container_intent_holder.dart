@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/city.dart';
+import 'package:businesslistingapi/viewobject/city.dart';
 
 class CategoryContainerIntentHolder {
   CategoryContainerIntentHolder(

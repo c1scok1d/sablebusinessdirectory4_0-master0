@@ -1,22 +1,22 @@
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/provider/item/search_item_provider.dart';
-import 'package:fluttermulticity/repository/item_repository.dart';
-import 'package:fluttermulticity/ui/items/item/item_vertical_list_item.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/intent_holder/item_detail_intent_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/item_parameter_holder.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/provider/item/search_item_provider.dart';
+import 'package:businesslistingapi/repository/item_repository.dart';
+import 'package:businesslistingapi/ui/items/item/item_vertical_list_item.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/intent_holder/item_detail_intent_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
 
 class ItemListWithFilterView extends StatefulWidget {
   const ItemListWithFilterView(

@@ -1,13 +1,13 @@
 import 'dart:io';
-import 'package:fluttermulticity/ui/common/ps_hero.dart';
-import 'package:fluttermulticity/ui/common/ps_square_progress_widget.dart';
-import 'package:fluttermulticity/viewobject/default_icon.dart';
+import 'package:businesslistingapi/ui/common/ps_hero.dart';
+import 'package:businesslistingapi/ui/common/ps_square_progress_widget.dart';
+import 'package:businesslistingapi/viewobject/default_icon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/viewobject/default_photo.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/viewobject/default_photo.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:optimized_cached_image/optimized_cached_image.dart';
 

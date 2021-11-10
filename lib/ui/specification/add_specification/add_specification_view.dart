@@ -1,17 +1,17 @@
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/specification/specification_provider.dart';
-import 'package:fluttermulticity/ui/common/dialog/error_dialog.dart';
-import 'package:fluttermulticity/ui/common/dialog/success_dialog.dart';
-import 'package:fluttermulticity/ui/common/ps_button_widget.dart';
-import 'package:fluttermulticity/ui/common/ps_textfield_widget.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/specification/specification_provider.dart';
+import 'package:businesslistingapi/ui/common/dialog/error_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/success_dialog.dart';
+import 'package:businesslistingapi/ui/common/ps_button_widget.dart';
+import 'package:businesslistingapi/ui/common/ps_textfield_widget.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/holder/add_specification_parameter_holder.dart';
-import 'package:fluttermulticity/viewobject/item_spec.dart';
+import 'package:businesslistingapi/viewobject/holder/add_specification_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/item_spec.dart';
 
 class AddSpecificationView extends StatefulWidget {
   const AddSpecificationView(

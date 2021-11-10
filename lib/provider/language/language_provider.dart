@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/repository/language_repository.dart';
-import 'package:fluttermulticity/viewobject/common/language.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/repository/language_repository.dart';
+import 'package:businesslistingapi/viewobject/common/language.dart';
 
 class LanguageProvider extends PsProvider {
   LanguageProvider({@required LanguageRepository repo, int limit = 0})

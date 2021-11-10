@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/viewobject/user.dart';
+import 'package:businesslistingapi/viewobject/user.dart';
 import 'package:quiver/core.dart';
 import 'common/ps_object.dart';
 

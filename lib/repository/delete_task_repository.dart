@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/db/favourite_item_dao.dart';
-import 'package:fluttermulticity/db/history_dao.dart';
-import 'package:fluttermulticity/db/user_login_dao.dart';
-import 'package:fluttermulticity/repository/Common/ps_repository.dart';
-import 'package:fluttermulticity/viewobject/user_login.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/db/favourite_item_dao.dart';
+import 'package:businesslistingapi/db/history_dao.dart';
+import 'package:businesslistingapi/db/user_login_dao.dart';
+import 'package:businesslistingapi/repository/Common/ps_repository.dart';
+import 'package:businesslistingapi/viewobject/user_login.dart';
 
 class DeleteTaskRepository extends PsRepository {
   Future<dynamic> deleteTask(

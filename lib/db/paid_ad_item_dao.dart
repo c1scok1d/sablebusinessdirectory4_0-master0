@@ -1,5 +1,5 @@
-import 'package:fluttermulticity/db/common/ps_dao.dart';
-import 'package:fluttermulticity/viewobject/item_paid_history.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
+import 'package:businesslistingapi/viewobject/item_paid_history.dart';
 import 'package:sembast/sembast.dart';
 
 class PaidAdItemDao extends PsDao<ItemPaidHistory> {

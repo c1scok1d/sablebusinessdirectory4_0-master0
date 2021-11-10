@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:fluttermulticity/repository/comment_header_repository.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/comment_header.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/repository/comment_header_repository.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/comment_header.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
 
 class CommentHeaderProvider extends PsProvider {
   CommentHeaderProvider(

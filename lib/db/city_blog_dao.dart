@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/blog.dart';
+import 'package:businesslistingapi/viewobject/blog.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart' show PsDao;
+import 'package:businesslistingapi/db/common/ps_dao.dart' show PsDao;
 
 class CityBlogDao extends PsDao<Blog> {
   CityBlogDao._() {

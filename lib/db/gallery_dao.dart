@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/default_photo.dart';
+import 'package:businesslistingapi/viewobject/default_photo.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
 
 class GalleryDao extends PsDao<DefaultPhoto> {
   GalleryDao._() {

@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:core';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/db/common/ps_app_database.dart';
-import 'package:fluttermulticity/viewobject/common/ps_map_object.dart';
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/db/common/ps_app_database.dart';
+import 'package:businesslistingapi/viewobject/common/ps_map_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
 
 abstract class PsDao<T extends PsObject<T>> {
   // dynamic dao;

@@ -1,11 +1,11 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/holder/google_map_pin_call_back_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/google_map_pin_call_back_holder.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

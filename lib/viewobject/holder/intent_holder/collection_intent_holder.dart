@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/viewobject/item_collection_header.dart';
+import 'package:businesslistingapi/viewobject/item_collection_header.dart';
 
 class CollectionIntentHolder {
   const CollectionIntentHolder({

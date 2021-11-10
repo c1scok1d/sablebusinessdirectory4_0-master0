@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/viewobject/category.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/viewobject/category.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

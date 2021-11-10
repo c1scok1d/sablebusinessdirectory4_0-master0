@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/user.dart';
+import 'package:businesslistingapi/viewobject/user.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
 
 class UserDao extends PsDao<User> {
   UserDao._() {

@@ -1,10 +1,10 @@
 import 'dart:math';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/item_parameter_holder.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';

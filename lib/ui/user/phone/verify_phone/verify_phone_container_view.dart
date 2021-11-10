@@ -1,9 +1,9 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/provider/user/user_provider.dart';
-import 'package:fluttermulticity/repository/user_repository.dart';
-import 'package:fluttermulticity/ui/user/phone/verify_phone/verify_phone_view.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/provider/user/user_provider.dart';
+import 'package:businesslistingapi/repository/user_repository.dart';
+import 'package:businesslistingapi/ui/user/phone/verify_phone/verify_phone_view.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

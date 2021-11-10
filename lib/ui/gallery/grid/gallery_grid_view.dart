@@ -1,10 +1,10 @@
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/gallery/gallery_provider.dart';
-import 'package:fluttermulticity/repository/gallery_repository.dart';
-import 'package:fluttermulticity/ui/common/base/ps_widget_with_appbar.dart';
-import 'package:fluttermulticity/ui/gallery/item/gallery_grid_item.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
+import 'package:businesslistingapi/repository/gallery_repository.dart';
+import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar.dart';
+import 'package:businesslistingapi/ui/gallery/item/gallery_grid_item.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

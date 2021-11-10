@@ -1,5 +1,5 @@
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:quiver/core.dart';
 
 class ItemPaidHistory extends PsObject<ItemPaidHistory> {

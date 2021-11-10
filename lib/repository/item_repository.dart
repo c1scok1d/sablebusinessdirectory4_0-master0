@@ -1,25 +1,25 @@
 import 'dart:async';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/db/favourite_item_dao.dart';
-import 'package:fluttermulticity/db/item_dao.dart';
-import 'package:fluttermulticity/db/item_map_dao.dart';
-import 'package:fluttermulticity/db/item_collection_dao.dart';
-import 'package:fluttermulticity/db/related_item_dao.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/api_status.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/db/favourite_item_dao.dart';
+import 'package:businesslistingapi/db/item_dao.dart';
+import 'package:businesslistingapi/db/item_map_dao.dart';
+import 'package:businesslistingapi/db/item_collection_dao.dart';
+import 'package:businesslistingapi/db/related_item_dao.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/api_status.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/download_item.dart';
-import 'package:fluttermulticity/viewobject/favourite_item.dart';
-import 'package:fluttermulticity/viewobject/holder/item_parameter_holder.dart';
-import 'package:fluttermulticity/viewobject/item_map.dart';
-import 'package:fluttermulticity/viewobject/product_collection.dart';
-import 'package:fluttermulticity/viewobject/related_item.dart';
+import 'package:businesslistingapi/viewobject/download_item.dart';
+import 'package:businesslistingapi/viewobject/favourite_item.dart';
+import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/item_map.dart';
+import 'package:businesslistingapi/viewobject/product_collection.dart';
+import 'package:businesslistingapi/viewobject/related_item.dart';
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/api/ps_api_service.dart';
-import 'package:fluttermulticity/repository/Common/ps_repository.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/ps_api_service.dart';
+import 'package:businesslistingapi/repository/Common/ps_repository.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class ItemRepository extends PsRepository {
   ItemRepository(

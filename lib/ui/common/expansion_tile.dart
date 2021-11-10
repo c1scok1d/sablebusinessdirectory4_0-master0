@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
 
 const Duration _kExpand = Duration(milliseconds: 200);
 

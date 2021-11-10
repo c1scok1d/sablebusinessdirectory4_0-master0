@@ -1,20 +1,20 @@
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/viewobject/holder/touch_count_parameter_holder.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/ui/category/item/category_vertical_list_item.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/city.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/category_parameter_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/intent_holder/item_list_intent_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/item_parameter_holder.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/viewobject/holder/touch_count_parameter_holder.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/ui/category/item/category_vertical_list_item.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/city.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/category_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/intent_holder/item_list_intent_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/category/category_provider.dart';
-import 'package:fluttermulticity/repository/category_repository.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/category/category_provider.dart';
+import 'package:businesslistingapi/repository/category_repository.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
 
 class CategoryListView extends StatefulWidget {
   const CategoryListView({@required this.city});

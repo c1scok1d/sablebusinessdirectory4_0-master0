@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 
 class Status extends PsObject<Status> {
   Status({this.id, this.title, this.addedDate});

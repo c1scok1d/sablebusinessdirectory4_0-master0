@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/repository/status_repository.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/status.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/repository/status_repository.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/status.dart';
 
 class StatusProvider extends PsProvider {
   StatusProvider({@required StatusRepository repo, int limit = 0})

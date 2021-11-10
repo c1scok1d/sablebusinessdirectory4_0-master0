@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
 
 class PsResource<T> {
   PsResource(this.status, this.message, this.data) {

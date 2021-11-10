@@ -1,5 +1,5 @@
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
-import 'package:fluttermulticity/viewobject/user.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/user.dart';
 import 'package:quiver/core.dart';
 
 class CommentDetail extends PsObject<CommentDetail> {

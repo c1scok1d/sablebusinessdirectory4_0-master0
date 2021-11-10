@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/api/ps_api_service.dart';
-import 'package:fluttermulticity/repository/Common/ps_repository.dart';
-import 'package:fluttermulticity/viewobject/item_paid_history.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/ps_api_service.dart';
+import 'package:businesslistingapi/repository/Common/ps_repository.dart';
+import 'package:businesslistingapi/viewobject/item_paid_history.dart';
 
 class ItemPaidHistoryRepository extends PsRepository {
   ItemPaidHistoryRepository({@required PsApiService psApiService}) {

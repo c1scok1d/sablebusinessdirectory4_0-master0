@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/provider/promotion/item_promotion_provider.dart';
+import 'package:businesslistingapi/provider/promotion/item_promotion_provider.dart';
 
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class PayStackRequestInterntHolder {
   const PayStackRequestInterntHolder(

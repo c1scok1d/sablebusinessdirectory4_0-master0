@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:fluttermulticity/repository/rating_repository.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/rating.dart';
+import 'package:businesslistingapi/repository/rating_repository.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/rating.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
 
 class RatingProvider extends PsProvider {
   RatingProvider({@required RatingRepository repo, int limit = 0})

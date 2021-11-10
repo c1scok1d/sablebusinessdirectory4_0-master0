@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:fluttermulticity/viewobject/common/language_value_holder.dart';
+import 'package:businesslistingapi/viewobject/common/language_value_holder.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/db/common/ps_shared_preferences.dart';
-import 'package:fluttermulticity/repository/Common/ps_repository.dart';
-import 'package:fluttermulticity/viewobject/common/language.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/db/common/ps_shared_preferences.dart';
+import 'package:businesslistingapi/repository/Common/ps_repository.dart';
+import 'package:businesslistingapi/viewobject/common/language.dart';
 
 class LanguageRepository extends PsRepository {
   LanguageRepository({@required PsSharedPreferences psSharedPreferences}) {

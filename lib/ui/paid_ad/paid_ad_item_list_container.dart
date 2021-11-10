@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/ui/paid_ad/paid_ad_item_list_view.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/ui/paid_ad/paid_ad_item_list_view.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 
 class PaidItemListContainerView extends StatefulWidget {
   @override

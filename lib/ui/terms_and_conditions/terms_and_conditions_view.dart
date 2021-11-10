@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/city_info/city_info_provider.dart';
-import 'package:fluttermulticity/repository/city_info_repository.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/city_info/city_info_provider.dart';
+import 'package:businesslistingapi/repository/city_info_repository.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:provider/provider.dart';
 
 class TermsAndConditionsView extends StatefulWidget {

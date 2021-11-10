@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/viewobject/common/language.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/viewobject/common/language.dart';
 
 class LanguageListItem extends StatelessWidget {
   const LanguageListItem({

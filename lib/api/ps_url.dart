@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/config/ps_config.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
 
 class PsUrl {
   PsUrl._();

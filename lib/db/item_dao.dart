@@ -1,6 +1,6 @@
 import 'package:sembast/sembast.dart';
-import 'package:fluttermulticity/db/common/ps_dao.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/db/common/ps_dao.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class ItemDao extends PsDao<Item> {
   ItemDao._() {

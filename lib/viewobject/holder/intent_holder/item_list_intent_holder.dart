@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/viewobject/holder/item_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
 
 class ItemListIntentHolder {
   const ItemListIntentHolder({

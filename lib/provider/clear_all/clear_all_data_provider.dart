@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/repository/clear_all_data_repository.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/repository/clear_all_data_repository.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:flutter/cupertino.dart';
 
 class ClearAllDataProvider extends PsProvider {

@@ -1,7 +1,7 @@
-// import 'package:fluttermulticity/config/ps_colors.dart';
-// import 'package:fluttermulticity/config/ps_config.dart';
-// import 'package:fluttermulticity/ui/specification/add_specification/add_specification_view.dart';
-// import 'package:fluttermulticity/utils/utils.dart';
+// import 'package:businesslistingapi/config/ps_colors.dart';
+// import 'package:businesslistingapi/config/ps_config.dart';
+// import 'package:businesslistingapi/ui/specification/add_specification/add_specification_view.dart';
+// import 'package:businesslistingapi/utils/utils.dart';
 // import 'package:flutter/material.dart';
 
 // class AddSpecificationContainerView extends StatefulWidget {

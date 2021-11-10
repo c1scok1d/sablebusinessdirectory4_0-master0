@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/item/item_provider.dart';
-import 'package:fluttermulticity/ui/common/ps_expansion_tile.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/item/item_provider.dart';
+import 'package:businesslistingapi/ui/common/ps_expansion_tile.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 
 class StatisticTileView extends StatefulWidget {
   const StatisticTileView({Key key, @required this.itemDetail})

@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 import 'package:quiver/core.dart';
 
 class ApiStatus extends PsObject<ApiStatus> {

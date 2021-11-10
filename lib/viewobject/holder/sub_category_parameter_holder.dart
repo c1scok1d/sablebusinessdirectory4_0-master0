@@ -1,5 +1,5 @@
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/viewobject/common/ps_holder.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/viewobject/common/ps_holder.dart';
 
 class SubCategoryParameterHolder extends PsHolder<dynamic> {
   SubCategoryParameterHolder() {

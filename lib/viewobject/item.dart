@@ -1,11 +1,11 @@
-import 'package:fluttermulticity/viewobject/category.dart';
-import 'package:fluttermulticity/viewobject/city.dart';
-import 'package:fluttermulticity/viewobject/item_spec.dart';
-import 'package:fluttermulticity/viewobject/sub_category.dart';
-import 'package:fluttermulticity/viewobject/user.dart';
+import 'package:businesslistingapi/viewobject/category.dart';
+import 'package:businesslistingapi/viewobject/city.dart';
+import 'package:businesslistingapi/viewobject/item_spec.dart';
+import 'package:businesslistingapi/viewobject/sub_category.dart';
+import 'package:businesslistingapi/viewobject/user.dart';
 import 'package:quiver/core.dart';
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
-import 'package:fluttermulticity/viewobject/rating_detail.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/rating_detail.dart';
 import 'default_photo.dart';
 
 class Item extends PsObject<Item> {

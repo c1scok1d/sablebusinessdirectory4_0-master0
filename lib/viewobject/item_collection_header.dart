@@ -1,6 +1,6 @@
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:quiver/core.dart';
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 import 'default_photo.dart';
 
 class ItemCollectionHeader extends PsObject<ItemCollectionHeader> {

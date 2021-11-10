@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/api/ps_api_service.dart';
-import 'package:fluttermulticity/db/city_info_dao.dart';
-import 'package:fluttermulticity/viewobject/city_info.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/ps_api_service.dart';
+import 'package:businesslistingapi/db/city_info_dao.dart';
+import 'package:businesslistingapi/viewobject/city_info.dart';
 import 'Common/ps_repository.dart';
 
 class CityInfoRepository extends PsRepository {

@@ -1,4 +1,4 @@
-name: fluttermulticity
+name: businesslistingapi
 description: A new Flutter ecommerce store application.
 
 # The following defines the version and build number for your application.
@@ -60,7 +60,7 @@ dependencies:
   carousel_slider: 3.0.0
   firebase_core: 1.0.1
   firebase_messaging: 9.0.0
-  flutter_webview_plugin: 0.3.11
+  flutter_webview_plugin: 0.4.0
   firebase_auth: 1.0.1
   flutter_native_admob: 2.1.0+3
   firebase_database: 6.1.0
@@ -71,10 +71,10 @@ dependencies:
   dio: any
   progress_dialog: 1.2.4
   braintree_payment: 1.2.2
-  launch_review: 2.0.0
+  launch_review: ^3.0.1
   package_info: 0.4.3
   flutter_icons: 1.1.0
-  flutter_stripe: 1.2.0
+  flutter_stripe: 2.0.2
   google_mobile_ads: 0.12.2+1
   flutter_credit_card: 0.1.4
   fluttertoast: 7.1.6
@@ -94,10 +94,14 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: "^0.9.2"
   #flutter_local_notifications:
   #  path: lib/utils/local_noti/
 
-  
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/icons/icon.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

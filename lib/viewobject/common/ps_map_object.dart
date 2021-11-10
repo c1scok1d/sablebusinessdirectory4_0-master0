@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 
 abstract class PsMapObject<T> extends PsObject<T> {
   int sorting;

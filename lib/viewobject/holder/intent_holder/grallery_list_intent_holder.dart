@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/provider/gallery/gallery_provider.dart';
+import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
 
 class GalleryListIntentHolder {
   const GalleryListIntentHolder({

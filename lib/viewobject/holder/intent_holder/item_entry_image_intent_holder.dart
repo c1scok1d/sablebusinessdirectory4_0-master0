@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/provider/gallery/gallery_provider.dart';
-import 'package:fluttermulticity/viewobject/default_photo.dart';
+import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
+import 'package:businesslistingapi/viewobject/default_photo.dart';
 
 class ItemEntryImageIntentHolder {
   const ItemEntryImageIntentHolder({

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/repository/ps_theme_repository.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/repository/ps_theme_repository.dart';
 
 class PsThemeProvider extends PsProvider {
   PsThemeProvider({@required PsThemeRepository repo, int limit = 0})

@@ -1,5 +1,5 @@
 import 'package:quiver/core.dart';
-import 'package:fluttermulticity/viewobject/common/ps_map_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_map_object.dart';
 
 class CityMap extends PsMapObject<CityMap> {
   CityMap({this.id, this.mapKey, this.cityId, int sorting, this.addedDate}) {

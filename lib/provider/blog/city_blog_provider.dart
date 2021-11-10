@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:fluttermulticity/repository/city_blog_repository.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/repository/city_blog_repository.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/viewobject/blog.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/viewobject/blog.dart';
 
 class CityBlogProvider extends PsProvider {
   CityBlogProvider({@required CityBlogRepository repo, int limit = 0})

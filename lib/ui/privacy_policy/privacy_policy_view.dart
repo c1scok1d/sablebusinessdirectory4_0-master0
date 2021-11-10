@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/provider/about_app/about_app_provider.dart';
-import 'package:fluttermulticity/repository/about_app_repository.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/provider/about_app/about_app_provider.dart';
+import 'package:businesslistingapi/repository/about_app_repository.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:provider/provider.dart';
 
 class PrivacyPolicyView extends StatefulWidget {

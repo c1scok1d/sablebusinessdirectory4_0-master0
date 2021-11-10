@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/repository/item_repository.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/repository/item_repository.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/provider/common/ps_provider.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
-import 'package:fluttermulticity/viewobject/holder/item_parameter_holder.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class SearchItemProvider extends PsProvider {
   SearchItemProvider(

@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/viewobject/common/ps_holder.dart' show PsHolder;
+import 'package:businesslistingapi/viewobject/common/ps_holder.dart' show PsHolder;
 import 'package:flutter/cupertino.dart';
 
 class UserRegisterParameterHolder

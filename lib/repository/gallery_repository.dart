@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:fluttermulticity/constant/ps_constants.dart';
-import 'package:fluttermulticity/db/gallery_dao.dart';
-import 'package:fluttermulticity/viewobject/api_status.dart';
-import 'package:fluttermulticity/viewobject/default_photo.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/db/gallery_dao.dart';
+import 'package:businesslistingapi/viewobject/api_status.dart';
+import 'package:businesslistingapi/viewobject/default_photo.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/api/common/ps_resource.dart';
-import 'package:fluttermulticity/api/common/ps_status.dart';
-import 'package:fluttermulticity/api/ps_api_service.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
+import 'package:businesslistingapi/api/ps_api_service.dart';
 import 'package:sembast/sembast.dart';
 
 import 'Common/ps_repository.dart';

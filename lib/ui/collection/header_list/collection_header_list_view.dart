@@ -1,14 +1,14 @@
-import 'package:fluttermulticity/config/ps_config.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/itemcollection/item_collection_provider.dart';
-import 'package:fluttermulticity/repository/item_collection_repository.dart';
-import 'package:fluttermulticity/ui/collection/item/collection_header_list_item.dart';
-import 'package:fluttermulticity/ui/common/ps_ui_widget.dart';
-import 'package:fluttermulticity/utils/utils.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/itemcollection/item_collection_provider.dart';
+import 'package:businesslistingapi/repository/item_collection_repository.dart';
+import 'package:businesslistingapi/ui/collection/item/collection_header_list_item.dart';
+import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
+import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/holder/intent_holder/collection_intent_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/intent_holder/collection_intent_holder.dart';
 import 'package:provider/provider.dart';
 
 class CollectionHeaderListView extends StatefulWidget {

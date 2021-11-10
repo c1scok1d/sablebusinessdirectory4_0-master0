@@ -1,12 +1,12 @@
-import 'package:fluttermulticity/config/ps_colors.dart';
-import 'package:fluttermulticity/constant/ps_dimens.dart';
-import 'package:fluttermulticity/constant/route_paths.dart';
-import 'package:fluttermulticity/provider/user/user_provider.dart';
-import 'package:fluttermulticity/repository/user_repository.dart';
-import 'package:fluttermulticity/ui/common/ps_button_widget.dart';
-import 'package:fluttermulticity/utils/utils.dart';
+import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/user/user_provider.dart';
+import 'package:businesslistingapi/repository/user_repository.dart';
+import 'package:businesslistingapi/ui/common/ps_button_widget.dart';
+import 'package:businesslistingapi/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttermulticity/viewobject/common/ps_value_holder.dart';
+import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:provider/provider.dart';
 
 class IntroSliderView extends StatefulWidget {
@@ -75,7 +75,7 @@ class IntroSliderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF4153A2),
+      color: const Color(0xFF0C0C0C),
       child: Stack(children: <Widget>[
         Positioned.fill(
           child: Column(
@@ -194,7 +194,7 @@ class IntroSliderSecondWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFAF4D5D), //894DAF
+      color: const Color(0xFF0C0C0C), //894DAF
       child:Stack(children: <Widget>[
         Positioned.fill(
           child: Column(
@@ -334,7 +334,7 @@ class _IntroSliderDonotshowagainWidgetState
 
       return Container(
       // color: PsColors.mainShadowColor,
-      color: const Color(0xFF894DAF), //
+      color: const Color(0xFF0C0C0C), //
       child: Stack(
           children: <Widget>[
             Positioned.fill(

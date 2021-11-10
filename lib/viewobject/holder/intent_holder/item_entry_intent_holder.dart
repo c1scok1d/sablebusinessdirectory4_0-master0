@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:fluttermulticity/viewobject/item.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 
 class ItemEntryIntentHolder {
   const ItemEntryIntentHolder({

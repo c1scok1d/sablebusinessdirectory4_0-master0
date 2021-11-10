@@ -1,4 +1,4 @@
-import 'package:fluttermulticity/viewobject/common/ps_object.dart';
+import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 import 'default_photo.dart';
 
 class CityInfo extends PsObject<CityInfo> {
