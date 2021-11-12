@@ -80,7 +80,7 @@ class PsConfig {
   /// 2) Declare at pubspec.yaml
   /// 3) Update your font family name at below
   ///
-  static const String ps_default_font_family = 'Product Sans';
+  static const String ps_default_font_family = 'Roboto';
 
   /// Default Language
 // static const ps_default_language = 'en';
