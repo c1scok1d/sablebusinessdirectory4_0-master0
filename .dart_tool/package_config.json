@@ -254,6 +254,12 @@
       "languageVersion": "2.0"
     },
     {
+      "name": "flutter_geofence",
+      "rootUri": "../packages/flutter_geofence",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter_icons",
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_icons-1.1.0",
       "packageUri": "lib/",
@@ -274,6 +280,18 @@
     {
       "name": "flutter_launcher_icons",
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_launcher_icons-0.9.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_local_notifications",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications-5.0.0+4",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_local_notifications_platform_interface",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_local_notifications_platform_interface-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -878,6 +896,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "timezone",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/timezone-0.7.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "transparent_image",
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/transparent_image-1.0.0",
       "packageUri": "lib/",
@@ -1064,7 +1088,7 @@
       "languageVersion": "2.2"
     }
   ],
-  "generated": "2021-11-09T22:54:58.992160Z",
+  "generated": "2021-11-12T21:01:49.472151Z",
   "generator": "pub",
   "generatorVersion": "2.14.0"
 }

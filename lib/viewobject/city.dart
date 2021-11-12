@@ -21,7 +21,8 @@ class City extends PsObject<City> {
       this.updatedUserId,
       this.touchCount,
       this.addedDateStr,
-      this.defaultPhoto});
+      this.defaultPhoto,
+      this.isNear=false});
   String id;
   String name;
   String description;
@@ -40,6 +41,7 @@ class City extends PsObject<City> {
   String updatedUserId;
   String touchCount;
   String addedDateStr;
+  bool isNear=false;
   DefaultPhoto defaultPhoto;
   @override
   City fromMap(dynamic dynamicData) {

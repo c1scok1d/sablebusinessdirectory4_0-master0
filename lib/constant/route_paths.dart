@@ -58,6 +58,7 @@ class RoutePaths {
   static const String googleMapFilter = '/googleMapFilter';
   static const String mapPin = '/mapPin';
   static const String googleMapPin = '/googleMapPin';
+  static const String googleMapPin2 = '/googleMapPin2';
   static const String filterList = '/FilterList';
   static const String filterExpantion = '/FilterExpantion';
   static const String itemSort = '/ItemSort';

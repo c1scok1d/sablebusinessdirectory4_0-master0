@@ -24,6 +24,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'config/ps_colors.dart';
 import 'config/ps_config.dart';
 import 'db/common/ps_shared_preferences.dart';
+// import 'package:awesome_notifications/awesome_notifications.dart';
+
 
 Future<void> main() async {
   // add this, and it should be the first line in main method

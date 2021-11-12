@@ -524,7 +524,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           maplng: mapPinIntentHolder.mapLng,
         );
       });
-    
+
     case '${RoutePaths.googleMapPin}':
       return MaterialPageRoute<dynamic>(builder: (BuildContext context) {
         final Object args = settings.arguments;
@@ -534,8 +534,23 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           flag: mapPinIntentHolder.flag,
           maplat: mapPinIntentHolder.mapLat,
           maplng: mapPinIntentHolder.mapLng,
+          city: mapPinIntentHolder.city,
+          item: mapPinIntentHolder.item,
         );
-      }); 
+      });
+
+    case '${RoutePaths.googleMapPin2}':
+      return MaterialPageRoute<dynamic>(builder: (BuildContext context) {
+        final Object args = settings.arguments;
+        final MapPinIntentHolder mapPinIntentHolder =
+            args ?? MapPinIntentHolder;
+        return GoogleMapPinView(
+          flag: mapPinIntentHolder.flag,
+          maplat: mapPinIntentHolder.mapLat,
+          maplng: mapPinIntentHolder.mapLng,
+          city: mapPinIntentHolder.city,
+        );
+      });
 
     case '${RoutePaths.itemSort}':
       final Object args = settings.arguments;
