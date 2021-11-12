@@ -1,32 +1,48 @@
+import 'dart:io';
+
 import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/config/ps_config.dart';
 import 'package:businesslistingapi/constant/ps_constants.dart';
 import 'package:businesslistingapi/constant/ps_dimens.dart';
 import 'package:businesslistingapi/ui/common/base/ps_widget_with_appbar_with_no_provider.dart';
+import 'package:businesslistingapi/ui/common/smooth_star_rating_widget.dart';
 import 'package:businesslistingapi/utils/utils.dart';
+import 'package:businesslistingapi/viewobject/city.dart';
+import 'package:businesslistingapi/viewobject/holder/google_map_pin_call_back_holder.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:businesslistingapi/viewobject/holder/google_map_pin_call_back_holder.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GoogleMapPinView extends StatefulWidget {
   const GoogleMapPinView(
-      {@required this.flag, @required this.maplat, @required this.maplng});
+      {@required this.flag,
+      @required this.maplat,
+      @required this.maplng,
+      this.city,
+      this.item});
 
   final String flag;
   final String maplat;
   final String maplng;
+  final City city;
+  final Item item;
 
   @override
   _MapPinViewState createState() => _MapPinViewState();
 }
 
-class _MapPinViewState extends State<GoogleMapPinView> with TickerProviderStateMixin {
+class _MapPinViewState extends State<GoogleMapPinView>
+    with TickerProviderStateMixin {
   LatLng latlng;
   double defaultRadius = 3000;
   String address = '';
   CameraPosition kGooglePlex;
   GoogleMapController mapController;
+  bool showPin = true;
 
   dynamic loadAddress() async {
     final List<Address> addresses = await Geocoder.local
@@ -38,14 +54,15 @@ class _MapPinViewState extends State<GoogleMapPinView> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    print('My Item:' + widget.item.toString());
     latlng ??= LatLng(double.parse(widget.maplat), double.parse(widget.maplng));
 
     const double value = 15.0;
     // 16 - log(scale) / log(2);
     kGooglePlex = CameraPosition(
-        target: LatLng(double.parse(widget.maplat), double.parse(widget.maplng)),
-        zoom: value,
-    ); 
+      target: LatLng(double.parse(widget.maplat), double.parse(widget.maplng)),
+      zoom: value,
+    );
     loadAddress();
 
     print('value $value');
@@ -56,7 +73,7 @@ class _MapPinViewState extends State<GoogleMapPinView> with TickerProviderStateM
             ? <Widget>[
                 InkWell(
                   child: Ink(
-                    child: Center(  
+                    child: Center(
                       child: Text(
                         'PICKLOCATION',
                         textAlign: TextAlign.justify,
@@ -68,9 +85,11 @@ class _MapPinViewState extends State<GoogleMapPinView> with TickerProviderStateM
                       ),
                     ),
                   ),
-                   onTap: () {
-                    Navigator.pop(context,
-                        GoogleMapPinCallBackHolder(address: address, latLng: latlng));
+                  onTap: () {
+                    Navigator.pop(
+                        context,
+                        GoogleMapPinCallBackHolder(
+                            address: address, latLng: latlng));
                   },
                 ),
                 const SizedBox(
@@ -79,30 +98,154 @@ class _MapPinViewState extends State<GoogleMapPinView> with TickerProviderStateM
               ]
             : <Widget>[],
         child: Scaffold(
-          body: Column(
+          body: Stack(
             children: <Widget>[
               Flexible(
                 child: GoogleMap(
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: kGooglePlex,
-                    circles: <Circle> {}
-                      ..add(Circle(
+                    circles: <Circle>{}..add(Circle(
                         circleId: CircleId(address),
                         center: latlng,
                         radius: 200,
                         fillColor: Colors.blue.withOpacity(0.7),
                         strokeWidth: 3,
                         strokeColor: Colors.redAccent,
-                      )
-                    ),
-                    onTap: widget.flag == PsConst.PIN_MAP
-                        ? _handleTap
-                        : _doNothingTap
-                  ), 
-                ),
+                      )),
+                    markers: <Marker>{}..add(Marker(
+                        markerId: MarkerId(address),
+                        position: latlng,
+                        // infoWindow: InfoWindow(title: '${widget.item.name}'),
+                        onTap: () {
+                          print("info window on tap");
+                          updateInfoWindow(
+                              context, mapController, latlng, 300, 200);
+                          setState(() {
+                            _showInfoWindow = true;
+                          });
+                        })),
+                    onTap: (lat){
+
+                      print('tap on map');
+                      setState(() {
+                        _showInfoWindow=false;
+                        // this.latlng = latlng;
+                      });
+                    }),
+              ),
+              mapInfo(),
             ],
           ),
         ));
+  }
+
+  Widget mapInfo() {
+    if (_showInfoWindow) {
+      Item c = widget.item;
+      return SizedBox(
+        width: 300,
+        child: Container(
+          color: Colors.white,
+          width: 300,
+          height: 300,
+          margin: EdgeInsets.only(
+            left: _leftMargin,
+            top: _topMargin,
+          ),
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+          ),
+
+          child: GestureDetector(
+            onTap: (){
+              openMap(double.parse(widget.item.lat), double.parse(widget.item.lng));
+            },
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 120,
+                  child: Image.network(
+                    // 'https://api.sablebusinessdirectory.com/uploads/received_10212466727970205.jpeg'
+                    PsConfig.ps_app_image_url+c.defaultPhoto.imgPath,
+                  ),
+                ),
+                Text(
+                  '${c.name}',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SingleChildScrollView(
+                  child: Text(
+                    '${c.description}',
+                    style: TextStyle(color: Colors.black54
+                      // fontWeight: FontWeight.bold
+                    ),
+                    maxLines: 3,
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Container(
+                  height: 60,
+                  width: 150,
+                  child: _HeaderRatingWidget(
+                    itemDetail: widget.item,
+                  ),
+                ),
+              ],
+            ),
+          ) ,
+
+        ),
+      );
+    }
+    return Container();
+  }
+  static Future<void> openMap(double latitude, double longitude) async {
+    String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
+    if (await canLaunch(googleUrl)) {
+      await launch(googleUrl);
+    } else {
+      Fluttertoast.showToast(
+          msg: 'Maps Not available',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          // backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0
+      );
+    }
+  }
+  bool _showInfoWindow = false;
+  bool _tempHidden = false;
+  double _leftMargin;
+  double _topMargin;
+
+  void updateInfoWindow(
+    BuildContext context,
+    GoogleMapController controller,
+    LatLng location,
+    double infoWindowWidth,
+    double markerOffset,
+  ) async {
+    ScreenCoordinate screenCoordinate =
+        await controller.getScreenCoordinate(location);
+    double devicePixelRatio =
+        Platform.isAndroid ? MediaQuery.of(context).devicePixelRatio : 1.0;
+    double left = (screenCoordinate.x.toDouble() / devicePixelRatio) -
+        (infoWindowWidth / 2);
+    double top =
+        (screenCoordinate.y.toDouble() / devicePixelRatio) ;
+    if (left < 0 || top < 0) {
+      _tempHidden = true;
+    } else {
+      _tempHidden = false;
+      _leftMargin = left;
+      _topMargin = top;
+    }
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -110,10 +253,113 @@ class _MapPinViewState extends State<GoogleMapPinView> with TickerProviderStateM
   }
 
   void _handleTap(LatLng latlng) {
+    print('tap on map');
     setState(() {
-      this.latlng = latlng;
+      // _showInfoWindow=false;
+      // this.latlng = latlng;
     });
   }
 
   void _doNothingTap(LatLng latlng) {}
+}
+
+class _HeaderRatingWidget extends StatefulWidget {
+  const _HeaderRatingWidget({
+    Key key,
+    @required this.itemDetail,
+  }) : super(key: key);
+
+  final Item itemDetail;
+
+  @override
+  __HeaderRatingWidgetState createState() => __HeaderRatingWidgetState();
+}
+
+class __HeaderRatingWidgetState extends State<_HeaderRatingWidget> {
+  @override
+  Widget build(BuildContext context) {
+    dynamic result;
+
+    if (widget.itemDetail != null && widget.itemDetail.ratingDetail != null) {
+      // i  f (widget.itemDetail.overallRating == '0') {
+      //   return Container();
+      // }
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: <Widget>[
+          SmoothStarRating(
+              key: Key(widget.itemDetail.ratingDetail.totalRatingValue),
+              rating:
+                  double.parse(widget.itemDetail.ratingDetail.totalRatingValue),
+              allowHalfRating: false,
+              isReadOnly: true,
+              starCount: 5,
+              size: PsDimens.space16,
+              color: PsColors.ratingColor,
+              borderColor: Utils.isLightMode(context)
+                  ? PsColors.black.withAlpha(100)
+                  : PsColors.white,
+              onRated: (double v) async {},
+              spacing: 0.0),
+          const SizedBox(
+            height: PsDimens.space10,
+          ),
+          GestureDetector(
+              onTap: () async {
+                // result = await Navigator.pushNamed(
+                //     context, RoutePaths.ratingList,
+                //     arguments: widget.itemDetail.id);
+                //
+                // if (result != null && result) {
+                //   // // setState(() {
+                //   // widget.itemDetail.loadItem(
+                //   //     widget.itemDetail.itemDetail.data.id,
+                //   //     widget.itemDetail.psValueHolder.loginUserId);
+                //   // // });
+                // }
+              },
+              child: (widget.itemDetail.overallRating != '0')
+                  ? Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          widget.itemDetail.ratingDetail.totalRatingValue ?? '',
+                          textAlign: TextAlign.left,
+                          style:
+                              Theme.of(context).textTheme.bodyText1.copyWith(),
+                        ),
+                        const SizedBox(
+                          width: PsDimens.space4,
+                        ),
+                        Text(
+                          '${Utils.getString(context, 'item_detail__out_of_five_stars')}(' +
+                              widget.itemDetail.ratingDetail.totalRatingCount +
+                              ' ${Utils.getString(context, 'item_detail__reviews')})',
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.bodyText1.copyWith(),
+                        ),
+                      ],
+                    )
+                  : Text(Utils.getString(context, 'item_detail__no_rating'))),
+          const SizedBox(
+            height: PsDimens.space10,
+          ),
+          // if (widget.itemDetail.itemDetail.data.isAvailable == '1')
+          //   Text(
+          //     Utils.getString(context, 'item_detail__in_stock'),
+          //     style: Theme.of(context)
+          //         .textTheme
+          //         .bodyText2
+          //         .copyWith(color: PsColors.mainDarkColor),
+          //   )
+          // else
+          //   Container(),
+        ],
+      );
+    } else {
+      return Container();
+    }
+  }
 }

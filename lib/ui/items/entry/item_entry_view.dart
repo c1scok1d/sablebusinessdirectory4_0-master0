@@ -1361,7 +1361,8 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
         arguments: MapPinIntentHolder(
             flag: PsConst.PIN_MAP,
             mapLat: _latlng.latitude.toString(),
-            mapLng: _latlng.longitude.toString()));
+            mapLng: _latlng.longitude.toString(),
+            item: widget.item));
     if (result != null && result is MapPinCallBackHolder) {
       setState(() {
         _latlng = result.latLng;
@@ -1377,12 +1378,15 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
 
   dynamic _handleGoogleMapTap(
       LatLng latLng, googlemap.GoogleMapController googleMapController) async {
+    print('Handling map');
     final dynamic result = await Navigator.pushNamed(
         context, RoutePaths.googleMapPin,
         arguments: MapPinIntentHolder(
             flag: PsConst.PIN_MAP,
             mapLat: _latlng.latitude.toString(),
-            mapLng: _latlng.longitude.toString()));
+            mapLng: _latlng.longitude.toString(),
+          item: widget.item
+        ));
     if (result != null && result is GoogleMapPinCallBackHolder) {
       setState(() {
         _latlng = LatLng(result.latLng.latitude, result.latLng.longitude);

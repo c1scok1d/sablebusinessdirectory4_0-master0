@@ -101,17 +101,21 @@ class _LocationTileViewState extends State<LocationTileView> {
                 ),
                 onTap: () async {
                   if(PsConfig.isUseGoogleMap) {
+                    print('Tapping view location');
                     await Navigator.pushNamed(context, RoutePaths.googleMapPin,
                       arguments: MapPinIntentHolder(
                           flag: PsConst.VIEW_MAP,
                           mapLat: widget.item.city.lat,
-                          mapLng: widget.item.city.lng));
+                          mapLng: widget.item.city.lng,
+                          item: widget.item));
                   } else {
+                    print('Tapping view location2');
                     await Navigator.pushNamed(context, RoutePaths.mapPin,
                         arguments: MapPinIntentHolder(
                             flag: PsConst.VIEW_MAP,
                             mapLat: widget.item.city.lat,
-                            mapLng: widget.item.city.lng));
+                            mapLng: widget.item.city.lng,
+                            item: widget.item));
                   }
                 },
               ),
