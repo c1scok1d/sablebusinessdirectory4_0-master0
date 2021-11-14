@@ -7,7 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
         android:icon="@mipmap/launcher_icon"
         android:label="Sable Business Directory">
@@ -21,13 +22,7 @@
             android:theme="@style/LaunchTheme"
             android:usesCleartextTraffic="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
-            <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyDiJlKZ1Ahc_3oneOtv4PcpDaHYRLBTWy4" />
+
 <!--                android:value="AIzaSyCMBDE0LLae_aFf2trtik89eYhtPM3rt30" />-->
             <!-- This keeps the window background of the activity showing
                  until Flutter renders its first frame. It can be removed if
@@ -52,7 +47,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <!-- Specifies an Android theme to apply to this Activity as soon as
+                      the Android process has started. This theme is visible to the user
+                      while the Flutter UI initializes. After that, this theme continues
+                      to determine the Window background behind the Flutter UI. -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyD3cdFkVivjeGN3cosfKwIkehzpIkY59oo" />
         <activity
             android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">

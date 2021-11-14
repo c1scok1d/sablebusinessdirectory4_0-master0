@@ -97,6 +97,7 @@ dependencies:
   google_maps_flutter: 2.0.4
   flutter_datetime_picker: 1.5.0
   flutter_local_notifications: ^5.0.0
+  flutter_google_places: ^0.3.0
 #  awesome_notifications: ^0.6.17
 #  flutter_geofence: ^0.4.1
 #  awesome_notifications: ^0.6.17
