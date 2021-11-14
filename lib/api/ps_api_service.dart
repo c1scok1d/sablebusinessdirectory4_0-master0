@@ -300,6 +300,22 @@ class PsApiService extends PsApi {
 
     return await postData<Item, List<Item>>(Item(), url, jsonMap);
   }
+  ///
+  /// Search Item
+  ///
+  Future<PsResource<List<Item>>> getItemListByLocation(
+      Map<dynamic, dynamic> jsonMap,
+      int limit,
+      int offset,
+      double lat,
+      double lng,
+      double miles) async {//api_key/sableisblackbusiness/limit/20/offset/0/lat/41.539120/lng/-87.642700/miles/23
+    final String url =
+        '${PsUrl.ps_search_item_url}/api_key/${PsConfig.ps_api_key}/limit/$limit/offset/$offset/lat/$lat/lng/$lng/miles/$miles';
+
+    return await getServerCall<Item, List<Item>>(Item(), url);
+    return await postData<Item, List<Item>>(Item(), url, jsonMap);
+  }
 
 ////
   /// Item Detail

@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 
 enum class GeoEvent {
     entry,
+    dwell,
     exit
 }
 

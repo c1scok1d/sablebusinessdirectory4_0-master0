@@ -1,9 +1,17 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
+import 'dart:math';
 
-import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
 import 'package:businesslistingapi/config/ps_config.dart';
 import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/db/common/ps_shared_preferences.dart';
+import 'package:businesslistingapi/models/simple_geofence.dart';
 import 'package:businesslistingapi/provider/blog/blog_provider.dart';
 import 'package:businesslistingapi/provider/city/city_provider.dart';
 import 'package:businesslistingapi/provider/city/popular_city_provider.dart';
@@ -13,21 +21,25 @@ import 'package:businesslistingapi/provider/item/feature_item_provider.dart';
 import 'package:businesslistingapi/provider/item/search_item_provider.dart';
 import 'package:businesslistingapi/provider/item/trending_item_provider.dart';
 import 'package:businesslistingapi/repository/blog_repository.dart';
+import 'package:businesslistingapi/repository/category_repository.dart';
 import 'package:businesslistingapi/repository/city_repository.dart';
 import 'package:businesslistingapi/repository/item_collection_repository.dart';
+import 'package:businesslistingapi/repository/item_repository.dart';
 import 'package:businesslistingapi/ui/city/item/city_horizontal_list_item.dart';
 import 'package:businesslistingapi/ui/city/item/popular_city_horizontal_list_item.dart';
 import 'package:businesslistingapi/ui/common/dialog/confirm_dialog_view.dart';
+import 'package:businesslistingapi/ui/common/dialog/noti_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/rating_dialog/core.dart';
+import 'package:businesslistingapi/ui/common/dialog/rating_dialog/style.dart';
 import 'package:businesslistingapi/ui/common/ps_admob_banner_widget.dart';
 import 'package:businesslistingapi/ui/common/ps_frame_loading_widget.dart';
-import 'package:businesslistingapi/ui/common/dialog/noti_dialog.dart';
 import 'package:businesslistingapi/ui/common/ps_textfield_widget_with_icon.dart';
 import 'package:businesslistingapi/ui/dashboard/home/blog_slider.dart';
 import 'package:businesslistingapi/ui/items/item/item_horizontal_list_item.dart';
+import 'package:businesslistingapi/utils/save_file.dart';
 import 'package:businesslistingapi/utils/utils.dart';
 import 'package:businesslistingapi/viewobject/blog.dart';
 import 'package:businesslistingapi/viewobject/city.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/city_parameter_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/intent_holder/city_intent_holder.dart';
@@ -35,19 +47,16 @@ import 'package:businesslistingapi/viewobject/holder/intent_holder/item_detail_i
 import 'package:businesslistingapi/viewobject/holder/intent_holder/item_list_intent_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
 import 'package:businesslistingapi/viewobject/item.dart';
-import 'package:businesslistingapi/ui/common/dialog/rating_dialog/core.dart';
-import 'package:businesslistingapi/ui/common/dialog/rating_dialog/style.dart';
-import 'package:flutter/material.dart';
 import 'package:businesslistingapi/viewobject/item_collection_header.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_geofence/geofence.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:businesslistingapi/api/common/ps_status.dart';
-import 'package:businesslistingapi/constant/ps_dimens.dart';
-import 'package:businesslistingapi/constant/route_paths.dart';
-import 'package:businesslistingapi/repository/category_repository.dart';
-import 'package:businesslistingapi/repository/item_repository.dart';
 
 class HomeDashboardViewWidget extends StatefulWidget {
   const HomeDashboardViewWidget(
@@ -97,8 +106,8 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
   @override
   void initState() {
     super.initState();
-
-    if (Platform.isAndroid) {  
+    print('InitState');
+    if (Platform.isAndroid) {
       _rateMyApp.init().then((_) {
         if (_rateMyApp.shouldOpenDialog) {
           _rateMyApp.showStarRateDialog(
@@ -168,6 +177,18 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         }
       });
     }
+    // initPlatformState();
+
+    Geofence.initialize();
+// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    var initializationSettingsAndroid =
+        new AndroidInitializationSettings('launcher_icon');
+    var initializationSettingsIOS =
+        IOSInitializationSettings(onDidReceiveLocalNotification: null);
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: null);
   }
 
   Future<void> onSelectNotification(String payload) async {
@@ -185,6 +206,8 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
   final TextEditingController userInputItemNameTextEditingController =
       TextEditingController();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      new FlutterLocalNotificationsPlugin();
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +218,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     itemCollectionRepo = Provider.of<ItemCollectionRepository>(context);
     valueHolder = Provider.of<PsValueHolder>(context);
 
+    print('HOME NOW');
+    initPlatformState();
+    // startBackgroundTracking();
     return MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<BlogProvider>(
@@ -404,6 +430,367 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
           ),
         )));
   }
+
+  Future<void> startBackgroundTracking(Coordinate c) async {
+    print('$TAG startBackgroundTracking');
+
+    final SearchItemProvider provider =
+        SearchItemProvider(repo: itemRepo, psValueHolder: valueHolder);
+    ItemParameterHolder itemParameterHolder = ItemParameterHolder();
+    bool isConnectedToInternet = await Utils.checkInternetConnectivity();
+    final StreamController<PsResource<List<Item>>> itemListStream =
+        StreamController<PsResource<List<Item>>>.broadcast();
+    itemListStream.stream.listen((event) {
+      print('Fetch some items');
+      registerGeofences(event);
+    });
+    itemRepo.getItemListByLoc(
+        itemListStream,
+        isConnectedToInternet,
+        30,
+        0,
+        PsStatus.PROGRESS_LOADING,
+        c.latitude,
+        c.longitude,
+        100,
+        itemParameterHolder.getSearchParameterHolder());
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initPlatformState() async {
+    print('😡 initPlatform state');
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    Geofence.requestPermissions();
+    Geofence.getCurrentLocation().then((coordinate) {
+      startBackgroundTracking(coordinate);
+      print(
+          '$TAG Your latitude is ${coordinate.latitude} and longitude ${coordinate.longitude}');
+    });
+    // Geofence.backgroundLocationUpdated.stream;
+    Geofence.startListeningForLocationChanges();
+    Geofence.backgroundLocationUpdated.stream.listen((event) {
+      // print('$TAG logging from flutter ${event.longitude}');
+
+      // startBackgroundTracking(event);
+      if (geofences == null ||
+          geofences.isEmpty) {
+        print('$TAG Items are empty');
+        return;
+      }
+      int x=0;
+      geofences.forEach((key, c) async {
+x++;
+        double dis = calculateDistance(c.latitude, c.longitude,
+            event.latitude, event.longitude);
+
+        // dis < 1000
+        //     ? print('Distance: $dis  ==${c.latitude},${c.longitude}')
+        //     : print(
+        //     'Dis: $dis ==lat1:${c.latitude}==ln1:${c.longitude}==lat2:${event.latitude}==ln2:${event.longitude}');
+        if ((dis * 1000) < 5000) {
+          if(c.transitionType==GeolocationEvent.entry &&!c.isNear){
+            print('Entering ${c.item_name}');
+            c.isNear=true;
+            if (c == null) {
+              print('$TAG Could not set notification, Item not found');
+              return;
+            }
+            String firstName = "";
+            SharedPreferences sharedPreferences =
+                await PsSharedPreferences.instance.futureShared;
+            try {
+              firstName =
+                  sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
+              firstName ??= '';
+            } on Exception catch (e) {
+              print('$TAG Could not get the name');
+            }
+
+            scheduleNotification(
+                'Good news $firstName ',
+                'There are black owned businesses near you!',
+                GeolocationEvent.entry,
+                x,
+                paypload: c.id,
+                item: c);
+          }else if(c.transitionType==GeolocationEvent.dwell&&c.isNear){
+            print('Dwelling ${c.item_name}');
+            if (c == null) {
+              print('$TAG Could not set notification, Item not found');
+              return;
+            }
+            String firstName = "";
+            SharedPreferences sharedPreferences =
+            await PsSharedPreferences.instance.futureShared;
+            try {
+              firstName =
+                  sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
+            } on Exception catch (e) {
+              print('$TAG Could not get the name');
+            }
+            scheduleNotification('You are near ${c.item_name}',
+                'Stop in and say Hi!', GeolocationEvent.dwell, x,
+                paypload: c.id, item: c);
+          }
+        } else if (c.isNear ) {
+          print('Exiting ${c.item_name}');
+          c.isNear = false;
+          if(c.transitionType==GeolocationEvent.exit){
+
+            if (c == null) {
+              print('$TAG Could not set notification, Item not found');
+              return;
+            }
+            String firstName = "";
+            SharedPreferences sharedPreferences =
+            await PsSharedPreferences.instance.futureShared;
+            try {
+              firstName =
+                  sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
+            } on Exception catch (e) {
+              print('$TAG Could not get the name');
+            }
+            // if(!c.transitionType=)
+            scheduleNotification(
+                "$TAG Don't miss an opportunity to buy black.",
+                'You are near ${c.item_name}',
+                GeolocationEvent.exit,
+                x,
+                paypload: c.id,
+                item: c);
+          }
+        }
+      });
+      // for (Item c in _recentCityProvider.cityList.data) {
+      // }
+    });
+    setState(() {});
+  }
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
+  static final double GEOFENCE_EXPIRATION_IN_HOURS = 12;
+  static final double GEOFENCE_EXPIRATION_IN_MILLISECONDS =
+      GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
+  static HashMap<String, SimpleGeofence> geofences =
+      HashMap<String, SimpleGeofence>();
+
+  void registerGeofences(PsResource<List<Item>> event) {
+    print('$TAG RegisterGeofences ${event.data.first.paidStatus}');
+    for (Item i in event.data) {
+      if (i.paidStatus != null && i.paidStatus.trim() == 'Progress') {
+        geofences.putIfAbsent(
+            i.id,
+            () => SimpleGeofence(
+                i.id,
+                double.parse(i.lat),
+                double.parse(i.lng),
+                i.isFeatured,
+                i.isPromotion,
+                i.cityId,
+                i.name,
+                i.defaultPhoto?.imgPath,
+                5000,
+                GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                GeolocationEvent.dwell));
+      } else {
+        geofences.putIfAbsent(
+            '${i.id}-a',
+            () => SimpleGeofence(
+                i.id,
+                double.parse(i.lat),
+                double.parse(i.lng),
+                i.isFeatured,
+                i.isPromotion,
+                i.cityId,
+                i.name,
+                i.defaultPhoto?.imgPath,
+                5000,
+                GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                GeolocationEvent.entry));
+        geofences.putIfAbsent(
+            '${i.id}-b',
+            () => SimpleGeofence(
+                i.id,
+                double.parse(i.lat),
+                double.parse(i.lng),
+                i.isFeatured,
+                i.isPromotion,
+                i.cityId,
+                i.name,
+                i.defaultPhoto?.imgPath,
+                5000,
+                GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                GeolocationEvent.exit));
+      }
+    }
+    Geofence.removeAllGeolocations();
+    geofences.forEach((key, value) {
+      Geofence.addGeolocation(value.toGeofence(), value.transitionType);
+    });
+    Geofence.startListening(GeolocationEvent.entry, (entry) {
+      print('$TAG Entering ${entry.id}');
+      getGeoCity(entry.id).then((SimpleGeofence c) async {
+        if (c == null) {
+          print('$TAG Could not set notification, Item not found');
+          return;
+        }
+        String firstName = "";
+        SharedPreferences sharedPreferences =
+            await PsSharedPreferences.instance.futureShared;
+        try {
+          firstName =
+              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
+        } on Exception catch (e) {
+          print('$TAG Could not get the name');
+        }
+        scheduleNotification(
+            'Good news $firstName ',
+            'There are black owned businesses near you!',
+            GeolocationEvent.entry,
+            int.parse(c.id),
+            paypload: c.id,
+            item: c);
+      });
+    });
+    Geofence.startListening(GeolocationEvent.dwell, (entry) {
+      print('$TAG Dwelling ${entry.id}');
+      getGeoCity(entry.id).then((SimpleGeofence c) async {
+        if (c == null) {
+          print('$TAG Could not set notification, Item not found');
+          return;
+        }
+        String firstName = "";
+        SharedPreferences sharedPreferences =
+            await PsSharedPreferences.instance.futureShared;
+        try {
+          firstName =
+              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
+        } on Exception catch (e) {
+          print('$TAG Could not get the name');
+        }
+        scheduleNotification('You are near ${c.item_name}',
+            'Stop in and say Hi!', GeolocationEvent.dwell, int.parse(c.id),
+            paypload: c.id, item: c);
+      });
+    });
+    Geofence.startListening(GeolocationEvent.exit, (entry) {
+      print('$TAG Exiting ${entry.id}');
+      getGeoCity(entry.id).then((c) async {
+        if (c == null) {
+          print('$TAG Could not set notification, Item not found');
+          return;
+        }
+        String firstName = "";
+        SharedPreferences sharedPreferences =
+            await PsSharedPreferences.instance.futureShared;
+        try {
+          firstName =
+              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
+        } on Exception catch (e) {
+          print('$TAG Could not get the name');
+        }
+        // if(!c.transitionType=)
+        scheduleNotification(
+            "$TAG Don't miss an opportunity to buy black.",
+            'You are near ${c.item_name}',
+            GeolocationEvent.exit,
+            int.parse(c.id),
+            paypload: c.id,
+            item: c);
+      });
+    });
+  }
+
+  static String TAG = 'GEOFENCES NEW:';
+
+  Future<void> scheduleNotification(
+      String title, String subtitle, GeolocationEvent event, int id,
+      {String paypload = "Item x", SimpleGeofence item}) async {
+    print("$TAG scheduling one with $title and $subtitle");
+    // var rng = new Random();
+    // Future.delayed(Duration(seconds: 5)).then((value) => null);
+    // Bitmap bitmap = await Bitmap.fromProvider(NetworkImage(PsConfig.ps_app_image_url+city.defaultPhoto.imgPath));
+
+    Future.delayed(const Duration(seconds: 5), () {}).then((result) async {
+      if(item.imageId==null){
+
+        final androidPlatformChannelSpecifics = const AndroidNotificationDetails(
+            '1123', 'Geofences', 'Geofence alert',
+            importance: Importance.high,
+            priority: Priority.high,
+            ticker: 'ticker');
+        final iOSPlatformChannelSpecifics = IOSNotificationDetails();
+        final platformChannelSpecifics = NotificationDetails(
+            android: androidPlatformChannelSpecifics,
+            iOS: iOSPlatformChannelSpecifics);
+        await flutterLocalNotificationsPlugin.show(
+          // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
+            id,
+            title,
+            subtitle,
+            platformChannelSpecifics,
+            payload: paypload);
+      }else{
+        var mfile =
+        await SaveFile().saveImage(PsConfig.ps_app_image_url + item.imageId??'');
+        print(mfile.absolute.path);
+        var bigPictureStyleInformation = BigPictureStyleInformation(
+            FilePathAndroidBitmap(mfile.absolute.path),
+            largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
+            contentTitle: '$title',
+            htmlFormatContentTitle: true,
+            summaryText: '$subtitle',
+            htmlFormatSummaryText: true);
+        final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+            '1123', 'Geofences', 'Geofence alert',
+            importance: Importance.high,
+            priority: Priority.high,
+            styleInformation: bigPictureStyleInformation,
+            largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
+            ticker: 'ticker');
+        final iOSPlatformChannelSpecifics = IOSNotificationDetails(
+            attachments: <IOSNotificationAttachment>[
+              IOSNotificationAttachment(mfile.absolute.path)
+            ]);
+        final platformChannelSpecifics = NotificationDetails(
+            android: androidPlatformChannelSpecifics,
+            iOS: iOSPlatformChannelSpecifics);
+        await flutterLocalNotificationsPlugin.show(
+          // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
+            id,
+            title,
+            subtitle,
+            platformChannelSpecifics,
+            payload: paypload);
+      }
+    });
+  }
+
+  Future<SimpleGeofence> getGeoCity(String id) {
+    print('$TAG getGeoCity ');
+    geofences.forEach((key, value) {
+      if (key.contains('-')) {
+        if (key.split('-')[0] == id) {
+          return Future.value(value);
+        }
+      } else {
+        if (key == id) {
+          return Future.value(value);
+        }
+      }
+    });
+    return Future.value(null);
+  }
 }
 
 class _HomeFeaturedItemHorizontalListWidget extends StatefulWidget {
@@ -604,7 +991,7 @@ class __HomeNewCityHorizontalListWidgetState
                                   city.id, //'latest',
                               city: city,
                               onTap: () async {
-                               await cityProvider.replaceCityInfoData(
+                                await cityProvider.replaceCityInfoData(
                                   cityProvider.cityList.data[index].id,
                                   cityProvider.cityList.data[index].name,
                                   cityProvider.cityList.data[index].lat,
@@ -815,7 +1202,7 @@ class __HomeRecommandedCityHorizontalListWidgetState
                                           city: provider
                                               .recommandedCityList.data[index],
                                           onTap: () async {
-                                          await  provider.replaceCityInfoData(
+                                            await provider.replaceCityInfoData(
                                               provider.recommandedCityList
                                                   .data[index].id,
                                               provider.recommandedCityList
@@ -1147,6 +1534,7 @@ class _MyHomeHeaderWidget extends StatefulWidget {
   final PsValueHolder psValueHolder;
   final AnimationController animationController;
   final Animation<double> animation;
+
   @override
   __MyHomeHeaderWidgetState createState() => __MyHomeHeaderWidgetState();
 }
@@ -1304,7 +1692,7 @@ class _HomePopularCityHorizontalListWidget extends StatelessWidget {
                                           city: popularCityProvider
                                               .popularCityList.data[index],
                                           onTap: () async {
-                                           await popularCityProvider
+                                            await popularCityProvider
                                                 .replaceCityInfoData(
                                               popularCityProvider
                                                   .popularCityList
