@@ -1,71 +1,39 @@
 {
   "project_info": {
-    "project_number": "945661989282",
-    "project_id": "sable-mobile-app-1617380169435",
-    "storage_bucket": "sable-mobile-app-1617380169435.appspot.com"
+    "project_number": "142135780540",
+    "project_id": "sable-business-directory",
+    "storage_bucket": "sable-business-directory.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:945661989282:android:94a719b4c804c96dfa22fb",
+        "mobilesdk_app_id": "1:142135780540:android:d4248d5b743d79eba31cb9",
         "android_client_info": {
           "package_name": "com.sable.businesslistingapi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "945661989282-baa0s1hng46fr9lom5ipc7faf2utfpnb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.sable.businesslistingapi",
-            "certificate_hash": "352478ccae6be82159addd427f119a86ea02c61f"
-          }
-        },
-        {
-          "client_id": "945661989282-lc20js2d83vmu6r6f2g7547hd0muh83f.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.sable.businesslistingapi",
-            "certificate_hash": "8c0b7794e5126071a25a0704bb163cc27bdb17c9"
-          }
-        },
-        {
-          "client_id": "945661989282-m23d2d1mmabofd3lmibnroosvf97i6e9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.sable.businesslistingapi",
-            "certificate_hash": "06018a0d611025ee1e1d9e39bc241a2c327c4f3a"
-          }
-        },
-        {
-          "client_id": "945661989282-nvfq2j1038or7tfmj8qsj06b19ob93oj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.sable.businesslistingapi",
-            "certificate_hash": "3e18add8c5cd5b25c8cf060030fee46da8a55620"
-          }
-        },
-        {
-          "client_id": "945661989282-hk9l2ef81mm4jimm2homauvni2fqhq9i.apps.googleusercontent.com",
+          "client_id": "142135780540-qr1vu4rnpu02dplog34672d4gftabtk6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD3cdFkVivjeGN3cosfKwIkehzpIkY59oo"
+          "current_key": "AIzaSyB1x7KK-tXJl_2DpwOkUqssYNsQx6qimiU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "945661989282-368qt6s76e5pck7srobefm1qt9dgfdnr.apps.googleusercontent.com",
+              "client_id": "142135780540-qr1vu4rnpu02dplog34672d4gftabtk6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         }
       },
-      "admob_app_id": "ca-app-pub-6732007157855667~5895978563"
+      "admob_app_id": "ca-app-pub-2494959558505145~8609252296"
     }
   ],
   "configuration_version": "1"
