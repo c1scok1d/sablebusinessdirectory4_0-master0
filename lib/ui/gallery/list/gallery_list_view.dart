@@ -8,6 +8,7 @@ import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
 // import 'package:businesslistingapi/repository/delete_image_repository.dart';
 // import 'package:businesslistingapi/ui/common/base/ps_widget_with_multi_provider.dart';
 import 'package:businesslistingapi/ui/gallery/list/gallery_list_item.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:flutter/material.dart';
 import 'package:businesslistingapi/utils/utils.dart';
 import 'package:businesslistingapi/viewobject/api_status.dart';
@@ -22,11 +23,13 @@ class GalleryListView extends StatefulWidget {
     Key key,
     @required this.itemId,
     this.onImageTap,
+    this.item,
     @required this.galleryProvider,
     // @required this.deleteImageProvider,
   }) : super(key: key);
 
   final String itemId;
+  final Item item;
   final Function onImageTap;
   final GalleryProvider galleryProvider;
   // final DeleteImageProvider deleteImageProvider;
@@ -125,6 +128,7 @@ class _GalleryListViewState extends State<GalleryListView>
                       arguments: ItemEntryImageIntentHolder(
                           flag: '',
                           itemId: widget.itemId,
+                          item: widget.item,
                           provider: widget.galleryProvider));
 
                   if (retrunData != null && retrunData is List<Asset>) {
@@ -211,6 +215,7 @@ class _GalleryListViewState extends State<GalleryListView>
                                         arguments: ItemEntryImageIntentHolder(
                                             flag: '',
                                             itemId: widget.itemId,
+                                            item: widget.item,
                                             image: widget.galleryProvider
                                                 .galleryList.data[index],
                                             provider: widget.galleryProvider));

@@ -314,4 +314,9 @@ class Item extends PsObject<Item> {
     }
     return dynamicList;
   }
+
+  @override
+  String toString() {
+    return 'Item{id: $id, cityId: $cityId, catId: $catId, subCatId: $subCatId, itemStatusId: $itemStatusId, name: $name, description: $description, searchTag: $searchTag, highlightInformation: $highlightInformation, isFeatured: $isFeatured, addedDate: $addedDate, addedUserId: $addedUserId, updatedDate: $updatedDate, updatedUserId: $updatedUserId, updatedFlag: $updatedFlag, overallRating: $overallRating, touchCount: $touchCount, favouriteCount: $favouriteCount, likeCount: $likeCount, lat: $lat, lng: $lng, openingHour: $openingHour, closingHour: $closingHour, isPromotion: $isPromotion, phone1: $phone1, phone2: $phone2, phone3: $phone3, email: $email, address: $address, facebook: $facebook, googlePlus: $googlePlus, twitter: $twitter, youtube: $youtube, instagram: $instagram, pinterest: $pinterest, website: $website, whatsapp: $whatsapp, messenger: $messenger, timeRemark: $timeRemark, terms: $terms, cancelationPolicy: $cancelationPolicy, additionalInfo: $additionalInfo, featuredDate: $featuredDate, isPaid: $isPaid, dynamicLink: $dynamicLink, addedDateStr: $addedDateStr, paidStatus: $paidStatus, transStatus: $transStatus, defaultPhoto: $defaultPhoto, city: $city, category: $category, subCategory: $subCategory, itemSpecList: $itemSpecList, user: $user, isLiked: $isLiked, isFavourited: $isFavourited, imageCount: $imageCount, commentHeaderCount: $commentHeaderCount, currencySymbol: $currencySymbol, currencyShortForm: $currencyShortForm, ratingDetail: $ratingDetail}';
+  }
 }

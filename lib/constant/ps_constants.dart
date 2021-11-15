@@ -197,6 +197,8 @@ class PsConst {
   static const String googleAuthProvider = 'google';
   static const String defaultEmail = 'admin@ps.com';
   static const String defaultPassword = 'admin@ps.com';
+  static const String googleMapsAPi = 'AIzaSyD3cdFkVivjeGN3cosfKwIkehzpIkY59oo';
+  // static const String defaultPassword = 'admin@ps.com';
 
   ///
   /// Error Codes

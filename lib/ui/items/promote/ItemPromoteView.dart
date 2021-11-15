@@ -86,6 +86,7 @@ class _ItemPromoteViewState extends State<ItemPromoteView>
     tokenRepository = Provider.of<TokenRepository>(context);
     userRepository = Provider.of<UserRepository>(context);
 
+    print('----------------------------------ITEM PROMOTE VIEW-----------------');
     return PsWidgetWithMultiProvider(
       child: MultiProvider(
         providers: <SingleChildWidget>[

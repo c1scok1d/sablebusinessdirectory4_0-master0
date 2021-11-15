@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
-import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart';
-import 'package:flutter/services.dart';
+
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
 import 'package:businesslistingapi/config/ps_config.dart';
 import 'package:businesslistingapi/constant/ps_constants.dart';
 import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/common/ps_provider.dart';
 import 'package:businesslistingapi/repository/user_repository.dart';
 import 'package:businesslistingapi/ui/common/dialog/error_dialog.dart';
 import 'package:businesslistingapi/ui/common/dialog/warning_dialog_view.dart';
@@ -22,12 +23,12 @@ import 'package:businesslistingapi/viewobject/holder/google_login_parameter_hold
 import 'package:businesslistingapi/viewobject/holder/user_login_parameter_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/user_register_parameter_holder.dart';
 import 'package:businesslistingapi/viewobject/user.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:firebase_auth_platform_interface/firebase_auth_platform_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:businesslistingapi/api/common/ps_resource.dart';
-import 'package:businesslistingapi/api/common/ps_status.dart';
-import 'package:businesslistingapi/provider/common/ps_provider.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart';
 
@@ -41,7 +42,8 @@ class UserProvider extends PsProvider {
     isDispose = false;
     print('User Provider: $hashCode');
     userListStream = StreamController<PsResource<User>>.broadcast();
-    subscription = userListStream.stream.listen((PsResource<User> resource) async {
+    subscription =
+        userListStream.stream.listen((PsResource<User> resource) async {
       if (resource != null && resource.data != null) {
         _user = resource;
         holderUser = resource.data;
@@ -54,7 +56,7 @@ class UserProvider extends PsProvider {
 
       if (!isDispose) {
         if (_user != null && _user.data != null) {
-         await replaceLoginUserId(_user.data.userId);
+          await replaceLoginUserId(_user.data.userId);
 
           notifyListeners();
         }
@@ -69,10 +71,12 @@ class UserProvider extends PsProvider {
 
   PsResource<User> _user = PsResource<User>(PsStatus.NOACTION, '', null);
   PsResource<User> _holderUser = PsResource<User>(PsStatus.NOACTION, '', null);
+
   PsResource<User> get user => _user;
 
   PsResource<ApiStatus> _apiStatus =
       PsResource<ApiStatus>(PsStatus.NOACTION, '', null);
+
   PsResource<ApiStatus> get apiStatus => _apiStatus;
 
   StreamSubscription<PsResource<User>> subscription;
@@ -477,8 +481,8 @@ class UserProvider extends PsProvider {
           await postAppleLogin(appleLoginParameterHolder.toMap());
 
       if (_apiStatus.data != null) {
-       await replaceVerifyUserData('', '', '', '');
-       await replaceLoginUserId(_apiStatus.data.userId);
+        await replaceVerifyUserData('', '', '', '');
+        await replaceLoginUserId(_apiStatus.data.userId);
       }
       return _apiStatus;
     } else {
@@ -553,6 +557,8 @@ class UserProvider extends PsProvider {
   ///
   Future<void> loginWithGoogleId(
       BuildContext context, Function onGoogleIdSignInSelected) async {
+    print('loginWithGoogleId');
+
     ///
     /// Check User is Accept Terms and Conditions
     ///
@@ -564,8 +570,10 @@ class UserProvider extends PsProvider {
         ///
         /// Get Firebase User with Google Id Login
         ///
+        print('_getFirebaseUserWithGoogleId1');
         final fb_auth.User firebaseUser = await _getFirebaseUserWithGoogleId();
 
+        print('_getFirebaseUserWithGoogleId2 ${firebaseUser.uid}');
         if (firebaseUser != null) {
           ///
           /// Got Firebase User
@@ -658,8 +666,8 @@ class UserProvider extends PsProvider {
           (await _firebaseAuth.signInWithCredential(credential)).user;
       print('signed in' + user.displayName);
       return user;
-    } on Exception {
-      print('not select google account');
+    } on Exception catch(e){
+      print('not select google account ${e}');
       return null;
     }
   }
@@ -693,8 +701,8 @@ class UserProvider extends PsProvider {
           await postGoogleLogin(googleLoginParameterHolder.toMap());
 
       if (_apiStatus.data != null) {
-       await replaceVerifyUserData('', '', '', '');
-       await replaceLoginUserId(_apiStatus.data.userId);
+        await replaceVerifyUserData('', '', '', '');
+        await replaceLoginUserId(_apiStatus.data.userId);
       }
 
       return _apiStatus;
@@ -880,8 +888,8 @@ class UserProvider extends PsProvider {
           await postFBLogin(fbLoginParameterHolder.toMap());
 
       if (_apiStatus.data != null) {
-       await replaceVerifyUserData('', '', '', '');
-       await replaceLoginUserId(_apiStatus.data.userId);
+        await replaceVerifyUserData('', '', '', '');
+        await replaceLoginUserId(_apiStatus.data.userId);
       }
 
       return _apiStatus;
@@ -1052,8 +1060,8 @@ class UserProvider extends PsProvider {
         await postUserLogin(userLoginParameterHolder.toMap());
 
     if (_apiStatus.data != null) {
-     await replaceVerifyUserData('', '', '', '');
-     await replaceLoginUserId(_apiStatus.data.userId);
+      await replaceVerifyUserData('', '', '', '');
+      await replaceLoginUserId(_apiStatus.data.userId);
     }
     return _apiStatus;
   }
@@ -1102,7 +1110,7 @@ class UserProvider extends PsProvider {
             ///
             /// Success
             ///
-           final User user = resourceUser.data;
+            final User user = resourceUser.data;
             if (user.status == PsConst.ONE) {
               // Approval Off
               await replaceVerifyUserData('', '', '', '');

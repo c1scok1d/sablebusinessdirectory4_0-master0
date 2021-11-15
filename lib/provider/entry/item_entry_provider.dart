@@ -16,7 +16,7 @@ class ItemEntryProvider extends PsProvider {
       : super(repo, limit) {
     _repo = repo;
     isDispose = false;
-    print('Item Entry Provider: $hashCode');
+    print('Item Entry Provider2: ${psValueHolder.toString()}');
 
     itemListStream = StreamController<PsResource<Item>>.broadcast();
     subscription = itemListStream.stream.listen((PsResource<Item> resource) async {

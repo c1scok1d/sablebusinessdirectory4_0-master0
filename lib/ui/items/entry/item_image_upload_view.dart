@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:businesslistingapi/api/common/ps_resource.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
 import 'package:businesslistingapi/config/ps_config.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
 import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/db/common/ps_shared_preferences.dart';
 import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
 import 'package:businesslistingapi/ui/common/dialog/error_dialog.dart';
-import 'package:businesslistingapi/ui/common/dialog/success_dialog.dart';
+import 'package:businesslistingapi/ui/common/dialog/image_upload_dialog.dart';
 import 'package:businesslistingapi/ui/common/dialog/warning_dialog_view.dart';
 import 'package:businesslistingapi/ui/common/ps_button_widget.dart';
 import 'package:businesslistingapi/ui/common/ps_ui_widget.dart';
@@ -13,19 +15,29 @@ import 'package:businesslistingapi/utils/ps_progress_dialog.dart';
 import 'package:businesslistingapi/utils/utils.dart';
 import 'package:businesslistingapi/viewobject/default_photo.dart';
 import 'package:businesslistingapi/viewobject/holder/delete_imge_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/intent_holder/user_item_intent_holder.dart';
+import 'package:businesslistingapi/viewobject/item.dart';
+import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ItemImageUploadView extends StatefulWidget {
   const ItemImageUploadView({
     @required this.flag,
     @required this.itemId,
     this.image,
+    this.item,
+    this.isPromotion,
     @required this.galleryProvider,
   });
+
   final String flag;
   final String itemId;
+  final String isPromotion;
+  final Item item;
   final DefaultPhoto image;
   final GalleryProvider galleryProvider;
+
   @override
   ItemImageUploadViewState createState() => ItemImageUploadViewState();
 }
@@ -49,6 +61,7 @@ class ItemImageUploadViewState extends State<ItemImageUploadView>
 
   bool isSelectedImagePath = false;
   String imageId = '';
+  String userId = '';
   List<Asset> images = <Asset>[];
   Asset selectedImageAsset;
   DefaultPhoto previousImage;
@@ -63,7 +76,7 @@ class ItemImageUploadViewState extends State<ItemImageUploadView>
       bool _isDone = isSelectedImagePath;
 
       if (!PsProgressDialog.isShowing()) {
-       await PsProgressDialog.showDialog(context);
+        await PsProgressDialog.showDialog(context);
       }
 
       final PsResource<DefaultPhoto> _apiStatus = await widget.galleryProvider
@@ -79,18 +92,44 @@ class ItemImageUploadViewState extends State<ItemImageUploadView>
           await uploadImage(itemId);
         }
       }
-
+      SharedPreferences s= await PsSharedPreferences.instance.futureShared;
+      userId=s.getString(PsConst.VALUE_HOLDER__USER_ID);
       PsProgressDialog.dismissDialog();
 
       if (!_isDone) {
         showDialog<dynamic>(
             context: context,
             builder: (BuildContext context) {
-              return SuccessDialog(
+              return ImageUploadDialog(
                 message:
                     Utils.getString(context, 'item_image_upload__uploaded'),
-                onPressed: () {
-                  Navigator.pop(context, images);
+                onPressed: (bool uploadAnother) {
+                  if (uploadAnother) {
+                    setState(() {
+                      userInputSearchKeyWord.text = '';
+                      selectedImageAsset = null;
+                      isSelectedImagePath = false;
+                      previousImage = null;
+                    });
+                  } else {
+                    Navigator.pop(context, images);
+                    if (widget.isPromotion == '1') {
+                      Navigator.pushNamed(
+                        context,
+                        RoutePaths.itemPromote,
+                        arguments: widget.item,
+                      );
+                    } else {
+                      Navigator.pushNamed(
+                        context,
+                        RoutePaths.userItemList,
+                        arguments: UserItemIntentHolder(
+                            userId: userId,
+                            status: '1',
+                            title: 'My Items List'),
+                      );
+                    }
+                  }
                 },
               );
             });
@@ -136,7 +175,8 @@ class ItemImageUploadViewState extends State<ItemImageUploadView>
         resultList = await MultiImagePicker.pickImages(
           maxImages: 1,
           enableCamera: true,
-          selectedAssets: images, //widget.images,
+          selectedAssets: images,
+          //widget.images,
           cupertinoOptions: CupertinoOptions(
             takePhotoIcon: 'chat',
             backgroundColor:
@@ -336,6 +376,7 @@ class ItemEntryImageWidget extends StatefulWidget {
   final int index;
   final DefaultPhoto galleryImage;
   final Asset selectedImage;
+
   @override
   State<StatefulWidget> createState() {
     return ItemEntryImageWidgetState();
@@ -344,6 +385,7 @@ class ItemEntryImageWidget extends StatefulWidget {
 
 class ItemEntryImageWidgetState extends State<ItemEntryImageWidget> {
   int i = 0;
+
   @override
   Widget build(BuildContext context) {
     if (widget.galleryImage != null) {

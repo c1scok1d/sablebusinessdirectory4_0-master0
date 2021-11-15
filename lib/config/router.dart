@@ -342,7 +342,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         return ItemImageUploadView(
           flag: itemEntryImageIntentHolder.flag,
           itemId: itemEntryImageIntentHolder.itemId,
+          isPromotion: itemEntryImageIntentHolder.isPromotion,
           image: itemEntryImageIntentHolder.image,
+          item: itemEntryImageIntentHolder.item,
           galleryProvider: itemEntryImageIntentHolder.provider,
         );
       });

@@ -1,6 +1,3 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:businesslistingapi/api/common/ps_resource.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
 import 'package:businesslistingapi/config/ps_config.dart';
@@ -36,11 +33,17 @@ import 'package:businesslistingapi/viewobject/holder/item_entry_parameter_holder
 import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:businesslistingapi/viewobject/status.dart';
 import 'package:businesslistingapi/viewobject/sub_category.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:google_api_headers/google_api_headers.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as googlemap;
+import 'package:google_maps_webservice/places.dart';
 import 'package:latlong/latlong.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart' as googlemap;
 
 class ItemEntryView extends StatefulWidget {
   const ItemEntryView(
@@ -53,6 +56,8 @@ class ItemEntryView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _ItemEntryViewState();
 }
+
+// GoogleMapsPlaces _places = GoogleMapsPlaces(apiKey: kGoogleApiKey);
 
 class _ItemEntryViewState extends State<ItemEntryView> {
   ItemRepository itemRepo;
@@ -117,28 +122,40 @@ class _ItemEntryViewState extends State<ItemEntryView> {
     galleryRepo = Provider.of<GalleryRepository>(context);
     // deleteImageRepo = Provider.of<DeleteImageRepository>(context);
     widget.animationController.forward();
+    _itemEntryProvider = ItemEntryProvider(
+        repo: itemRepo, psValueHolder: valueHolder);
+
     return PsWidgetWithMultiProvider(
       child: MultiProvider(
           providers: <SingleChildWidget>[
             ChangeNotifierProvider<ItemEntryProvider>(
                 lazy: false,
                 create: (BuildContext context) {
-                  _itemEntryProvider = ItemEntryProvider(
-                      repo: itemRepo, psValueHolder: valueHolder);
+                  // MyRents myRents = MyRents();
+                  // ChangeNotifierProvider<ItemEntryProvider>(create: (_) {
+                  //   _itemEntryProvider = ItemEntryProvider(
+                  //       repo: itemRepo, psValueHolder: valueHolder);
+                  //   return _itemEntryProvider;
+                  // });
+                  if(_itemEntryProvider.psValueHolder.cityLat==null){
 
+                    latlng = LatLng(
+                        45.5231, -122.6765);
+
+                  }else{
                   latlng = LatLng(
-                      double.parse(_itemEntryProvider.psValueHolder.cityLat),
-                      double.parse(_itemEntryProvider.psValueHolder.cityLng));
+                  double.parse(_itemEntryProvider.psValueHolder.cityLat),
+                  double.parse(_itemEntryProvider.psValueHolder.cityLng));}
                   if (_itemEntryProvider.itemLocationId != null ||
-                      _itemEntryProvider.itemLocationId != '')
-                    _itemEntryProvider.itemLocationId =
-                        _itemEntryProvider.psValueHolder.cityId;
+                  _itemEntryProvider.itemLocationId != '')
+                  _itemEntryProvider.itemLocationId =
+                  _itemEntryProvider.psValueHolder.cityId;
                   if (userInputLattitude.text.isEmpty)
-                    userInputLattitude.text =
-                        _itemEntryProvider.psValueHolder.cityLat;
+                  userInputLattitude.text =
+                  _itemEntryProvider.psValueHolder.cityLat;
                   if (userInputLongitude.text.isEmpty)
-                    userInputLongitude.text =
-                        _itemEntryProvider.psValueHolder.cityLng;
+                  userInputLongitude.text =
+                  _itemEntryProvider.psValueHolder.cityLng;
                   _itemEntryProvider.getItemFromDB(widget.item.id);
 
                   return _itemEntryProvider;
@@ -187,7 +204,8 @@ class _ItemEntryViewState extends State<ItemEntryView> {
                               userInputItemDescription.text =
                                   itemEntryProvider.item.data.description;
                               statusController.text =
-                                  itemEntryProvider.item.data.transStatus;
+                                  itemEntryProvider.item.data.transStatus ??
+                                      'Publish';
                               userInputOpenTime.text =
                                   itemEntryProvider.item.data.openingHour;
                               userInputCloseTime.text =
@@ -409,11 +427,16 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
   bool isFirstTime = true;
   googlemap.CameraPosition kGooglePlex;
 
+  // itemEntryProvider.item.data.transStatus
   @override
   Widget build(BuildContext context) {
     flag ??= widget.flag;
     itemId = widget.item.id;
-
+    if (widget.statusController.text.isEmpty)
+      widget.statusController.text = 'Publish';
+    // if(widget.statusController.text.isEmpty)widget.statusController.text='Publish';
+    print('XXXXX ${widget.item.lat}');
+    // print('XXXXX ${widget.statusController.text}');
     if (isFirstTime) {
       if (widget.isFeatured == null && widget.isPromotion == null) {
         isFeatured = '0';
@@ -437,10 +460,11 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
     }
 
     _latlng ??= widget.latLng;
+    print('XXXXX ${widget.latLng}');
     kGooglePlex = googlemap.CameraPosition(
-        target: googlemap.LatLng(_latlng.latitude, _latlng.longitude),
-        zoom: widget.zoom,
-      );
+      target: googlemap.LatLng(_latlng.latitude, _latlng.longitude),
+      zoom: widget.zoom,
+    );
     ((widget.flag == PsConst.ADD_NEW_ITEM &&
                 widget.locationController.text ==
                     widget.provider.psValueHolder.cityName) ||
@@ -455,10 +479,10 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
       _latlng = LatLng(double.parse(widget.provider.item.data.lat),
           double.parse(widget.provider.item.data.lng));
       kGooglePlex = googlemap.CameraPosition(
-          target: googlemap.LatLng(double.parse(widget.provider.item.data.lat),
-              double.parse(widget.provider.item.data.lat)),
-          zoom: widget.zoom,
-        );
+        target: googlemap.LatLng(double.parse(widget.provider.item.data.lat),
+            double.parse(widget.provider.item.data.lat)),
+        zoom: widget.zoom,
+      );
     } else {
       _latlng = _latlng;
     }
@@ -514,6 +538,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                 await PsProgressDialog.showDialog(context);
               }
               if (flag == PsConst.ADD_NEW_ITEM) {
+                print('Adding new Item:');
                 //add new
                 final ItemEntryParameterHolder itemEntryParameterHolder =
                     ItemEntryParameterHolder(
@@ -562,6 +587,8 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                   itemId = itemData.data.id;
                   widget.galleryProvider.itemId = itemId;
                   flag = PsConst.EDIT_ITEM;
+
+                  print('Uploaded:'+itemData.status.toString());
                   showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
@@ -575,6 +602,8 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                                     arguments: ItemEntryImageIntentHolder(
                                         flag: widget.flag,
                                         itemId: itemData.data.id,
+                                        item: itemData.data,
+                                        isPromotion: itemData.data.isPromotion,
                                         provider: widget.galleryProvider));
 
                             if (retrunData != null &&
@@ -674,6 +703,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                   PsProgressDialog.dismissDialog();
 
                   if (itemData.data != null) {
+                    print('Uploaded:'+itemData.status.toString());
                     showDialog<dynamic>(
                         context: context,
                         builder: (BuildContext context) {
@@ -685,6 +715,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                         });
                   }
                 } else {
+                  print('Already saved:'+itemData.name);
                   showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
@@ -1055,6 +1086,32 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                   hintText: Utils.getString(context, 'item_entry__address'),
                   textAboutMe: true,
                   textEditingController: widget.userInputAddress,
+                  onTap: () async {
+                    _handlePressButton(widget.userInputAddress);
+                    // Prediction p = await PlacesAutocomplete.show(
+                    //     context: context, apiKey: PsConst.googleMapsAPi);
+                    // displayPrediction(p, widget.userInputAddress);
+                    // generate a new token here
+                    // String sessionToken = Uuid().v4();
+                    // final Suggestion result = await showSearch(
+                    //   context: context,
+                    //   delegate: AddressSearch(sessionToken),
+                    // );
+                    // // This will change the text displayed in the TextField
+                    //
+                    // if (result != null) {
+                    //   final placeDetails = await PlaceApiProvider(sessionToken)
+                    //       .getPlaceDetailFromId(result.placeId);
+                    //   setState(() {
+                    //     widget.userInputAddress.text = result.description;
+                    //     // _controller.text = result.description;
+                    //     // _streetNumber = placeDetails.streetNumber;
+                    //     // _street = placeDetails.street;
+                    //     // _city = placeDetails.city;
+                    //     // _zipCode = placeDetails.zipCode;
+                    //   });
+                    // }
+                  },
                 ),
                 const SizedBox(height: PsDimens.space8)
               ],
@@ -1192,6 +1249,8 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                     _ImageGridWidget(
                       galleryProvider: widget.galleryProvider,
                       itemId: itemId,
+                      item: widget.item,
+                      isPro: isPromotion,
                     )
                   else
                     Text(
@@ -1204,6 +1263,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                     ),
                   _UploadImgeButtonWidget(
                     itemId: itemId,
+                    isPromotion: widget.isPromotion,
                     galleryProvider: widget.galleryProvider,
                   )
                 ],
@@ -1230,7 +1290,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
             child: Column(
               children: <Widget>[
                 const SizedBox(height: PsDimens.space8),
-                  if (!PsConfig.isUseGoogleMap)
+                if (!PsConfig.isUseGoogleMap)
                   Padding(
                     padding: const EdgeInsets.only(right: 8, left: 8),
                     child: Container(
@@ -1238,9 +1298,10 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                       child: FlutterMap(
                         mapController: widget.mapController,
                         options: MapOptions(
-                            center: widget
-                                .latLng, //LatLng(51.5, -0.09), //LatLng(45.5231, -122.6765),
-                            zoom: widget.zoom, //10.0,
+                            center: widget.latLng,
+                            //LatLng(51.5, -0.09), //LatLng(45.5231, -122.6765),
+                            zoom: widget.zoom,
+                            //10.0,
                             onTap: (LatLng latLngr) {
                               FocusScope.of(context).requestFocus(FocusNode());
                               _handleTap(_latlng, widget.mapController);
@@ -1270,8 +1331,8 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                                                 flag: PsConst.PIN_MAP,
                                                 mapLat:
                                                     widget.valueHolder.cityLat,
-                                                mapLng:
-                                                    widget.valueHolder.cityLng));
+                                                mapLng: widget
+                                                    .valueHolder.cityLng));
 
                                     if (itemLocationResult != null &&
                                         itemLocationResult
@@ -1304,10 +1365,11 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                         ],
                       ),
                     ),
-                  ) else 
-                   Padding(
-                      padding: const EdgeInsets.only(right: 8, left: 8),
-                      child: Container(
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8, left: 8),
+                    child: Container(
                       height: 250,
                       child: googlemap.GoogleMap(
                           onMapCreated: widget.updateMapController,
@@ -1321,15 +1383,14 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                               fillColor: Colors.blue.withOpacity(0.7),
                               strokeWidth: 3,
                               strokeColor: Colors.redAccent,
-                            )
-                          ),
-                        onTap: (googlemap.LatLng latLngr) {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          _handleGoogleMapTap(_latlng, widget.googleMapController);
-                      }
+                            )),
+                          onTap: (googlemap.LatLng latLngr) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            _handleGoogleMapTap(
+                                _latlng, widget.googleMapController);
+                          }),
                     ),
                   ),
-                ),
                 PsTextFieldWidget(
                   titleText: Utils.getString(context, 'item_entry__latitude'),
                   textAboutMe: false,
@@ -1354,6 +1415,57 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
           _uploadItemWidget
           // ])
         ]);
+  }
+
+  Future<void> _handlePressButton(TextEditingController c) async {
+    Mode _mode = Mode.overlay;
+    // show input autocomplete with selected mode
+    // then get the Prediction selected
+    Prediction p = await PlacesAutocomplete.show(
+      context: context,
+      apiKey: PsConst.googleMapsAPi,
+      onError: onError,
+      mode: _mode,
+      language: "en",
+      types: ['all'],
+      strictbounds: false,
+      decoration: InputDecoration(
+        hintText: 'Search',
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide(
+            color: Colors.white,
+          ),
+        ),
+      ),
+      components: [Component(Component.country, "en")],
+    );
+    displayPrediction(p, c);
+  }
+
+  Future<Null> displayPrediction(
+      Prediction p, TextEditingController controller) async {
+    if (p != null) {
+      // get detail (lat/lng)
+      GoogleMapsPlaces _places = GoogleMapsPlaces(
+        apiKey: PsConst.googleMapsAPi,
+        apiHeaders: await GoogleApiHeaders().getHeaders(),
+      );
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId);
+      final lat = detail.result.geometry.location.lat;
+      final lng = detail.result.geometry.location.lng;
+      controller.text = p.description;
+      // scaffold.showSnackBar(
+      //   SnackBar(content: Text("${p.description} - $lat/$lng")),
+      // );
+    }
+  }
+
+  void onError(PlacesAutocompleteResponse response) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(response.errorMessage)),
+    );
   }
 
   dynamic _handleTap(LatLng latLng, MapController mapController) async {
@@ -1385,8 +1497,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
             flag: PsConst.PIN_MAP,
             mapLat: _latlng.latitude.toString(),
             mapLng: _latlng.longitude.toString(),
-          item: widget.item
-        ));
+            item: widget.item));
     if (result != null && result is GoogleMapPinCallBackHolder) {
       setState(() {
         _latlng = LatLng(result.latLng.latitude, result.latLng.longitude);
@@ -1410,10 +1521,17 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
 
 class _UploadImgeButtonWidget extends StatefulWidget {
   const _UploadImgeButtonWidget(
-      {Key key, @required this.itemId, @required this.galleryProvider})
+      {Key key,
+      @required this.itemId,
+      this.isPromotion,
+      this.item,
+      @required this.galleryProvider})
       : super(key: key);
   final String itemId;
+  final Item item;
+  final String isPromotion;
   final GalleryProvider galleryProvider;
+
   @override
   __UploadImgeButtonWidgetState createState() =>
       __UploadImgeButtonWidgetState();
@@ -1421,12 +1539,17 @@ class _UploadImgeButtonWidget extends StatefulWidget {
 
 class __UploadImgeButtonWidgetState extends State<_UploadImgeButtonWidget> {
   String _itemId;
+  Item item;
+
   @override
   Widget build(BuildContext context) {
     if (widget.itemId == null || widget.itemId.isEmpty) {
       _itemId = widget.galleryProvider.itemId;
     } else {
       _itemId = widget.itemId;
+    }
+    if (widget.item != null) {
+      item = widget.item;
     }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1466,6 +1589,8 @@ class __UploadImgeButtonWidgetState extends State<_UploadImgeButtonWidget> {
                       arguments: ItemEntryImageIntentHolder(
                           flag: '',
                           itemId: _itemId,
+                          item: item,
+                          isPromotion: widget.isPromotion,
                           provider: widget.galleryProvider));
 
                   if (retrunData != null && retrunData is List<Asset>) {
@@ -1479,19 +1604,27 @@ class __UploadImgeButtonWidgetState extends State<_UploadImgeButtonWidget> {
 }
 
 class _ImageGridWidget extends StatefulWidget {
-  const _ImageGridWidget({
+  _ImageGridWidget({
     Key key,
     @required this.galleryProvider,
+    @required this.isPro,
     @required this.itemId,
+    this.item,
   }) : super(key: key);
   final GalleryProvider galleryProvider;
   final String itemId;
+  final String isPro;
+  Item item;
+
   @override
   __ImageGridWidgetState createState() => __ImageGridWidgetState();
 }
 
 class __ImageGridWidgetState extends State<_ImageGridWidget> {
   String _itemId;
+  String isPromo;
+  Item item;
+
   @override
   Widget build(BuildContext context) {
     if (widget.itemId == null || widget.itemId.isEmpty) {
@@ -1499,6 +1632,12 @@ class __ImageGridWidgetState extends State<_ImageGridWidget> {
     } else {
       _itemId = widget.itemId;
     }
+    if (widget.isPro == null || widget.isPro.isEmpty) {
+      isPromo = widget.isPro;
+    } else {
+      isPromo = widget.isPro;
+    }
+    item = widget.item;
     return Container(
       margin: const EdgeInsets.all(PsDimens.space16),
       child: Column(
@@ -1527,6 +1666,8 @@ class __ImageGridWidgetState extends State<_ImageGridWidget> {
                               arguments: ItemEntryImageIntentHolder(
                                   flag: '',
                                   itemId: _itemId,
+                                  isPromotion: isPromo,
+                                  item: item,
                                   image: widget
                                       .galleryProvider.galleryList.data[index],
                                   provider: widget.galleryProvider));
@@ -1587,6 +1728,7 @@ class _ImageGridItem extends StatelessWidget {
   final DefaultPhoto image;
   final Function deleteIconTap;
   final Function onTap;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -1633,6 +1775,7 @@ class _MyHeaderWidget extends StatefulWidget {
 
 class __MyHeaderWidgetState extends State<_MyHeaderWidget> {
   String _itemId;
+
   @override
   Widget build(BuildContext context) {
     if (widget.itemId == null || widget.itemId.isEmpty) {

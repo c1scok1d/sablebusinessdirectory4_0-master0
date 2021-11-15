@@ -466,6 +466,7 @@ class _LoginWithGoogleWidget extends StatefulWidget {
 class __LoginWithGoogleWidgetState extends State<_LoginWithGoogleWidget> {
   @override
   Widget build(BuildContext context) {
+    print('LoginWithGoogleWidgetState');
     return Container(
       margin: const EdgeInsets.only(
           left: PsDimens.space32,

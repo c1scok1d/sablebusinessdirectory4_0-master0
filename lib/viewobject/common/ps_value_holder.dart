@@ -72,4 +72,8 @@ class PsValueHolder {
   String cityLat;
   String cityLng;
 
+  @override
+  String toString() {
+    return 'PsValueHolder{loginUserId: $loginUserId, userIdToVerify: $userIdToVerify, userNameToVerify: $userNameToVerify, userEmailToVerify: $userEmailToVerify, userPasswordToVerify: $userPasswordToVerify, deviceToken: $deviceToken, notiSetting: $notiSetting, isToShowIntroSlider: $isToShowIntroSlider, overAllTaxLabel: $overAllTaxLabel, overAllTaxValue: $overAllTaxValue, shippingTaxLabel: $shippingTaxLabel, messenger: $messenger, whatsApp: $whatsApp, phone: $phone, shippingTaxValue: $shippingTaxValue, appInfoVersionNo: $appInfoVersionNo, appInfoForceUpdate: $appInfoForceUpdate, appInfoForceUpdateTitle: $appInfoForceUpdateTitle, appInfoForceUpdateMsg: $appInfoForceUpdateMsg, startDate: $startDate, endDate: $endDate, paypalEnabled: $paypalEnabled, stripeEnabled: $stripeEnabled, codEnabled: $codEnabled, bankEnabled: $bankEnabled, publishKey: $publishKey, shippingId: $shippingId, standardShippingEnable: $standardShippingEnable, zoneShippingEnable: $zoneShippingEnable, noShippingEnable: $noShippingEnable, cityId: $cityId, cityName: $cityName, cityLat: $cityLat, cityLng: $cityLng}';
+  }
 }

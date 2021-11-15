@@ -79,7 +79,7 @@ class _UserItemListViewState extends State<UserItemListView>
     timeDilation = 1.0;
     repo1 = Provider.of<ItemRepository>(context);
     psValueHolder = Provider.of<PsValueHolder>(context);
-
+print('----------------------------------USER iTEMlIST USER:${widget.addedUserId}-----------------');
     return WillPopScope(
       onWillPop: _requestPop,
       child: PsWidgetWithAppBar<AddedItemProvider>(

@@ -85,6 +85,41 @@ class ItemRepository extends PsRepository {
     return _itemDao.delete(item);
   }
 
+  Future<dynamic> getItemListByLoc(
+      StreamController<PsResource<List<Item>>> itemListStream,
+      bool isConnectedToInternet,
+      int limit,
+      int offset,
+      PsStatus status,
+          double lat,
+      double lng,
+      double miles,
+      ItemParameterHolder holder,
+      {bool isLoadFromServer = true}) async {
+    // Server Call
+    if (isConnectedToInternet) {
+      final PsResource<List<Item>> _resource =
+      await _psApiService.getItemListByLocation(
+          holder.toMap(), limit, offset, lat, lng, miles);
+
+      print('Param Key ${_resource.toString()}');
+      if (_resource.status == PsStatus.SUCCESS) {
+        // Create Map List
+        print('Status is success');
+
+      } else {
+        if (_resource.errorCode == PsConst.ERROR_CODE_10001) {
+
+
+        }
+        // Load updated Data from Db and Send to UI
+
+      }
+      sinkItemListStream(
+          itemListStream,
+          _resource);
+    }
+  }
   Future<dynamic> getItemList(
       StreamController<PsResource<List<Item>>> itemListStream,
       bool isConnectedToInternet,

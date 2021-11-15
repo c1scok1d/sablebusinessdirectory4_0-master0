@@ -25,7 +25,12 @@ class PsResource<T> {
   String errorCode;
   T data;
 
-  // @override
+  @override
+  String toString() {
+    return 'PsResource{status: $status, message: $message, errorCode: $errorCode, data: ${data.toString()}}';
+  }
+
+// @override
   // bool operator ==(dynamic other) {
   //   print('other : ${other.data.hashCode}');
   //   print('me : ${data.hashCode}');

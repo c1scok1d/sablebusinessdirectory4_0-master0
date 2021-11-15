@@ -59,6 +59,8 @@ import 'package:businesslistingapi/repository/ps_theme_repository.dart';
 import 'package:businesslistingapi/repository/sub_category_repository.dart';
 import 'package:provider/single_child_widget.dart';
 
+import 'entry/item_entry_provider.dart';
+
 List<SingleChildWidget> providers = <SingleChildWidget>[
   ...independentProviders,
   ..._dependentProviders,
@@ -95,6 +97,7 @@ List<SingleChildWidget> independentProviders = <SingleChildWidget>[
   Provider<AboutAppDao>.value(value: AboutAppDao.instance),
   Provider<SpecificationDao>.value(value: SpecificationDao.instance),
   Provider<FavouriteItemDao>.value(value: FavouriteItemDao.instance),
+
 ];
 
 List<SingleChildWidget> _dependentProviders = <SingleChildWidget>[
