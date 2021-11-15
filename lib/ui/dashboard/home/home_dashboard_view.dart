@@ -1552,8 +1552,8 @@ class __MyHomeHeaderWidgetState extends State<_MyHomeHeaderWidget> {
               alignment: Alignment.center,
               margin: const EdgeInsets.only(
                   left: PsDimens.space12,
-                  right: PsDimens.space12,
-                  top: PsDimens.space64),
+                  right: PsDimens.space12),
+                  //top: PsDimens.space64),
               // decoration: BoxDecoration(
               //   borderRadius: BorderRadius.circular(PsDimens.space12),
               //   // color:  Colors.white54
@@ -1563,7 +1563,7 @@ class __MyHomeHeaderWidgetState extends State<_MyHomeHeaderWidget> {
               // ),
               child: Column(
                 children: <Widget>[
-                  _spacingWidget,
+                  /*_spacingWidget,
                   // _spacingWidget,
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -1582,20 +1582,20 @@ class __MyHomeHeaderWidgetState extends State<_MyHomeHeaderWidget> {
                             left: PsDimens.space20,
                             right: PsDimens.space20,
                             bottom: PsDimens.space32),
-                        child: Text(
-                          Utils.getString(
-                              context, 'dashboard__app_description'),
-                          textAlign: TextAlign.right,
-                          style: Theme.of(context)
-                              .textTheme
-                              .subtitle1
-                              .copyWith(color: PsColors.mainColor),
+                    //    child: Text(
+                      //    Utils.getString(
+                        //      context, 'dashboard__app_description'),
+                          //textAlign: TextAlign.right,
+                         // style: Theme.of(context)
+                           //   .textTheme
+                             // .subtitle1
+                              //.copyWith(color: PsColors.mainColor),
                         ),
                       ),
                     ],
                   ),
 
-                  _spacingWidget,
+                  _spacingWidget, */
                   PsTextFieldWidgetWithIcon(
                     hintText:
                         Utils.getString(context, 'dashboard__search_keyword'),

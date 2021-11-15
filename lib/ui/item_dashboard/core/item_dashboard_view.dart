@@ -169,7 +169,7 @@ class _HomeViewState extends State<ItemDashboardView>
               builder: (BuildContext context) {
                 return ConfirmDialogView(
                     description: Utils.getString(
-                        context, 'home__quit_dialog_description'),
+                        context, 'home__quit_city_dialog_description'),
                     leftButtonText: Utils.getString(
                         context, 'app_info__cancel_button_name'),
                     rightButtonText: Utils.getString(context, 'dialog__ok'),
