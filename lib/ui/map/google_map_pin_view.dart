@@ -169,8 +169,99 @@ class _MapPinViewState extends State<GoogleMapPinView>
             ),
             child: GestureDetector(
               onTap: () {
-                openMap(double.parse(widget.item.lat),
-                    double.parse(widget.item.lng));
+                showDialog<void>(context: context, builder: (context) {
+
+                  return Dialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                              height: 60,
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(PsDimens.space8),
+                              decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(5),
+                                      topRight: Radius.circular(5)),
+                                  color: PsColors.mainColor),
+                              child: Row(
+                                children: <Widget>[
+                                  const SizedBox(width: PsDimens.space4),
+                                  Icon(
+                                    Icons.directions,
+                                    color: PsColors.white,
+                                  ),
+                                  const SizedBox(width: PsDimens.space4),
+                                  Text(
+                                    'Directions',
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                      color: PsColors.white,
+                                    ),
+                                  ),
+                                ],
+                              )),
+                          const SizedBox(height: PsDimens.space20),
+                          Container(
+                            padding: const EdgeInsets.only(
+                                left: PsDimens.space16,
+                                right: PsDimens.space16,
+                                top: PsDimens.space8,
+                                bottom: PsDimens.space8),
+                            child: Text(
+                              'Do you want to get directions to location?',
+                              style: Theme.of(context).textTheme.subtitle2,
+                            ),
+                          ),
+                          const SizedBox(height: PsDimens.space20),
+                          Divider(
+                            thickness: 0.5,
+                            height: 1,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
+                          ButtonBar(
+                            children: [
+                              MaterialButton(
+                                height: 50,
+                                minWidth: 100,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+
+                                  openMap(double.parse(widget.item.lat),
+                                      double.parse(widget.item.lng));
+                                },
+                                child: Text(
+                                  'Yes',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .button
+                                      .copyWith(color: PsColors.mainColor),
+                                ),
+                              ),
+                              MaterialButton(
+                                height: 50,
+                                minWidth: 100,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  'No',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .button
+                                      .copyWith(color: PsColors.mainColor),
+                                ),
+                              )
+                            ],
+                          )
+
+                        ],
+                      ),
+                    ),
+                  );
+                },);
               },
               child: Column(
                 children: <Widget>[
