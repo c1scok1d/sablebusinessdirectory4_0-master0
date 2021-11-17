@@ -56,6 +56,9 @@ class PsConst {
   static const String ADD_NEW_ITEM = 'ADD_NEW_ITEM';
   static const String EDIT_ITEM = 'EDIT_ITEM';
 
+  static const String GEO_SERVICE_KEY  = 'GEO_SERVICE_KEY';
+
+
   static const String VALUE_HOLDER__USER_ID = 'USERID';
   static const String VALUE_HOLDER__SHOW_INTRO_SLIDER = 'SHOW_INTRO_SLIDER';
   static const String VALUE_HOLDER__USER_NAME = 'USERNAME';

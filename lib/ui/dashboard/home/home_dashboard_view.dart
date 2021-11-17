@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:app_settings/app_settings.dart';
 import 'package:businesslistingapi/api/common/ps_resource.dart';
 import 'package:businesslistingapi/api/common/ps_status.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
@@ -28,6 +29,7 @@ import 'package:businesslistingapi/repository/item_repository.dart';
 import 'package:businesslistingapi/ui/city/item/city_horizontal_list_item.dart';
 import 'package:businesslistingapi/ui/city/item/popular_city_horizontal_list_item.dart';
 import 'package:businesslistingapi/ui/common/dialog/confirm_dialog_view.dart';
+import 'package:businesslistingapi/ui/common/dialog/error_dialog.dart';
 import 'package:businesslistingapi/ui/common/dialog/noti_dialog.dart';
 import 'package:businesslistingapi/ui/common/dialog/rating_dialog/core.dart';
 import 'package:businesslistingapi/ui/common/dialog/rating_dialog/style.dart';
@@ -44,6 +46,7 @@ import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/city_parameter_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/intent_holder/city_intent_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/intent_holder/item_detail_intent_holder.dart';
+import 'package:businesslistingapi/viewobject/holder/intent_holder/item_entry_intent_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/intent_holder/item_list_intent_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart';
 import 'package:businesslistingapi/viewobject/item.dart';
@@ -53,6 +56,7 @@ import 'package:flutter_geofence/geofence.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -104,7 +108,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       remindLaunches: 1);
 
   @override
-  void initState() {
+  Future<void> initState() {
     super.initState();
     print('InitState');
     if (Platform.isAndroid) {
@@ -178,8 +182,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       });
     }
     // initPlatformState();
-
-    Geofence.initialize();
+    requestPermission();
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('launcher_icon');
@@ -189,6 +192,11 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: null);
+
+// You can can also directly ask the permission about its status.
+//     if (await Permission.location.isRestricted) {
+//       // The OS restricts access, for example because of parental controls.
+//     }
   }
 
   Future<void> onSelectNotification(String payload) async {
@@ -219,7 +227,17 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     valueHolder = Provider.of<PsValueHolder>(context);
 
     print('HOME NOW');
-    initPlatformState();
+
+    PsSharedPreferences.instance.futureShared.then((pref) {
+      try {
+        bool isGeoEnabled = pref.getBool(PsConst.GEO_SERVICE_KEY);
+        if (isGeoEnabled) {
+          initPlatformState();
+        }
+      } on Exception catch (e) {
+        print('GEO_SERVICE_KEY not available');
+      }
+    });
     // startBackgroundTracking();
     return MultiProvider(
         providers: <SingleChildWidget>[
@@ -315,120 +333,149 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
               }),
         ],
         child: Scaffold(
-            body: Container(
-          color: PsColors.coreBackgroundColor,
-          child: RefreshIndicator(
-            onRefresh: () {
-              _blogProvider.resetBlogList();
-              _searchItemProvider.resetLatestItemList(
-                  ItemParameterHolder().getLatestParameterHolder());
-              _trendingItemProvider.resetTrendingItemList(
-                  ItemParameterHolder().getTrendingParameterHolder());
-              _featuredItemProvider.resetFeatureItemList(
-                  ItemParameterHolder().getFeaturedParameterHolder());
-              _discountItemProvider.resetDiscountItemList(
-                  ItemParameterHolder().getDiscountParameterHolder());
-              _popularCityProvider.resetPopularCityList().then((dynamic value) {
-                // Utils.psPrint("Is Has Internet " + value);
-                final bool isConnectedToIntenet = value ?? bool;
-                if (!isConnectedToIntenet) {
-                  Fluttertoast.showToast(
-                      msg: 'No Internet Connectiion. Please try again !',
-                      toastLength: Toast.LENGTH_LONG,
-                      gravity: ToastGravity.BOTTOM,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.blueGrey,
-                      textColor: Colors.white);
+            floatingActionButton: FloatingActionButton(
+              onPressed: () async {
+                if (await Utils.checkInternetConnectivity()) {
+                  Utils.navigateOnUserVerificationView(context, () async {
+                    Navigator.pushNamed(context, RoutePaths.itemEntry,
+                        arguments: ItemEntryIntentHolder(
+                            flag: PsConst.ADD_NEW_ITEM, item: Item()));
+                  });
+                } else {
+                  showDialog<dynamic>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return ErrorDialog(
+                          message: Utils.getString(
+                              context, 'error_dialog__no_internet'),
+                        );
+                      });
                 }
-              });
-              _cityProvider
-                  .resetCityListByKey(CityParameterHolder().getRecentCities());
-              return _recommandedCityProvider.resetRecommandedCityList();
-            },
-            child: CustomScrollView(
-              controller: widget._scrollController,
-              scrollDirection: Axis.vertical,
-              slivers: <Widget>[
-                _MyHomeHeaderWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 1, 1.0,
-                              curve: Curves.fastOutSlowIn))),
-                  userInputItemNameTextEditingController:
-                      userInputItemNameTextEditingController,
-                  psValueHolder: valueHolder, //animation
-                ),
-                _HomeFeaturedItemHorizontalListWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 3, 1.0,
-                              curve: Curves.fastOutSlowIn))),
-                ),
-                _HomePopularCityHorizontalListWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 2, 1.0,
-                              curve: Curves.fastOutSlowIn))),
-                ),
-                _HomeRecommandedCityHorizontalListWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 4, 1.0,
-                              curve: Curves.fastOutSlowIn))),
-                ),
-                _HomeNewCityHorizontalListWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 6, 1.0,
-                              curve: Curves.fastOutSlowIn))), //animation
-                ),
-                _HomeBlogSliderWidget(
-                  animationController: widget.animationController,
-
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 7, 1.0,
-                              curve: Curves.fastOutSlowIn))), //animation
-                ),
-                _HomeTrendingItemHorizontalListWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 5, 1.0,
-                              curve: Curves.fastOutSlowIn))), //animation
-                ),
-                _HomeNewPlaceHorizontalListWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 4, 1.0,
-                              curve: Curves.fastOutSlowIn))), //animation
-                ),
-                _HomeOnPromotionHorizontalListWidget(
-                  animationController: widget.animationController,
-                  animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                      CurvedAnimation(
-                          parent: widget.animationController,
-                          curve: Interval((1 / count) * 3, 1.0,
-                              curve: Curves.fastOutSlowIn))), //animation
-                ),
-              ],
+              },
+              child: Icon(Icons.add, color: PsColors.white),
+              backgroundColor: PsColors.mainColor,
+              // label: Text(Utils.getString(context, 'dashboard__submit_ad'),
+              //     style: Theme.of(context)
+              //         .textTheme
+              //         .caption
+              //         .copyWith(color: PsColors.white)),
             ),
-          ),
-        )));
+            body: Container(
+              color: PsColors.coreBackgroundColor,
+              child: RefreshIndicator(
+                onRefresh: () {
+                  _blogProvider.resetBlogList();
+                  _searchItemProvider.resetLatestItemList(
+                      ItemParameterHolder().getLatestParameterHolder());
+                  _trendingItemProvider.resetTrendingItemList(
+                      ItemParameterHolder().getTrendingParameterHolder());
+                  _featuredItemProvider.resetFeatureItemList(
+                      ItemParameterHolder().getFeaturedParameterHolder());
+                  _discountItemProvider.resetDiscountItemList(
+                      ItemParameterHolder().getDiscountParameterHolder());
+                  _popularCityProvider
+                      .resetPopularCityList()
+                      .then((dynamic value) {
+                    // Utils.psPrint("Is Has Internet " + value);
+                    final bool isConnectedToIntenet = value ?? bool;
+                    if (!isConnectedToIntenet) {
+                      Fluttertoast.showToast(
+                          msg: 'No Internet Connectiion. Please try again !',
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.BOTTOM,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.blueGrey,
+                          textColor: Colors.white);
+                    }
+                  });
+                  _cityProvider.resetCityListByKey(
+                      CityParameterHolder().getRecentCities());
+                  return _recommandedCityProvider.resetRecommandedCityList();
+                },
+                child: CustomScrollView(
+                  controller: widget._scrollController,
+                  scrollDirection: Axis.vertical,
+                  slivers: <Widget>[
+                    _MyHomeHeaderWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 1, 1.0,
+                                  curve: Curves.fastOutSlowIn))),
+                      userInputItemNameTextEditingController:
+                          userInputItemNameTextEditingController,
+                      psValueHolder: valueHolder, //animation
+                    ),
+                    _HomeFeaturedItemHorizontalListWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 3, 1.0,
+                                  curve: Curves.fastOutSlowIn))),
+                    ),
+                    _HomePopularCityHorizontalListWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 2, 1.0,
+                                  curve: Curves.fastOutSlowIn))),
+                    ),
+                    _HomeRecommandedCityHorizontalListWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 4, 1.0,
+                                  curve: Curves.fastOutSlowIn))),
+                    ),
+                    _HomeNewCityHorizontalListWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 6, 1.0,
+                                  curve: Curves.fastOutSlowIn))), //animation
+                    ),
+                    _HomeBlogSliderWidget(
+                      animationController: widget.animationController,
+
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 7, 1.0,
+                                  curve: Curves.fastOutSlowIn))), //animation
+                    ),
+                    _HomeTrendingItemHorizontalListWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 5, 1.0,
+                                  curve: Curves.fastOutSlowIn))), //animation
+                    ),
+                    _HomeNewPlaceHorizontalListWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 4, 1.0,
+                                  curve: Curves.fastOutSlowIn))), //animation
+                    ),
+                    _HomeOnPromotionHorizontalListWidget(
+                      animationController: widget.animationController,
+                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                          CurvedAnimation(
+                              parent: widget.animationController,
+                              curve: Interval((1 / count) * 3, 1.0,
+                                  curve: Curves.fastOutSlowIn))), //animation
+                    ),
+                  ],
+                ),
+              ),
+            )));
   }
 
   Future<void> startBackgroundTracking(Coordinate c) async {
@@ -464,7 +511,8 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    Geofence.requestPermissions();
+    //Will be handles by handler
+    // Geofence.requestPermissions();
     Geofence.getCurrentLocation().then((coordinate) {
       startBackgroundTracking(coordinate);
       print(
@@ -476,25 +524,24 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       // print('$TAG logging from flutter ${event.longitude}');
 
       // startBackgroundTracking(event);
-      if (geofences == null ||
-          geofences.isEmpty) {
+      if (geofences == null || geofences.isEmpty) {
         print('$TAG Items are empty');
         return;
       }
-      int x=0;
+      int x = 0;
       geofences.forEach((key, c) async {
-x++;
-        double dis = calculateDistance(c.latitude, c.longitude,
-            event.latitude, event.longitude);
+        x++;
+        double dis = calculateDistance(
+            c.latitude, c.longitude, event.latitude, event.longitude);
 
         // dis < 1000
         //     ? print('Distance: $dis  ==${c.latitude},${c.longitude}')
         //     : print(
         //     'Dis: $dis ==lat1:${c.latitude}==ln1:${c.longitude}==lat2:${event.latitude}==ln2:${event.longitude}');
         if ((dis * 1000) < 5000) {
-          if(c.transitionType==GeolocationEvent.entry &&!c.isNear){
+          if (c.transitionType == GeolocationEvent.entry && !c.isNear) {
             print('Entering ${c.item_name}');
-            c.isNear=true;
+            c.isNear = true;
             if (c == null) {
               print('$TAG Could not set notification, Item not found');
               return;
@@ -517,7 +564,7 @@ x++;
                 x,
                 paypload: c.id,
                 item: c);
-          }else if(c.transitionType==GeolocationEvent.dwell&&c.isNear){
+          } else if (c.transitionType == GeolocationEvent.dwell && c.isNear) {
             print('Dwelling ${c.item_name}');
             if (c == null) {
               print('$TAG Could not set notification, Item not found');
@@ -525,7 +572,7 @@ x++;
             }
             String firstName = "";
             SharedPreferences sharedPreferences =
-            await PsSharedPreferences.instance.futureShared;
+                await PsSharedPreferences.instance.futureShared;
             try {
               firstName =
                   sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
@@ -536,18 +583,17 @@ x++;
                 'Stop in and say Hi!', GeolocationEvent.dwell, x,
                 paypload: c.id, item: c);
           }
-        } else if (c.isNear ) {
+        } else if (c.isNear) {
           print('Exiting ${c.item_name}');
           c.isNear = false;
-          if(c.transitionType==GeolocationEvent.exit){
-
+          if (c.transitionType == GeolocationEvent.exit) {
             if (c == null) {
               print('$TAG Could not set notification, Item not found');
               return;
             }
             String firstName = "";
             SharedPreferences sharedPreferences =
-            await PsSharedPreferences.instance.futureShared;
+                await PsSharedPreferences.instance.futureShared;
             try {
               firstName =
                   sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
@@ -555,13 +601,9 @@ x++;
               print('$TAG Could not get the name');
             }
             // if(!c.transitionType=)
-            scheduleNotification(
-                "$TAG Don't miss an opportunity to buy black.",
-                'You are near ${c.item_name}',
-                GeolocationEvent.exit,
-                x,
-                paypload: c.id,
-                item: c);
+            scheduleNotification("$TAG Don't miss an opportunity to buy black.",
+                'You are near ${c.item_name}', GeolocationEvent.exit, x,
+                paypload: c.id, item: c);
           }
         }
       });
@@ -570,6 +612,7 @@ x++;
     });
     setState(() {});
   }
+
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     var p = 0.017453292519943295;
     var c = cos;
@@ -578,6 +621,7 @@ x++;
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * asin(sqrt(a));
   }
+
   static final double GEOFENCE_EXPIRATION_IN_HOURS = 12;
   static final double GEOFENCE_EXPIRATION_IN_MILLISECONDS =
       GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
@@ -722,27 +766,27 @@ x++;
     // Bitmap bitmap = await Bitmap.fromProvider(NetworkImage(PsConfig.ps_app_image_url+city.defaultPhoto.imgPath));
 
     Future.delayed(const Duration(seconds: 5), () {}).then((result) async {
-      if(item.imageId==null){
-
-        final androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-            '1123', 'Geofences', 'Geofence alert',
-            importance: Importance.high,
-            priority: Priority.high,
-            ticker: 'ticker');
+      if (item.imageId == null) {
+        final androidPlatformChannelSpecifics =
+            const AndroidNotificationDetails(
+                '1123', 'Geofences', 'Geofence alert',
+                importance: Importance.high,
+                priority: Priority.high,
+                ticker: 'ticker');
         final iOSPlatformChannelSpecifics = IOSNotificationDetails();
         final platformChannelSpecifics = NotificationDetails(
             android: androidPlatformChannelSpecifics,
             iOS: iOSPlatformChannelSpecifics);
         await flutterLocalNotificationsPlugin.show(
-          // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
+            // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
             id,
             title,
             subtitle,
             platformChannelSpecifics,
             payload: paypload);
-      }else{
-        var mfile =
-        await SaveFile().saveImage(PsConfig.ps_app_image_url + item.imageId??'');
+      } else {
+        var mfile = await SaveFile()
+            .saveImage(PsConfig.ps_app_image_url + item.imageId ?? '');
         print(mfile.absolute.path);
         var bigPictureStyleInformation = BigPictureStyleInformation(
             FilePathAndroidBitmap(mfile.absolute.path),
@@ -766,7 +810,7 @@ x++;
             android: androidPlatformChannelSpecifics,
             iOS: iOSPlatformChannelSpecifics);
         await flutterLocalNotificationsPlugin.show(
-          // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
+            // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
             id,
             title,
             subtitle,
@@ -790,6 +834,230 @@ x++;
       }
     });
     return Future.value(null);
+  }
+
+  Future<void> requestPermission() async {
+    print('REQUESTING PERMISSION');
+    if (await Permission.locationAlways.isDenied) {
+      showDialog<void>(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0)),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                      height: 60,
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(PsDimens.space8),
+                      decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              topRight: Radius.circular(5)),
+                          color: PsColors.mainColor),
+                      child: Row(
+                        children: <Widget>[
+                          const SizedBox(width: PsDimens.space4),
+                          Icon(
+                            Icons.pin_drop,
+                            color: PsColors.white,
+                          ),
+                          const SizedBox(width: PsDimens.space4),
+                          Text(
+                            'Special Permission',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              color: PsColors.white,
+                            ),
+                          ),
+                        ],
+                      )),
+                  const SizedBox(height: PsDimens.space20),
+                  Container(
+                    padding: const EdgeInsets.only(
+                        left: PsDimens.space16,
+                        right: PsDimens.space16,
+                        top: PsDimens.space8,
+                        bottom: PsDimens.space8),
+                    child: Text(
+                      'To alert you when you are near a registered business, '
+                      'this app requires special permission to access your location while working in the background. '
+                      'We respect user privacy. Your location will never be recorded or shared for any reason.'
+                      "Tap 'Deny' to proceed without receiving notification alerts. "
+                      "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
+                      style: Theme.of(context).textTheme.subtitle2,
+                    ),
+                  ),
+                  const SizedBox(height: PsDimens.space20),
+                  Divider(
+                    thickness: 0.5,
+                    height: 1,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  ButtonBar(
+                    children: [
+                      MaterialButton(
+                        height: 50,
+                        minWidth: 100,
+                        onPressed: () async {
+                          Navigator.of(context).pop();
+
+                          Map<Permission, PermissionStatus> statuses = await [
+                            Permission.locationAlways,
+                            Permission.storage,
+                            Permission.camera,
+                          ].request();
+                          print(statuses[Permission.locationAlways]);
+
+                          print(statuses[Permission.storage]);
+                          Geofence.initialize();
+                          Geofence.requestPermissions();
+                        },
+                        child: Text(
+                          'Continue',
+                          style: Theme.of(context)
+                              .textTheme
+                              .button
+                              .copyWith(color: PsColors.mainColor),
+                        ),
+                      ),
+                      MaterialButton(
+                        height: 50,
+                        minWidth: 100,
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          showDeniedDialog();
+                        },
+                        child: Text(
+                          'No',
+                          style: Theme.of(context)
+                              .textTheme
+                              .button
+                              .copyWith(color: PsColors.mainColor),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.locationAlways,
+        Permission.storage,
+        Permission.camera,
+      ].request();
+      print(statuses[Permission.locationAlways]);
+      Geofence.initialize();
+    }
+
+  }
+
+  void showDeniedDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                    height: 60,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(PsDimens.space8),
+                    decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(5),
+                            topRight: Radius.circular(5)),
+                        color: PsColors.mainColor),
+                    child: Row(
+                      children: <Widget>[
+                        const SizedBox(width: PsDimens.space4),
+                        Icon(
+                          Icons.pin_drop,
+                          color: PsColors.white,
+                        ),
+                        const SizedBox(width: PsDimens.space4),
+                        Text(
+                          'Special Permission',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: PsColors.white,
+                          ),
+                        ),
+                      ],
+                    )),
+                const SizedBox(height: PsDimens.space20),
+                Container(
+                  padding: const EdgeInsets.only(
+                      left: PsDimens.space16,
+                      right: PsDimens.space16,
+                      top: PsDimens.space8,
+                      bottom: PsDimens.space8),
+                  child: Text(
+                    "You will not be alerted when you are near a registered black owned business. "
+                    "We respect user privacy. You location will never be recorded or shared for any reason. "
+                    "Tap 'Continue' to proceed without receiving alerts. "
+                    "To enable alerts when near a registered black owned business select 'allow all the time' at [Go to Settings] > [Permissions]"
+                    "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
+                    style: Theme.of(context).textTheme.subtitle2,
+                  ),
+                ),
+                const SizedBox(height: PsDimens.space20),
+                Divider(
+                  thickness: 0.5,
+                  height: 1,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                ButtonBar(
+                  children: [
+                    MaterialButton(
+                      height: 50,
+                      minWidth: 100,
+                      onPressed: () async {
+                        Navigator.of(context).pop();
+
+                        AppSettings.openAppSettings(asAnotherTask: true);
+                      },
+                      child: Text(
+                        'Go to Settings',
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            .copyWith(color: PsColors.mainColor),
+                      ),
+                    ),
+                    MaterialButton(
+                      height: 50,
+                      minWidth: 100,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'No',
+                        style: Theme.of(context)
+                            .textTheme
+                            .button
+                            .copyWith(color: PsColors.mainColor),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -1551,9 +1819,8 @@ class __MyHomeHeaderWidgetState extends State<_MyHomeHeaderWidget> {
             child: Container(
               alignment: Alignment.center,
               margin: const EdgeInsets.only(
-                  left: PsDimens.space12,
-                  right: PsDimens.space12),
-                  //top: PsDimens.space64),
+                  left: PsDimens.space12, right: PsDimens.space12),
+              //top: PsDimens.space64),
               // decoration: BoxDecoration(
               //   borderRadius: BorderRadius.circular(PsDimens.space12),
               //   // color:  Colors.white54
