@@ -346,7 +346,7 @@ class _PSAppState extends State<PSApp> {
             themedWidgetBuilder: (BuildContext context, ThemeData theme) {
               return MaterialApp(
                 debugShowCheckedModeBanner: false,
-                title: 'Panacea-Soft',
+                title: 'Sable Business Directory',
                 theme: theme,
                 initialRoute: '/',
                 onGenerateRoute: router.generateRoute,
@@ -391,7 +391,7 @@ class _PSAppState extends State<PSApp> {
                       ),
                       const SizedBox(width: PsDimens.space4),
                       Text(
-                        'Special Permission',
+                        'Special Permissions Required',
                         textAlign: TextAlign.start,
                         style: TextStyle(
                           color: PsColors.white,
@@ -407,10 +407,10 @@ class _PSAppState extends State<PSApp> {
                     top: PsDimens.space8,
                     bottom: PsDimens.space8),
                 child: Text(
-                  "You will not be alerted when you are near a registered black owned business. "
-                      "We respect user privacy. You location will never be recorded or shared for any reason. "
-                      "Tap 'Continue' to proceed without receiving alerts. "
-                      "To enable alerts when near a registered black owned business select 'allow all the time' at [Go to Settings] > [Permissions]"
+                  "You will not be alerted when you are near a registered black owned business.\n"
+                      "We respect user privacy. You location will never be recorded or shared for any reason.\n"
+                      "Tap 'Continue' to proceed without receiving alerts.\n"
+                      "To enable alerts when near a registered black owned business select 'allow all the time' at [Go to Settings] > [Permissions]\n"
                       "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
@@ -428,7 +428,6 @@ class _PSAppState extends State<PSApp> {
                     minWidth: 100,
                     onPressed: () async {
                       Navigator.of(context).pop();
-
                       AppSettings.openAppSettings(asAnotherTask: true);
                     },
                     child: Text(
