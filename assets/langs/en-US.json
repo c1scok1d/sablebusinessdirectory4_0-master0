@@ -472,13 +472,13 @@
   "intro_slider_next" : "NEXT",
   "intro_slider_skip" : "SKIP",
   "intro_slider1_title" :"Shop Black Owned",
-  "intro_slider1_description" :"Add, find, rate, review and get alerts when near registered black owned businesses",
+  "intro_slider1_description" :"Add, find, rate, review and get alerts when near registered black owned businesses.",
   "intro_slider2_title" :"Ratings & Reviews",
-  "intro_slider2_description" :" Get ratings and reviews on black owned businesses",
+  "intro_slider2_description" :" Get ratings and reviews on black owned businesses.",
   "intro_slider3_title" :"Discover New Black Owned Businesses",
-  "intro_slider3_description" :"Get alerts when you're nearby a registered black owned business",
+  "intro_slider3_description" :"Get alerts when you're nearby a registered black owned business.",
   "intro_slider_do_not_show_again": "Do not show again",
-  "intro_slider_lets_explore" : "Let's Explore",
+  "intro_slider_lets_explore" : "Let's Go",
   "intro_slider_setting" :"About Sable",
   "intro_slider_setting_description" : "Basic guide for the app"
 }
