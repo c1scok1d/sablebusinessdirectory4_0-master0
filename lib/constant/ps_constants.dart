@@ -2,7 +2,7 @@
 /// ps_static static constants.dart
 /// ----------------------------
 /// Developed by Panacea-Soft
-/// www.panacea-soft.com
+/// sablebusinessdirectory.com
 ///
 
 import 'package:businesslistingapi/config/ps_config.dart';
