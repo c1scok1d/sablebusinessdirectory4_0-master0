@@ -38,7 +38,7 @@ class GoogleMapPinView extends StatefulWidget {
 class _MapPinViewState extends State<GoogleMapPinView>
     with TickerProviderStateMixin {
   LatLng latlng;
-  double defaultRadius = 3000;
+ // double defaultRadius = 3000;
   String address = '';
   CameraPosition kGooglePlex;
   GoogleMapController mapController;
@@ -118,7 +118,10 @@ class _MapPinViewState extends State<GoogleMapPinView>
                           position: latlng,
                           // infoWindow: InfoWindow(title: '${widget.item.name}'),
                           onTap: () {
-                            print("info window on tap");
+                            if(_showInfoWindow = false){
+                              _showInfoWindow = true;
+                            }
+                            //print("info window on tap");
                             setState(() {
                               _showInfoWindow = true;
                             });
