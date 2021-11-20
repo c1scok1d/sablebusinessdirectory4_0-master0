@@ -160,7 +160,8 @@ flutter:
    - assets/images/home_icon/featured_products.png
    - assets/images/home_icon/free_download.png
    - assets/images/delivery_car_img.png
-   - assets/images/seo.png
+   - assets/images/shop.png
+   - assets/images/alerts.png
    - assets/images/rating.png
    - assets/images/contact.png
    - assets/images/trending.png 
