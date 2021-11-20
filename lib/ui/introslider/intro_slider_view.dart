@@ -86,7 +86,7 @@ class IntroSliderWidget extends StatelessWidget {
                 width: 120,
                 height: 120,
                 child: Image.asset(
-                  'assets/images/seo.png',
+                  'assets/images/shop.png',
                 ),
               ),
               Text(
@@ -205,7 +205,7 @@ class IntroSliderSecondWidget extends StatelessWidget {
                 width: 120,
                 height: 120,
                 child: Image.asset(
-                  'assets/images/salad.png',
+                  'assets/images/rating.png',
                 ),
               ),
               Text(
@@ -346,7 +346,7 @@ class _IntroSliderDonotshowagainWidgetState
                 width: 120,
                 height: 120,
                 child: Image.asset(
-                  'assets/images/burger.png',
+                  'assets/images/alerts.png',
                 ),
               ),
               Text(
