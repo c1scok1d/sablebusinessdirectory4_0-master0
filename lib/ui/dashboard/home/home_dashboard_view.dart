@@ -380,7 +380,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                     final bool isConnectedToIntenet = value ?? bool;
                     if (!isConnectedToIntenet) {
                       Fluttertoast.showToast(
-                          msg: 'No Internet Connectiion. Please try again !',
+                          msg: 'No Internet Connection. Please try again !',
                           toastLength: Toast.LENGTH_LONG,
                           gravity: ToastGravity.BOTTOM,
                           timeInSecForIosWeb: 1,
@@ -884,9 +884,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                         bottom: PsDimens.space8),
                     child: Text(
                       'To alert you when you are near a registered business, '
-                      'this app requires special permission to access your location while working in the background. '
-                      'We respect user privacy. Your location will never be recorded or shared for any reason.'
-                      "Tap 'Deny' to proceed without receiving notification alerts. "
+                      'this app requires special permission to access your location while working in the background.\n '
+                      'We respect user privacy. Your location will never be recorded or shared for any reason.\n'
+                      "Tap 'Deny' to proceed without receiving notification alerts.\n"
                       "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
                       style: Theme.of(context).textTheme.subtitle2,
                     ),
@@ -906,10 +906,12 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                           Navigator.of(context).pop();
 
                           Map<Permission, PermissionStatus> statuses = await [
+                            Permission.locationWhenInUse,
                             Permission.locationAlways,
-                            Permission.storage,
-                            Permission.camera,
+                            //Permission.storage,
+                            //Permission.camera,
                           ].request();
+                          print(statuses[Permission.locationWhenInUse]);
                           print(statuses[Permission.locationAlways]);
 
                           print(statuses[Permission.storage]);
@@ -949,10 +951,12 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       );
     } else {
       Map<Permission, PermissionStatus> statuses = await [
+        Permission.locationWhenInUse,
         Permission.locationAlways,
-        Permission.storage,
-        Permission.camera,
+        //Permission.storage,
+        //Permission.camera,
       ].request();
+      print(statuses[Permission.locationWhenInUse]);
       print(statuses[Permission.locationAlways]);
       Geofence.initialize();
     }
@@ -1004,11 +1008,11 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                       top: PsDimens.space8,
                       bottom: PsDimens.space8),
                   child: Text(
-                    "You will not be alerted when you are near a registered black owned business. "
-                    "We respect user privacy. You location will never be recorded or shared for any reason. "
-                    "Tap 'Continue' to proceed without receiving alerts. "
-                    "To enable alerts when near a registered black owned business select 'allow all the time' at [Go to Settings] > [Permissions]"
-                    "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
+                    "You will not be alerted when you are near a registered black owned business.\n "
+                    "We respect user privacy. You location will never be recorded or shared for any reason.\n "
+                    "Tap 'Continue' to proceed without receiving alerts.\n"
+                    "To enable alerts when near a registered black owned business select 'allow all the time' at [Go to Settings] > [Permissions]\n"
+                    "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.\n",
                     style: Theme.of(context).textTheme.subtitle2,
                   ),
                 ),

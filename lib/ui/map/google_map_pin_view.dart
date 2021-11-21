@@ -38,7 +38,7 @@ class GoogleMapPinView extends StatefulWidget {
 class _MapPinViewState extends State<GoogleMapPinView>
     with TickerProviderStateMixin {
   LatLng latlng;
-  double defaultRadius = 3000;
+ // double defaultRadius = 3000;
   String address = '';
   CameraPosition kGooglePlex;
   GoogleMapController mapController;
@@ -105,20 +105,23 @@ class _MapPinViewState extends State<GoogleMapPinView>
                   child: GoogleMap(
                       onMapCreated: _onMapCreated,
                       initialCameraPosition: kGooglePlex,
-                      circles: <Circle>{}..add(Circle(
+                      /*circles: <Circle>{}..add(Circle(
                           circleId: CircleId(address),
                           center: latlng,
                           radius: 200,
                           fillColor: Colors.blue.withOpacity(0.7),
                           strokeWidth: 3,
                           strokeColor: Colors.redAccent,
-                        )),
+                        )),*/
                       markers: <Marker>{}..add(Marker(
                           markerId: MarkerId(address),
                           position: latlng,
                           // infoWindow: InfoWindow(title: '${widget.item.name}'),
                           onTap: () {
-                            print("info window on tap");
+                            if(_showInfoWindow = false){
+                              _showInfoWindow = true;
+                            }
+                            //print("info window on tap");
                             setState(() {
                               _showInfoWindow = true;
                             });
@@ -211,7 +214,7 @@ class _MapPinViewState extends State<GoogleMapPinView>
                                 top: PsDimens.space8,
                                 bottom: PsDimens.space8),
                             child: Text(
-                              'Do you want to get directions to location?',
+                              'Do you want directions to ${c.name}?',
                               style: Theme.of(context).textTheme.subtitle2,
                             ),
                           ),
@@ -357,8 +360,6 @@ class _MapPinViewState extends State<GoogleMapPinView>
 
     updateInfoWindow(
         context, mapController, latlng, 300, 200);
-
-
   }
 
   void _handleTap(LatLng latlng) {

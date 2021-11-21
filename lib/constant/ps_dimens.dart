@@ -1,8 +1,8 @@
 ///
 /// ps_dimens.dart
 /// ----------------------------
-/// Developed by Panacea-Soft
-/// www.panacea-soft.com
+/// Developed by MAC Internet Services
+/// sablebusinessdirectory.com
 ///
 class PsDimens {
   // General Spacing

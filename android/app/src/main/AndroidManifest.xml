@@ -1,28 +1,40 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sable.businesslistingapi">
 
-<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" /> <for card.io card scanning -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
-        android:icon="@mipmap/launcher_icon"
+        android:icon="@drawable/launcher_icon"
         android:label="Sable Business Directory">
 
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:icon="@mipmap/launcher_icon"
+            android:icon="@drawable/launcher_icon"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:usesCleartextTraffic="true"
             android:windowSoftInputMode="adjustResize">
+            <!-- Specifies an Android theme to apply to this Activity as soon as
+                 the Android process has started. This theme is visible to the user
+                 while the Flutter UI initializes. After that, this theme continues
+                 to determine the Window background behind the Flutter UI. -->
 
-<!--                android:value="AIzaSyCMBDE0LLae_aFf2trtik89eYhtPM3rt30" />-->
             <!-- This keeps the window background of the activity showing
                  until Flutter renders its first frame. It can be removed if
                  there is no splash screen (such as the default splash screen
@@ -46,13 +58,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Specifies an Android theme to apply to this Activity as soon as
-                      the Android process has started. This theme is visible to the user
-                      while the Flutter UI initializes. After that, this theme continues
-                      to determine the Window background behind the Flutter UI. -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_map_key" />
+
         <activity
             android:name="com.braintreepayments.api.BraintreeBrowserSwitchActivity"
             android:launchMode="singleTask">
@@ -69,9 +75,9 @@
         <!--meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_map_key" / -->
-<!--        <meta-data-->
-<!--            android:name="com.google.android.maps.v2.API_KEY"-->
-<!--            android:value="@string/google_map_key" />-->
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="@string/google_map_key" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
