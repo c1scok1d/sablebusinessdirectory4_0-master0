@@ -7,6 +7,8 @@ class PsTextFieldWidget extends StatelessWidget {
   const PsTextFieldWidget(
       {this.textEditingController,
       this.onTap,
+      this.onChanged,
+      this.onTapMyLocation,
       this.titleText = '',
       this.hintText,
       this.textAboutMe = false,
@@ -18,6 +20,8 @@ class PsTextFieldWidget extends StatelessWidget {
 
   final TextEditingController textEditingController;
   final Function onTap;
+  final Function onChanged;
+  final Function onTapMyLocation;
   final String titleText;
   final String hintText;
   final double height;
@@ -64,47 +68,61 @@ class PsTextFieldWidget extends StatelessWidget {
             height: 0,
           ),
         Container(
-            width: double.infinity,
-            height: height,
-            margin: const EdgeInsets.all(PsDimens.space12),
-            decoration: BoxDecoration(
-              color: PsColors.backgroundColor,
-              borderRadius: BorderRadius.circular(PsDimens.space4),
-              border: Border.all(color: PsColors.mainDividerColor),
-            ),
-            child: TextField(
-                keyboardType:
-                    phoneInputType ? TextInputType.phone : TextInputType.text,
-                maxLines: null,
-                controller: textEditingController,
-                onTap: onTap,
-                style: Theme.of(context).textTheme.bodyText2,
-                decoration: textAboutMe
-                    ? InputDecoration(
-                        contentPadding: const EdgeInsets.only(
-                          left: PsDimens.space12,
-                          bottom: PsDimens.space8,
-                          top: PsDimens.space10,
-                        ),
-                        border: InputBorder.none,
-                        hintText: hintText,
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .bodyText2
-                            .copyWith(color: PsColors.textPrimaryLightColor),
-                      )
-                    : InputDecoration(
-                        contentPadding: const EdgeInsets.only(
-                          left: PsDimens.space12,
-                          bottom: PsDimens.space8,
-                        ),
-                        border: InputBorder.none,
-                        hintText: hintText,
-                        hintStyle: Theme.of(context)
-                            .textTheme
-                            .bodyText2
-                            .copyWith(color: PsColors.textPrimaryLightColor),
-                      ))),
+          width: double.infinity,
+          height: height,
+          margin: const EdgeInsets.all(PsDimens.space12),
+          decoration: BoxDecoration(
+            color: PsColors.backgroundColor,
+            borderRadius: BorderRadius.circular(PsDimens.space4),
+            border: Border.all(color: PsColors.mainDividerColor),
+          ),
+          child: Stack(
+            children: [
+              TextField(
+                  keyboardType:
+                      phoneInputType ? TextInputType.phone : TextInputType.text,
+                  maxLines: null,
+                  controller: textEditingController,
+                  onTap: onTap,
+
+                  // onChanged==null?onChanged(value){}:onChanged,
+                  onChanged: onChanged == null ? (value) {} : onChanged,
+                  style: Theme.of(context).textTheme.bodyText2,
+                  decoration: textAboutMe
+                      ? InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                            left: PsDimens.space12,
+                            bottom: PsDimens.space8,
+                            top: PsDimens.space10,
+                          ),
+                          border: InputBorder.none,
+                          hintText: hintText,
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyText2
+                              .copyWith(color: PsColors.textPrimaryLightColor),
+                        )
+                      : InputDecoration(
+                          contentPadding: const EdgeInsets.only(
+                            left: PsDimens.space12,
+                            bottom: PsDimens.space8,
+                          ),
+                          border: InputBorder.none,
+                          hintText: hintText,
+                          hintStyle: Theme.of(context)
+                              .textTheme
+                              .bodyText2
+                              .copyWith(color: PsColors.textPrimaryLightColor),
+                        )),
+              if (onTapMyLocation == null) Container() else Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                          onPressed: onTapMyLocation,
+                          icon: Icon(Icons.location_searching_outlined)),
+                    )
+            ],
+          ),
+        ),
       ],
     );
   }

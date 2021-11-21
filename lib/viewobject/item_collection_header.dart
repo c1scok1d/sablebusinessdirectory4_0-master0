@@ -70,7 +70,7 @@ class ItemCollectionHeader extends PsObject<ItemCollectionHeader> {
       data['id'] = object.id;
       data['name'] = object.name;
       data['city_id'] = object.cityId;
-      data['status'] = object.status;
+      data['status'] = object.city;
       data['added_date'] = object.addedDate;
       data['added_user_id'] = object.addedUserId;
       data['updated_date'] = object.updatedDate;

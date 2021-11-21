@@ -27,8 +27,8 @@ class NotiProvider extends PsProvider {
 
       _notiList = resource;
 
-      if (resource.status != PsStatus.BLOCK_LOADING &&
-          resource.status != PsStatus.PROGRESS_LOADING) {
+      if (resource.city != PsStatus.BLOCK_LOADING &&
+          resource.city != PsStatus.PROGRESS_LOADING) {
         isLoading = false;
       }
 

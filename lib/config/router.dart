@@ -1,3 +1,4 @@
+import 'package:businesslistingapi/provider/city/city_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:businesslistingapi/constant/route_paths.dart';
 import 'package:businesslistingapi/ui/app_info/app_info_view.dart';
@@ -677,6 +678,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return PageRouteBuilder<dynamic>(
           pageBuilder: (_, Animation<double> a1, Animation<double> a2) =>
               StatusListView(statusName: statusName));
+    case '${RoutePaths.cityList}':
+      final Object args = settings.arguments;
+      final String statusName = args ?? String;
+      return PageRouteBuilder<dynamic>(
+          pageBuilder: (_, Animation<double> a1, Animation<double> a2) =>
+              CityListView(statusName: statusName));
 
     default:
       return PageRouteBuilder<dynamic>(

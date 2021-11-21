@@ -77,6 +77,7 @@ class RoutePaths {
   static const String searchCategory = '/searchCategory';
   static const String searchSubCategory = '/searchSubCategory';
   static const String statusList = '/statusList';
+  static const String cityList = '/cityList';
   static const String relatedProduct = '/RelatedItem';
   static const String more = '/more';
   static const String uploaded = '/uploaded';

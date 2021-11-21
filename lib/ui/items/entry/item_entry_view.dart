@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:businesslistingapi/api/common/ps_resource.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
 import 'package:businesslistingapi/config/ps_config.dart';
@@ -6,6 +8,8 @@ import 'package:businesslistingapi/constant/ps_dimens.dart';
 import 'package:businesslistingapi/constant/route_paths.dart';
 import 'package:businesslistingapi/provider/entry/item_entry_provider.dart';
 import 'package:businesslistingapi/provider/gallery/gallery_provider.dart';
+import 'package:businesslistingapi/provider/item/autocomplete/application_bloc.dart';
+import 'package:businesslistingapi/provider/item/models/place.dart';
 import 'package:businesslistingapi/repository/gallery_repository.dart';
 import 'package:businesslistingapi/repository/item_repository.dart';
 import 'package:businesslistingapi/ui/common/base/ps_widget_with_multi_provider.dart';
@@ -20,6 +24,7 @@ import 'package:businesslistingapi/utils/ps_progress_dialog.dart';
 import 'package:businesslistingapi/utils/utils.dart';
 import 'package:businesslistingapi/viewobject/api_status.dart';
 import 'package:businesslistingapi/viewobject/category.dart';
+import 'package:businesslistingapi/viewobject/city.dart';
 import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:businesslistingapi/viewobject/default_photo.dart';
 import 'package:businesslistingapi/viewobject/holder/delete_imge_parameter_holder.dart';
@@ -35,12 +40,17 @@ import 'package:businesslistingapi/viewobject/status.dart';
 import 'package:businesslistingapi/viewobject/sub_category.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:google_api_headers/google_api_headers.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as googlemap;
+
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:latlong/latlong.dart';
+
+// import 'package:latlong/latlong.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -64,6 +74,7 @@ class _ItemEntryViewState extends State<ItemEntryView> {
   GalleryRepository galleryRepo;
   ItemEntryProvider _itemEntryProvider;
   GalleryProvider galleryProvider;
+  ApplicationBloc applicationBloc;
   PsValueHolder valueHolder;
 
   final TextEditingController userInputItemName = TextEditingController();
@@ -101,6 +112,7 @@ class _ItemEntryViewState extends State<ItemEntryView> {
   googlemap.GoogleMapController googleMapController;
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController subCategoryController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
 
@@ -122,8 +134,8 @@ class _ItemEntryViewState extends State<ItemEntryView> {
     galleryRepo = Provider.of<GalleryRepository>(context);
     // deleteImageRepo = Provider.of<DeleteImageRepository>(context);
     widget.animationController.forward();
-    _itemEntryProvider = ItemEntryProvider(
-        repo: itemRepo, psValueHolder: valueHolder);
+    _itemEntryProvider =
+        ItemEntryProvider(repo: itemRepo, psValueHolder: valueHolder);
 
     return PsWidgetWithMultiProvider(
       child: MultiProvider(
@@ -137,25 +149,23 @@ class _ItemEntryViewState extends State<ItemEntryView> {
                   //       repo: itemRepo, psValueHolder: valueHolder);
                   //   return _itemEntryProvider;
                   // });
-                  if(_itemEntryProvider.psValueHolder.cityLat==null){
-
+                  if (_itemEntryProvider.psValueHolder.cityLat == null) {
+                    latlng = LatLng(45.5231, -122.6765);
+                  } else {
                     latlng = LatLng(
-                        45.5231, -122.6765);
-
-                  }else{
-                  latlng = LatLng(
-                  double.parse(_itemEntryProvider.psValueHolder.cityLat),
-                  double.parse(_itemEntryProvider.psValueHolder.cityLng));}
+                        double.parse(_itemEntryProvider.psValueHolder.cityLat),
+                        double.parse(_itemEntryProvider.psValueHolder.cityLng));
+                  }
                   if (_itemEntryProvider.itemLocationId != null ||
-                  _itemEntryProvider.itemLocationId != '')
-                  _itemEntryProvider.itemLocationId =
-                  _itemEntryProvider.psValueHolder.cityId;
+                      _itemEntryProvider.itemLocationId != '')
+                    _itemEntryProvider.itemLocationId =
+                        _itemEntryProvider.psValueHolder.cityId;
                   if (userInputLattitude.text.isEmpty)
-                  userInputLattitude.text =
-                  _itemEntryProvider.psValueHolder.cityLat;
+                    userInputLattitude.text =
+                        _itemEntryProvider.psValueHolder.cityLat;
                   if (userInputLongitude.text.isEmpty)
-                  userInputLongitude.text =
-                  _itemEntryProvider.psValueHolder.cityLng;
+                    userInputLongitude.text =
+                        _itemEntryProvider.psValueHolder.cityLng;
                   _itemEntryProvider.getItemFromDB(widget.item.id);
 
                   return _itemEntryProvider;
@@ -171,6 +181,17 @@ class _ItemEntryViewState extends State<ItemEntryView> {
                   }
                   return galleryProvider;
                 }),
+            ChangeNotifierProvider<ApplicationBloc>(
+              lazy: false,
+              create: (context) {
+                applicationBloc = ApplicationBloc();
+
+                // applicationBloc.bounds.stream.listen((bounds) async {
+                //   contr.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+                // });
+                return applicationBloc;
+              },
+            )
           ],
           child: SingleChildScrollView(
             child: AnimatedBuilder(
@@ -183,134 +204,143 @@ class _ItemEntryViewState extends State<ItemEntryView> {
                           (BuildContext context,
                               ItemEntryProvider itemEntryProvider,
                               Widget child) {
-                        return Consumer<GalleryProvider>(builder:
+                        return Consumer<ApplicationBloc>(builder:
                             (BuildContext context,
-                                GalleryProvider galleryProvider, Widget child) {
-                          if (itemEntryProvider != null &&
-                              itemEntryProvider.item != null &&
-                              itemEntryProvider.item.data != null) {
-                            if (bindDataFirstTime) {
-                              userInputItemName.text =
-                                  itemEntryProvider.item.data.name;
-                              categoryController.text =
-                                  itemEntryProvider.item.data.category.name;
-                              subCategoryController.text =
-                                  itemEntryProvider.item.data.subCategory.name;
-                              userInputSearchTagsKeyword.text =
-                                  itemEntryProvider.item.data.searchTag;
-                              userInputItemHighLightInformation.text =
-                                  itemEntryProvider
-                                      .item.data.highlightInformation;
-                              userInputItemDescription.text =
-                                  itemEntryProvider.item.data.description;
-                              statusController.text =
-                                  itemEntryProvider.item.data.transStatus ??
-                                      'Publish';
-                              userInputOpenTime.text =
-                                  itemEntryProvider.item.data.openingHour;
-                              userInputCloseTime.text =
-                                  itemEntryProvider.item.data.closingHour;
-                              userInputTimeRemark.text =
-                                  itemEntryProvider.item.data.timeRemark;
-                              userInputPhone1.text =
-                                  itemEntryProvider.item.data.phone1;
-                              userInputPhone2.text =
-                                  itemEntryProvider.item.data.phone2;
-                              userInputPhone3.text =
-                                  itemEntryProvider.item.data.phone3;
-                              userInputEmail.text =
-                                  itemEntryProvider.item.data.email;
-                              userInputAddress.text =
-                                  itemEntryProvider.item.data.address;
-                              userInputFacebook.text =
-                                  itemEntryProvider.item.data.facebook;
-                              userInputTwitter.text =
-                                  itemEntryProvider.item.data.twitter;
-                              userInputYoutube.text =
-                                  itemEntryProvider.item.data.youtube;
-                              userInputGoogle.text =
-                                  itemEntryProvider.item.data.googlePlus;
-                              userInputInstagram.text =
-                                  itemEntryProvider.item.data.instagram;
-                              userInputWebsite.text =
-                                  itemEntryProvider.item.data.website;
-                              userInputPinterest.text =
-                                  itemEntryProvider.item.data.pinterest;
-                              userInputWhatsappNumber.text =
-                                  itemEntryProvider.item.data.whatsapp;
-                              userInputMessenger.text =
-                                  itemEntryProvider.item.data.messenger;
-                              userInputTermsAndConditions.text =
-                                  itemEntryProvider.item.data.terms;
-                              userInputCancelationPolicy.text =
-                                  itemEntryProvider.item.data.cancelationPolicy;
-                              userInputAdditionalInfo.text =
-                                  itemEntryProvider.item.data.additionalInfo;
-                              userInputLattitude.text =
-                                  itemEntryProvider.item.data.lat;
-                              userInputLongitude.text =
-                                  itemEntryProvider.item.data.lng;
-                              itemEntryProvider.categoryId =
-                                  itemEntryProvider.item.data.category.id;
-                              itemEntryProvider.subCategoryId =
-                                  itemEntryProvider.item.data.subCategory.id;
-                              itemEntryProvider.isFeatured =
-                                  itemEntryProvider.item.data.isFeatured;
-                              itemEntryProvider.isPromotion =
-                                  itemEntryProvider.item.data.isPromotion;
-                              bindDataFirstTime = false;
+                                ApplicationBloc applicationBloc, Widget child) {
+                          return Consumer<GalleryProvider>(builder:
+                              (BuildContext context,
+                                  GalleryProvider galleryProvider,
+                                  Widget child) {
+                            if (itemEntryProvider != null &&
+                                itemEntryProvider.item != null &&
+                                itemEntryProvider.item.data != null) {
+                              if (bindDataFirstTime) {
+                                userInputItemName.text =
+                                    itemEntryProvider.item.data.name;
+                                categoryController.text =
+                                    itemEntryProvider.item.data.category.name;
+                                subCategoryController.text = itemEntryProvider
+                                    .item.data.subCategory.name;
+                                userInputSearchTagsKeyword.text =
+                                    itemEntryProvider.item.data.searchTag;
+                                userInputItemHighLightInformation.text =
+                                    itemEntryProvider
+                                        .item.data.highlightInformation;
+                                userInputItemDescription.text =
+                                    itemEntryProvider.item.data.description;
+                                statusController.text =
+                                    itemEntryProvider.item.data.transStatus ??
+                                        'Publish';
+                                userInputOpenTime.text =
+                                    itemEntryProvider.item.data.openingHour;
+                                userInputCloseTime.text =
+                                    itemEntryProvider.item.data.closingHour;
+                                userInputTimeRemark.text =
+                                    itemEntryProvider.item.data.timeRemark;
+                                userInputPhone1.text =
+                                    itemEntryProvider.item.data.phone1;
+                                userInputPhone2.text =
+                                    itemEntryProvider.item.data.phone2;
+                                userInputPhone3.text =
+                                    itemEntryProvider.item.data.phone3;
+                                userInputEmail.text =
+                                    itemEntryProvider.item.data.email;
+                                userInputAddress.text =
+                                    itemEntryProvider.item.data.address;
+                                userInputFacebook.text =
+                                    itemEntryProvider.item.data.facebook;
+                                userInputTwitter.text =
+                                    itemEntryProvider.item.data.twitter;
+                                userInputYoutube.text =
+                                    itemEntryProvider.item.data.youtube;
+                                userInputGoogle.text =
+                                    itemEntryProvider.item.data.googlePlus;
+                                userInputInstagram.text =
+                                    itemEntryProvider.item.data.instagram;
+                                userInputWebsite.text =
+                                    itemEntryProvider.item.data.website;
+                                userInputPinterest.text =
+                                    itemEntryProvider.item.data.pinterest;
+                                userInputWhatsappNumber.text =
+                                    itemEntryProvider.item.data.whatsapp;
+                                userInputMessenger.text =
+                                    itemEntryProvider.item.data.messenger;
+                                userInputTermsAndConditions.text =
+                                    itemEntryProvider.item.data.terms;
+                                userInputCancelationPolicy.text =
+                                    itemEntryProvider
+                                        .item.data.cancelationPolicy;
+                                userInputAdditionalInfo.text =
+                                    itemEntryProvider.item.data.additionalInfo;
+                                userInputLattitude.text =
+                                    itemEntryProvider.item.data.lat;
+                                userInputLongitude.text =
+                                    itemEntryProvider.item.data.lng;
+                                itemEntryProvider.categoryId =
+                                    itemEntryProvider.item.data.category.id;
+                                itemEntryProvider.subCategoryId =
+                                    itemEntryProvider.item.data.subCategory.id;
+                                itemEntryProvider.isFeatured =
+                                    itemEntryProvider.item.data.isFeatured;
+                                itemEntryProvider.isPromotion =
+                                    itemEntryProvider.item.data.isPromotion;
+                                bindDataFirstTime = false;
+                              }
                             }
-                          }
 
-                          return AllControllerTextWidget(
-                            userInputItemName: userInputItemName,
-                            userInputSearchTagsKeyword:
-                                userInputSearchTagsKeyword,
-                            userInputItemHighLightInformation:
-                                userInputItemHighLightInformation,
-                            userInputItemDescription: userInputItemDescription,
-                            userInputOpenTime: userInputOpenTime,
-                            userInputCloseTime: userInputCloseTime,
-                            userInputTimeRemark: userInputTimeRemark,
-                            userInputPhone1: userInputPhone1,
-                            userInputPhone2: userInputPhone2,
-                            userInputPhone3: userInputPhone3,
-                            userInputEmail: userInputEmail,
-                            userInputAddress: userInputAddress,
-                            userInputFacebook: userInputFacebook,
-                            userInputTwitter: userInputTwitter,
-                            userInputYoutube: userInputYoutube,
-                            userInputGoogle: userInputGoogle,
-                            userInputInstagram: userInputInstagram,
-                            userInputWebsite: userInputWebsite,
-                            userInputPinterest: userInputPinterest,
-                            userInputWhatsappNumber: userInputWhatsappNumber,
-                            userInputMessenger: userInputMessenger,
-                            userInputTermsAndConditions:
-                                userInputTermsAndConditions,
-                            userInputCancelationPolicy:
-                                userInputCancelationPolicy,
-                            userInputAdditionalInfo: userInputAdditionalInfo,
-                            userInputLattitude: userInputLattitude,
-                            userInputLongitude: userInputLongitude,
-                            categoryController: categoryController,
-                            subCategoryController: subCategoryController,
-                            statusController: statusController,
-                            mapController: mapController,
-                            locationController: locationController,
-                            latLng: latlng,
-                            item: widget.item,
-                            isFeatured: widget.item.isFeatured,
-                            isPromotion: widget.item.isPromotion,
-                            provider: itemEntryProvider,
-                            galleryProvider: galleryProvider,
-                            zoom: zoom,
-                            flag: widget.flag,
-                            valueHolder: valueHolder,
-                            updateMapController: updateMapController,
-                            googleMapController: googleMapController,
-                          );
-                        });
+                            return AllControllerTextWidget(
+                              userInputItemName: userInputItemName,
+                              userInputSearchTagsKeyword:
+                                  userInputSearchTagsKeyword,
+                              userInputItemHighLightInformation:
+                                  userInputItemHighLightInformation,
+                              userInputItemDescription:
+                                  userInputItemDescription,
+                              userInputOpenTime: userInputOpenTime,
+                              userInputCloseTime: userInputCloseTime,
+                              userInputTimeRemark: userInputTimeRemark,
+                              userInputPhone1: userInputPhone1,
+                              userInputPhone2: userInputPhone2,
+                              userInputPhone3: userInputPhone3,
+                              userInputEmail: userInputEmail,
+                              userInputAddress: userInputAddress,
+                              userInputFacebook: userInputFacebook,
+                              userInputTwitter: userInputTwitter,
+                              userInputYoutube: userInputYoutube,
+                              userInputGoogle: userInputGoogle,
+                              userInputInstagram: userInputInstagram,
+                              userInputWebsite: userInputWebsite,
+                              userInputPinterest: userInputPinterest,
+                              userInputWhatsappNumber: userInputWhatsappNumber,
+                              userInputMessenger: userInputMessenger,
+                              userInputTermsAndConditions:
+                                  userInputTermsAndConditions,
+                              userInputCancelationPolicy:
+                                  userInputCancelationPolicy,
+                              userInputAdditionalInfo: userInputAdditionalInfo,
+                              userInputLattitude: userInputLattitude,
+                              userInputLongitude: userInputLongitude,
+                              categoryController: categoryController,
+                              subCategoryController: subCategoryController,
+                              cityController: cityController,
+                              statusController: statusController,
+                              mapController: mapController,
+                              locationController: locationController,
+                              latLng: latlng,
+                              item: widget.item,
+                              isFeatured: widget.item.isFeatured,
+                              isPromotion: widget.item.isPromotion,
+                              provider: itemEntryProvider,
+                              applicationBloc: applicationBloc,
+                              galleryProvider: galleryProvider,
+                              zoom: zoom,
+                              flag: widget.flag,
+                              valueHolder: valueHolder,
+                              updateMapController: updateMapController,
+                              googleMapController: googleMapController,
+                            );
+                          });
+                        }); /*});*/
                       })
                     ],
                   ),
@@ -355,6 +385,7 @@ class AllControllerTextWidget extends StatefulWidget {
     this.categoryController,
     this.subCategoryController,
     this.statusController,
+    this.cityController,
     this.mapController,
     this.locationController,
     this.latLng,
@@ -362,6 +393,7 @@ class AllControllerTextWidget extends StatefulWidget {
     this.isFeatured,
     this.isPromotion,
     this.provider,
+    this.applicationBloc,
     this.galleryProvider,
     this.zoom,
     this.flag,
@@ -398,6 +430,7 @@ class AllControllerTextWidget extends StatefulWidget {
   final TextEditingController userInputLongitude;
   final TextEditingController categoryController;
   final TextEditingController subCategoryController;
+  final TextEditingController cityController;
   final TextEditingController statusController;
   final TextEditingController locationController;
   final MapController mapController;
@@ -405,6 +438,7 @@ class AllControllerTextWidget extends StatefulWidget {
   final Item item;
   final String isFeatured;
   final String isPromotion;
+  final ApplicationBloc applicationBloc;
   final ItemEntryProvider provider;
   final GalleryProvider galleryProvider;
   final double zoom;
@@ -486,6 +520,8 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
     } else {
       _latlng = _latlng;
     }
+
+    // ApplicationBloc applicationBloc = Provider.of<ApplicationBloc>(context);
 
     final Widget _uploadItemWidget = Container(
         margin: const EdgeInsets.only(
@@ -588,7 +624,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                   widget.galleryProvider.itemId = itemId;
                   flag = PsConst.EDIT_ITEM;
 
-                  print('Uploaded:'+itemData.status.toString());
+                  print('Uploaded:' + itemData.status.toString());
                   showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
@@ -703,7 +739,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                   PsProgressDialog.dismissDialog();
 
                   if (itemData.data != null) {
-                    print('Uploaded:'+itemData.status.toString());
+                    print('Uploaded:' + itemData.status.toString());
                     showDialog<dynamic>(
                         context: context,
                         builder: (BuildContext context) {
@@ -715,7 +751,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                         });
                   }
                 } else {
-                  print('Already saved:'+itemData.name);
+                  print('Already saved:' + itemData.name);
                   showDialog<dynamic>(
                       context: context,
                       builder: (BuildContext context) {
@@ -730,691 +766,902 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
           },
         ));
 
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(
-                left: PsDimens.space16,
-                right: PsDimens.space16,
-                bottom: PsDimens.space8,
-                top: PsDimens.space8),
-            child: Text(
-              Utils.getString(context, 'item_entry__item_info'),
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
-              maxLines: 1,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(PsDimens.space12),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 0.5),
-                borderRadius: BorderRadius.circular(PsDimens.space16)),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: PsDimens.space8),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__item_name'),
-                  textAboutMe: false,
-                  hintText: Utils.getString(context, 'item_entry__item_name'),
-                  textEditingController: widget.userInputItemName,
+    return Stack(
+      children: [
+        Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: PsDimens.space16,
+                    right: PsDimens.space16,
+                    bottom: PsDimens.space8,
+                    top: PsDimens.space8),
+                child: Text(
+                  Utils.getString(context, 'item_entry__item_info'),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  maxLines: 1,
                 ),
-                PsDropdownBaseWithControllerWidget(
-                  title: Utils.getString(context, 'item_entry__category_name'),
-                  textEditingController: widget.categoryController,
-                  onTap: () async {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    final ItemEntryProvider provider =
-                        Provider.of<ItemEntryProvider>(context, listen: false);
-
-                    final dynamic categoryResult = await Navigator.pushNamed(
-                        context, RoutePaths.searchCategory,
-                        arguments: widget.categoryController.text);
-
-                    if (categoryResult != null && categoryResult is Category) {
-                      provider.categoryId = categoryResult.id;
-                      widget.categoryController.text = categoryResult.name;
-                      provider.subCategoryId = '';
-
-                      setState(() {
-                        widget.categoryController.text = categoryResult.name;
-                        widget.subCategoryController.text = '';
-                      });
-                    }
-                  },
-                ),
-                PsDropdownBaseWithControllerWidget(
-                    title: Utils.getString(
-                        context, 'item_entry__sub_category_name'),
-                    textEditingController: widget.subCategoryController,
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      final ItemEntryProvider provider =
-                          Provider.of<ItemEntryProvider>(context,
-                              listen: false);
-                      if (provider.categoryId != '') {
-                        final dynamic subCategoryResult =
-                            await Navigator.pushNamed(
-                                context, RoutePaths.searchSubCategory,
-                                arguments: SubCategoryIntentHolder(
-                                    categoryId: provider.categoryId,
-                                    subCategoryName:
-                                        widget.subCategoryController.text));
-                        if (subCategoryResult != null &&
-                            subCategoryResult is SubCategory) {
-                          provider.subCategoryId = subCategoryResult.id;
-
-                          widget.subCategoryController.text =
-                              subCategoryResult.name;
-                        }
-                      } else {
-                        showDialog<dynamic>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ErrorDialog(
-                                message: Utils.getString(context,
-                                    'home_search__choose_category_first'),
-                              );
-                            });
-                        const ErrorDialog(message: 'Choose Category first');
-                      }
-                    }),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(
-                      context, 'item_entry__search_tags_keyword'),
-                  textAboutMe: false,
-                  textEditingController: widget.userInputSearchTagsKeyword,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(
-                      context, 'item_entry__item_highlight_info'),
-                  height: PsDimens.space120,
-                  textAboutMe: true,
-                  keyboardType: TextInputType.multiline,
-                  textEditingController:
-                      widget.userInputItemHighLightInformation,
-                ),
-                PsTextFieldWidget(
-                  titleText:
-                      Utils.getString(context, 'item_entry__item_description'),
-                  height: PsDimens.space120,
-                  textAboutMe: true,
-                  keyboardType: TextInputType.multiline,
-                  textEditingController: widget.userInputItemDescription,
-                ),
-                PsDropdownBaseWithControllerWidget(
-                    title: Utils.getString(context, 'item_entry__status'),
-                    textEditingController: widget.statusController,
-                    onTap: () async {
-                      FocusScope.of(context).requestFocus(FocusNode());
-                      final ItemEntryProvider provider =
-                          Provider.of<ItemEntryProvider>(context,
-                              listen: false);
-
-                      final dynamic statusResult = await Navigator.pushNamed(
-                          context, RoutePaths.statusList,
-                          arguments: widget.statusController.text);
-
-                      if (statusResult != null && statusResult is Status) {
-                        provider.statusId = statusResult.id;
-                        widget.statusController.text = statusResult.title;
-                        // provider.subCategoryId = '';
-
-                        setState(() {
-                          widget.statusController.text = statusResult.title;
-                        });
-                      }
-                    }),
-                Row(
-                  children: <Widget>[
-                    Theme(
-                      data: ThemeData(unselectedWidgetColor: Colors.grey),
-                      child: Checkbox(
-                        activeColor: PsColors.mainColor,
-                        value: widget.provider.isFeaturedCheckBoxSelect,
-                        onChanged: (bool value) {
-                          setState(() {
-                            widget.provider.isFeaturedCheckBoxSelect = value;
-                            if (widget.provider.isFeaturedCheckBoxSelect) {
-                              widget.provider.isFeatured = '1';
-                              isFeatured = '1';
-                              isFirstTime = false;
-                            } else {
-                              widget.provider.isFeatured = '0';
-                              isFeatured = '0';
-                              isFirstTime = false;
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        child: Text(
-                            Utils.getString(context, 'item_entry__is_featured'),
-                            style: Theme.of(context).textTheme.bodyText1),
-                        onTap: () {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Theme(
-                      data: ThemeData(unselectedWidgetColor: Colors.grey),
-                      child: Checkbox(
-                        activeColor: PsColors.mainColor,
-                        value: widget.provider.isPromotionCheckBoxSelect,
-                        onChanged: (bool value) {
-                          setState(() {
-                            widget.provider.isPromotionCheckBoxSelect = value;
-                            if (widget.provider.isPromotionCheckBoxSelect) {
-                              widget.provider.isPromotion = '1';
-                              isPromotion = '1';
-                              isFirstTime = false;
-                            } else {
-                              widget.provider.isPromotion = '0';
-                              isPromotion = '0';
-                              isFirstTime = false;
-                            }
-                          });
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: InkWell(
-                        child: Text(
-                            Utils.getString(
-                                context, 'item_entry__is_promotion'),
-                            style: Theme.of(context).textTheme.bodyText1),
-                        onTap: () {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: PsDimens.space8)
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: PsDimens.space16,
-                right: PsDimens.space16,
-                bottom: PsDimens.space8,
-                top: PsDimens.space8),
-            child: Text(
-              Utils.getString(context, 'item_entry__schedule'),
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
-              maxLines: 1,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(PsDimens.space12),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 0.5),
-                borderRadius: BorderRadius.circular(PsDimens.space16)),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: PsDimens.space8),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__open_time'),
-                  hintText: Utils.getString(context, 'item_entry__open_time'),
-                  textEditingController: widget.userInputOpenTime,
-                  onTap: () async {
-                    print('Hello');
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    final TimeOfDay timeOfDay = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                      builder: (BuildContext context, Widget child) {
-                        return MediaQuery(
-                          data: MediaQuery.of(context)
-                              .copyWith(alwaysUse24HourFormat: true),
-                          child: child,
-                        );
-                      },
-                    );
-
-                    if (timeOfDay != null) {
-                      widget.provider.openingHour =
-                          Utils.getTimeOfDayformat(timeOfDay);
-                      // Utils.getTimeOfDayformat(timeOfDay);
-                    }
-                    setState(() {
-                      widget.userInputOpenTime.text =
-                          widget.provider.openingHour;
-                    });
-                  },
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__close_time'),
-                  hintText: Utils.getString(context, 'item_entry__close_time'),
-                  textEditingController: widget.userInputCloseTime,
-                  onTap: () async {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    final TimeOfDay timeOfDay = await showTimePicker(
-                      context: context,
-                      initialTime: TimeOfDay.now(),
-                      builder: (BuildContext context, Widget child) {
-                        return MediaQuery(
-                          data: MediaQuery.of(context)
-                              .copyWith(alwaysUse24HourFormat: true),
-                          child: child,
-                        );
-                      },
-                    );
-
-                    if (timeOfDay != null) {
-                      widget.provider.closingHour =
-                          Utils.getTimeOfDayformat(timeOfDay);
-                      // Utils.getTimeOfDayformat(timeOfDay);
-                    }
-                    setState(() {
-                      widget.userInputCloseTime.text =
-                          widget.provider.closingHour;
-                    });
-                  },
-                ),
-                PsTextFieldWidget(
-                  titleText:
-                      Utils.getString(context, 'item_entry__time_remark'),
-                  height: PsDimens.space120,
-                  hintText: Utils.getString(context, 'item_entry__time_remark'),
-                  textAboutMe: true,
-                  textEditingController: widget.userInputTimeRemark,
-                ),
-                const SizedBox(height: PsDimens.space8)
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: PsDimens.space16,
-                right: PsDimens.space16,
-                bottom: PsDimens.space8,
-                top: PsDimens.space8),
-            child: Text(
-              Utils.getString(context, 'item_entry__contact'),
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
-              maxLines: 1,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(PsDimens.space12),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 0.5),
-                borderRadius: BorderRadius.circular(PsDimens.space16)),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: PsDimens.space8),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__phone_1'),
-                  keyboardType: TextInputType.phone,
-                  hintText: Utils.getString(context, 'item_entry__phone_1'),
-                  textEditingController: widget.userInputPhone1,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__phone_2'),
-                  keyboardType: TextInputType.phone,
-                  hintText: Utils.getString(context, 'item_entry__phone_2'),
-                  textEditingController: widget.userInputPhone2,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__phone_3'),
-                  keyboardType: TextInputType.phone,
-                  hintText: Utils.getString(context, 'item_entry__phone_3'),
-                  textEditingController: widget.userInputPhone3,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__email'),
-                  keyboardType: TextInputType.emailAddress,
-                  hintText: Utils.getString(context, 'item_entry__email'),
-                  textEditingController: widget.userInputEmail,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__address'),
-                  keyboardType: TextInputType.number,
-                  height: PsDimens.space120,
-                  hintText: Utils.getString(context, 'item_entry__address'),
-                  textAboutMe: true,
-                  textEditingController: widget.userInputAddress,
-                  onTap: () async {
-                    _handlePressButton(widget.userInputAddress);
-                    // Prediction p = await PlacesAutocomplete.show(
-                    //     context: context, apiKey: PsConst.googleMapsAPi);
-                    // displayPrediction(p, widget.userInputAddress);
-                    // generate a new token here
-                    // String sessionToken = Uuid().v4();
-                    // final Suggestion result = await showSearch(
-                    //   context: context,
-                    //   delegate: AddressSearch(sessionToken),
-                    // );
-                    // // This will change the text displayed in the TextField
-                    //
-                    // if (result != null) {
-                    //   final placeDetails = await PlaceApiProvider(sessionToken)
-                    //       .getPlaceDetailFromId(result.placeId);
-                    //   setState(() {
-                    //     widget.userInputAddress.text = result.description;
-                    //     // _controller.text = result.description;
-                    //     // _streetNumber = placeDetails.streetNumber;
-                    //     // _street = placeDetails.street;
-                    //     // _city = placeDetails.city;
-                    //     // _zipCode = placeDetails.zipCode;
-                    //   });
-                    // }
-                  },
-                ),
-                const SizedBox(height: PsDimens.space8)
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: PsDimens.space16,
-                right: PsDimens.space16,
-                bottom: PsDimens.space8,
-                top: PsDimens.space8),
-            child: Text(
-              Utils.getString(context, 'item_entry__social_info'),
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
-              maxLines: 1,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(PsDimens.space12),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 0.5),
-                borderRadius: BorderRadius.circular(PsDimens.space16)),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: PsDimens.space8),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__facebook'),
-                  hintText: Utils.getString(context, 'item_entry__facebook'),
-                  textEditingController: widget.userInputFacebook,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__twitter'),
-                  hintText: Utils.getString(context, 'item_entry__twitter'),
-                  textEditingController: widget.userInputTwitter,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__youtube'),
-                  hintText: Utils.getString(context, 'item_entry__youtube'),
-                  textEditingController: widget.userInputYoutube,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__google'),
-                  hintText: Utils.getString(context, 'item_entry__google'),
-                  textEditingController: widget.userInputGoogle,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__instagram'),
-                  hintText: Utils.getString(context, 'item_entry__instagram'),
-                  textEditingController: widget.userInputInstagram,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__website'),
-                  hintText: Utils.getString(context, 'item_entry__website'),
-                  textEditingController: widget.userInputWebsite,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__pinterest'),
-                  hintText: Utils.getString(context, 'item_entry__pinterest'),
-                  textEditingController: widget.userInputPinterest,
-                ),
-                PsTextFieldWidget(
-                  titleText:
-                      Utils.getString(context, 'item_entry__whatsapp_number'),
-                  hintText:
-                      Utils.getString(context, 'item_entry__whatsapp_number'),
-                  textEditingController: widget.userInputWhatsappNumber,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__messenger'),
-                  hintText: Utils.getString(context, 'item_entry__messenger'),
-                  textEditingController: widget.userInputMessenger,
-                ),
-                const SizedBox(height: PsDimens.space8)
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: PsDimens.space16,
-                right: PsDimens.space16,
-                bottom: PsDimens.space8,
-                top: PsDimens.space8),
-            child: Text(
-              Utils.getString(context, 'item_entry__policy'),
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
-              maxLines: 1,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(PsDimens.space12),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 0.5),
-                borderRadius: BorderRadius.circular(PsDimens.space16)),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: PsDimens.space8),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(
-                      context, 'item_entry__terms_and_conditions'),
-                  height: PsDimens.space120,
-                  hintText: Utils.getString(
-                      context, 'item_entry__terms_and_conditions'),
-                  textEditingController: widget.userInputTermsAndConditions,
-                ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(
-                      context, 'item_entry__cancelation_policy'),
-                  height: PsDimens.space120,
-                  hintText: Utils.getString(
-                      context, 'item_entry__cancelation_policy'),
-                  textEditingController: widget.userInputCancelationPolicy,
-                ),
-                PsTextFieldWidget(
-                  titleText:
-                      Utils.getString(context, 'item_entry__additional_info'),
-                  height: PsDimens.space120,
-                  hintText:
-                      Utils.getString(context, 'item_entry__additional_info'),
-                  // textAboutMe: true,
-                  textEditingController: widget.userInputAdditionalInfo,
-                ),
-                const SizedBox(height: PsDimens.space8)
-              ],
-            ),
-          ),
-          if (flag == PsConst.ADD_NEW_ITEM)
-            Container()
-          else
-            Container(
-              child: Column(
-                children: <Widget>[
-                  if (widget.galleryProvider.galleryList.data.isNotEmpty)
-                    _ImageGridWidget(
-                      galleryProvider: widget.galleryProvider,
-                      itemId: itemId,
-                      item: widget.item,
-                      isPro: isPromotion,
-                    )
-                  else
-                    Text(
-                      Utils.getString(context, 'item_entry__no_image_uploaded'),
-                      textAlign: TextAlign.start,
-                      style: Theme.of(context)
-                          .textTheme
-                          .caption
-                          .copyWith(color: Colors.blue),
-                    ),
-                  _UploadImgeButtonWidget(
-                    itemId: itemId,
-                    isPromotion: widget.isPromotion,
-                    galleryProvider: widget.galleryProvider,
-                  )
-                ],
               ),
-            ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: PsDimens.space16,
-                right: PsDimens.space16,
-                bottom: PsDimens.space8,
-                top: PsDimens.space8),
-            child: Text(
-              Utils.getString(context, 'item_entry__pin_location'),
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
-              maxLines: 1,
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(PsDimens.space12),
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey, width: 0.5),
-                borderRadius: BorderRadius.circular(PsDimens.space16)),
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: PsDimens.space8),
-                if (!PsConfig.isUseGoogleMap)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8, left: 8),
-                    child: Container(
-                      height: 250,
-                      child: FlutterMap(
-                        mapController: widget.mapController,
-                        options: MapOptions(
-                            center: widget.latLng,
-                            //LatLng(51.5, -0.09), //LatLng(45.5231, -122.6765),
-                            zoom: widget.zoom,
-                            //10.0,
-                            onTap: (LatLng latLngr) {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              _handleTap(_latlng, widget.mapController);
-                            }),
-                        layers: <LayerOptions>[
-                          TileLayerOptions(
-                            urlTemplate:
-                                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              Container(
+                margin: const EdgeInsets.all(PsDimens.space12),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 0.5),
+                    borderRadius: BorderRadius.circular(PsDimens.space16)),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: PsDimens.space8),
+                    PsDropdownBaseWithControllerWidget(
+                      title:
+                          Utils.getString(context, 'edit_profile__city_name'),
+                      textEditingController: widget.cityController,
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        final ItemEntryProvider provider =
+                            Provider.of<ItemEntryProvider>(context,
+                                listen: false);
+
+                        final dynamic cityResult = await Navigator.pushNamed(
+                            context, RoutePaths.cityList,
+                            arguments: widget.cityController.text);
+
+                        if (cityResult != null && cityResult is City) {
+                          provider.cityId = cityResult.id;
+                          widget.cityController.text = cityResult.name;
+                          // provider.subCategoryId = '';
+
+                          setState(() {
+                            widget.cityController.text = cityResult.name;
+                          });
+                        }
+                      },
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__item_name'),
+                      textAboutMe: false,
+                      hintText:
+                          Utils.getString(context, 'item_entry__item_name'),
+                      textEditingController: widget.userInputItemName,
+                    ),
+                    PsDropdownBaseWithControllerWidget(
+                      title:
+                          Utils.getString(context, 'item_entry__category_name'),
+                      textEditingController: widget.categoryController,
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        final ItemEntryProvider provider =
+                            Provider.of<ItemEntryProvider>(context,
+                                listen: false);
+
+                        final dynamic categoryResult =
+                            await Navigator.pushNamed(
+                                context, RoutePaths.searchCategory,
+                                arguments: widget.categoryController.text);
+
+                        if (categoryResult != null &&
+                            categoryResult is Category) {
+                          provider.categoryId = categoryResult.id;
+                          widget.categoryController.text = categoryResult.name;
+                          provider.subCategoryId = '';
+
+                          setState(() {
+                            widget.categoryController.text =
+                                categoryResult.name;
+                            widget.subCategoryController.text = '';
+                          });
+                        }
+                      },
+                    ),
+                    PsDropdownBaseWithControllerWidget(
+                        title: Utils.getString(
+                            context, 'item_entry__sub_category_name'),
+                        textEditingController: widget.subCategoryController,
+                        onTap: () async {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          final ItemEntryProvider provider =
+                              Provider.of<ItemEntryProvider>(context,
+                                  listen: false);
+                          if (provider.categoryId != '') {
+                            final dynamic subCategoryResult =
+                                await Navigator.pushNamed(
+                                    context, RoutePaths.searchSubCategory,
+                                    arguments: SubCategoryIntentHolder(
+                                        categoryId: provider.categoryId,
+                                        subCategoryName:
+                                            widget.subCategoryController.text));
+                            if (subCategoryResult != null &&
+                                subCategoryResult is SubCategory) {
+                              provider.subCategoryId = subCategoryResult.id;
+
+                              widget.subCategoryController.text =
+                                  subCategoryResult.name;
+                            }
+                          } else {
+                            showDialog<dynamic>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return ErrorDialog(
+                                    message: Utils.getString(context,
+                                        'home_search__choose_category_first'),
+                                  );
+                                });
+                            const ErrorDialog(message: 'Choose Category first');
+                          }
+                        }),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(
+                          context, 'item_entry__search_tags_keyword'),
+                      textAboutMe: false,
+                      textEditingController: widget.userInputSearchTagsKeyword,
+                    ),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(
+                          context, 'item_entry__item_highlight_info'),
+                      height: PsDimens.space120,
+                      textAboutMe: true,
+                      keyboardType: TextInputType.multiline,
+                      textEditingController:
+                          widget.userInputItemHighLightInformation,
+                    ),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(
+                          context, 'item_entry__item_description'),
+                      height: PsDimens.space120,
+                      textAboutMe: true,
+                      keyboardType: TextInputType.multiline,
+                      textEditingController: widget.userInputItemDescription,
+                    ),
+                    PsDropdownBaseWithControllerWidget(
+                        title: Utils.getString(context, 'item_entry__status'),
+                        textEditingController: widget.statusController,
+                        onTap: () async {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          final ItemEntryProvider provider =
+                              Provider.of<ItemEntryProvider>(context,
+                                  listen: false);
+
+                          final dynamic statusResult =
+                              await Navigator.pushNamed(
+                                  context, RoutePaths.statusList,
+                                  arguments: widget.statusController.text);
+
+                          if (statusResult != null && statusResult is Status) {
+                            provider.statusId = statusResult.id;
+                            widget.statusController.text = statusResult.title;
+                            // provider.subCategoryId = '';
+
+                            setState(() {
+                              widget.statusController.text = statusResult.title;
+                            });
+                          }
+                        }),
+                    Row(
+                      children: <Widget>[
+                        Theme(
+                          data: ThemeData(unselectedWidgetColor: Colors.grey),
+                          child: Checkbox(
+                            activeColor: PsColors.mainColor,
+                            value: widget.provider.isFeaturedCheckBoxSelect,
+                            onChanged: (bool value) {
+                              setState(() {
+                                widget.provider.isFeaturedCheckBoxSelect =
+                                    value;
+                                if (widget.provider.isFeaturedCheckBoxSelect) {
+                                  widget.provider.isFeatured = '1';
+                                  isFeatured = '1';
+                                  isFirstTime = false;
+                                } else {
+                                  widget.provider.isFeatured = '0';
+                                  isFeatured = '0';
+                                  isFirstTime = false;
+                                }
+                              });
+                            },
                           ),
-                          MarkerLayerOptions(markers: <Marker>[
-                            Marker(
-                              width: 80.0,
-                              height: 80.0,
-                              point: _latlng,
-                              builder: (BuildContext ctx) => Container(
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.location_on,
-                                    color: PsColors.mainColor,
-                                  ),
-                                  iconSize: 45,
-                                  onPressed: () async {
-                                    final dynamic itemLocationResult =
-                                        await Navigator.pushNamed(
-                                            context, RoutePaths.mapPin,
-                                            arguments: MapPinIntentHolder(
-                                                flag: PsConst.PIN_MAP,
-                                                mapLat:
-                                                    widget.valueHolder.cityLat,
-                                                mapLng: widget
-                                                    .valueHolder.cityLng));
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            child: Text(
+                                Utils.getString(
+                                    context, 'item_entry__is_featured'),
+                                style: Theme.of(context).textTheme.bodyText1),
+                            onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: PsDimens.space8)
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: PsDimens.space16,
+                    right: PsDimens.space16,
+                    bottom: PsDimens.space8,
+                    top: PsDimens.space8),
+                child: Text(
+                  Utils.getString(context, 'item_entry__schedule'),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  maxLines: 1,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(PsDimens.space12),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 0.5),
+                    borderRadius: BorderRadius.circular(PsDimens.space16)),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: PsDimens.space8),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__open_time'),
+                      hintText:
+                          Utils.getString(context, 'item_entry__open_time'),
+                      textEditingController: widget.userInputOpenTime,
+                      onTap: () async {
+                        print('Hello');
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        final TimeOfDay timeOfDay = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                          builder: (BuildContext context, Widget child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context)
+                                  .copyWith(alwaysUse24HourFormat: true),
+                              child: child,
+                            );
+                          },
+                        );
 
-                                    if (itemLocationResult != null &&
-                                        itemLocationResult
-                                            is MapPinCallBackHolder) {
-                                      //
-                                      setState(() {
-                                        _latlng = itemLocationResult.latLng;
+                        if (timeOfDay != null) {
+                          widget.provider.openingHour =
+                              Utils.getTimeOfDayformat(timeOfDay);
+                          // Utils.getTimeOfDayformat(timeOfDay);
+                        }
+                        setState(() {
+                          widget.userInputOpenTime.text =
+                              widget.provider.openingHour;
+                        });
+                      },
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__close_time'),
+                      hintText:
+                          Utils.getString(context, 'item_entry__close_time'),
+                      textEditingController: widget.userInputCloseTime,
+                      onTap: () async {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        final TimeOfDay timeOfDay = await showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay.now(),
+                          builder: (BuildContext context, Widget child) {
+                            return MediaQuery(
+                              data: MediaQuery.of(context)
+                                  .copyWith(alwaysUse24HourFormat: true),
+                              child: child,
+                            );
+                          },
+                        );
 
-                                        widget.mapController
-                                            .move(_latlng, widget.zoom);
+                        if (timeOfDay != null) {
+                          widget.provider.closingHour =
+                              Utils.getTimeOfDayformat(timeOfDay);
+                          // Utils.getTimeOfDayformat(timeOfDay);
+                        }
+                        setState(() {
+                          widget.userInputCloseTime.text =
+                              widget.provider.closingHour;
+                        });
+                      },
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__time_remark'),
+                      height: PsDimens.space120,
+                      hintText:
+                          Utils.getString(context, 'item_entry__time_remark'),
+                      textAboutMe: true,
+                      textEditingController: widget.userInputTimeRemark,
+                    ),
+                    const SizedBox(height: PsDimens.space8)
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: PsDimens.space16,
+                    right: PsDimens.space16,
+                    bottom: PsDimens.space8,
+                    top: PsDimens.space8),
+                child: Text(
+                  Utils.getString(context, 'item_entry__contact'),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  maxLines: 1,
+                ),
+              ),
 
-                                        widget.userInputLattitude.text =
-                                            itemLocationResult.latLng.latitude
-                                                .toString();
-                                        widget.userInputLongitude.text =
-                                            itemLocationResult.latLng.longitude
-                                                .toString();
+              Container(
+                margin: const EdgeInsets.all(PsDimens.space12),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 0.5),
+                    borderRadius: BorderRadius.circular(PsDimens.space16)),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: PsDimens.space8),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__phone_1'),
+                      keyboardType: TextInputType.phone,
+                      hintText: Utils.getString(context, 'item_entry__phone_1'),
+                      textEditingController: widget.userInputPhone1,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__phone_2'),
+                      keyboardType: TextInputType.phone,
+                      hintText: Utils.getString(context, 'item_entry__phone_2'),
+                      textEditingController: widget.userInputPhone2,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__phone_3'),
+                      keyboardType: TextInputType.phone,
+                      hintText: Utils.getString(context, 'item_entry__phone_3'),
+                      textEditingController: widget.userInputPhone3,
+                    ),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(context, 'item_entry__email'),
+                      keyboardType: TextInputType.emailAddress,
+                      hintText: Utils.getString(context, 'item_entry__email'),
+                      textEditingController: widget.userInputEmail,
+                    ),
 
-                                        widget.valueHolder.cityLat =
-                                            widget.userInputLattitude.text;
-                                        widget.valueHolder.cityLng =
-                                            widget.userInputLongitude.text;
-                                      });
-                                    }
-                                  },
-                                ),
+                    Container(
+                      height: widget.applicationBloc.searchResults == null ||
+                          widget.applicationBloc.searchResults.length == 0
+                          ? 0
+                          : 300,
+                      child: Stack(
+                        children: [
+                          if (widget.applicationBloc.searchResults != null &&
+                              widget.applicationBloc.searchResults.length != 0)
+                            Container(
+                                height: 300.0,
+                                margin: EdgeInsets.symmetric(horizontal: 16),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey, width: 0.5),
+                                    borderRadius: BorderRadius.circular(PsDimens.space16),
+                                    color: Colors.black.withOpacity(.6),
+                                    backgroundBlendMode: BlendMode.darken),),
+                          if (widget.applicationBloc.searchResults != null)
+                            Container(
+                              height: 300.0,
+                              margin: EdgeInsets.symmetric(horizontal: 16),
+                              child: ListView.builder(
+                                  itemCount:
+                                  widget.applicationBloc.searchResults.length,
+
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      title: Text(
+                                        widget.applicationBloc.searchResults[index]
+                                            .description,
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      onTap: () {
+                                        widget.applicationBloc.setSelectedLocation(
+                                            widget.applicationBloc
+                                                .searchResults[index].placeId);
+                                        // setState(() {
+                                        //
+                                        // });
+                                      },
+                                    );
+                                  }),
+                            ),
+                        ],
+                      ),
+                    ),//Autocomplete results
+                    Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Stack(
+                          children: [
+                            PsTextFieldWidget(
+                              titleText:
+                              Utils.getString(context, 'item_entry__address'),
+                              keyboardType: TextInputType.streetAddress,
+                              hintText:
+                              Utils.getString(context, 'item_entry__address'),
+                              textAboutMe: true,
+                              textEditingController: _locationController,
+                              onChanged: (String value) =>
+                                  widget.applicationBloc.searchPlaces(value),
+                              onTap: () =>
+                                  widget.applicationBloc.clearSelectedLocation(),
+                              onTapMyLocation: (){
+                                final googlemap.GoogleMapController controller =
+                                    widget.googleMapController;
+
+                                controller.animateCamera(
+                                    googlemap.CameraUpdate.newCameraPosition(
+                                        googlemap.CameraPosition(
+                                            target:
+                                            googlemap.LatLng(
+                                                widget
+                                                    .applicationBloc
+                                                    .latlongLocationStatic
+                                                    .geometry
+                                                    .location
+                                                    .lat,
+                                                widget
+                                                    .applicationBloc
+                                                    .latlongLocationStatic
+                                                    .geometry
+                                                    .location
+                                                    .lng),
+                                            zoom: 14.0)));
+                                setState(() {
+                                  _locationController.text = widget
+                                      .applicationBloc.latlongLocationStatic.name;
+                                  widget.userInputLattitude.text = widget
+                                      .applicationBloc
+                                      .latlongLocationStatic
+                                      .geometry
+                                      .location
+                                      .lat
+                                      .toString();
+                                  widget.userInputLongitude.text = widget
+                                      .applicationBloc
+                                      .latlongLocationStatic
+                                      .geometry
+                                      .location
+                                      .lng
+                                      .toString();
+                                });
+                              },
+
+                            ),
+                            // TextField(
+                            //   controller: _locationController,
+                            //   decoration: InputDecoration(
+                            //     hintText: 'Address',
+                            //   ),
+                            // ),
+
+                          ],
+                        )),
+                    // PsTextFieldWidget(
+                    //   titleText:
+                    //       Utils.getString(context, 'item_entry__address'),
+                    //   keyboardType: TextInputType.streetAddress,
+                    //   height: PsDimens.space120,
+                    //   hintText: Utils.getString(context, 'item_entry__address'),
+                    //   textAboutMe: true,
+                    //   textEditingController: widget.userInputAddress,
+                    //   onTap: () async {
+                    //     _handlePressButton(widget.userInputAddress);
+                    //   },
+                    // ),
+                    const SizedBox(height: PsDimens.space8)
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: PsDimens.space16,
+                    right: PsDimens.space16,
+                    bottom: PsDimens.space8,
+                    top: PsDimens.space8),
+                child: Text(
+                  Utils.getString(context, 'item_entry__social_info'),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  maxLines: 1,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(PsDimens.space12),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 0.5),
+                    borderRadius: BorderRadius.circular(PsDimens.space16)),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: PsDimens.space8),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__facebook'),
+                      hintText:
+                          Utils.getString(context, 'item_entry__facebook'),
+                      textEditingController: widget.userInputFacebook,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__twitter'),
+                      hintText: Utils.getString(context, 'item_entry__twitter'),
+                      textEditingController: widget.userInputTwitter,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__youtube'),
+                      hintText: Utils.getString(context, 'item_entry__youtube'),
+                      textEditingController: widget.userInputYoutube,
+                    ),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(context, 'item_entry__google'),
+                      hintText: Utils.getString(context, 'item_entry__google'),
+                      textEditingController: widget.userInputGoogle,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__instagram'),
+                      hintText:
+                          Utils.getString(context, 'item_entry__instagram'),
+                      textEditingController: widget.userInputInstagram,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__website'),
+                      hintText: Utils.getString(context, 'item_entry__website'),
+                      textEditingController: widget.userInputWebsite,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__pinterest'),
+                      hintText:
+                          Utils.getString(context, 'item_entry__pinterest'),
+                      textEditingController: widget.userInputPinterest,
+                    ),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(
+                          context, 'item_entry__whatsapp_number'),
+                      hintText: Utils.getString(
+                          context, 'item_entry__whatsapp_number'),
+                      textEditingController: widget.userInputWhatsappNumber,
+                    ),
+                    PsTextFieldWidget(
+                      titleText:
+                          Utils.getString(context, 'item_entry__messenger'),
+                      hintText:
+                          Utils.getString(context, 'item_entry__messenger'),
+                      textEditingController: widget.userInputMessenger,
+                    ),
+                    const SizedBox(height: PsDimens.space8)
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: PsDimens.space16,
+                    right: PsDimens.space16,
+                    bottom: PsDimens.space8,
+                    top: PsDimens.space8),
+                child: Text(
+                  Utils.getString(context, 'item_entry__policy'),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  maxLines: 1,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(PsDimens.space12),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 0.5),
+                    borderRadius: BorderRadius.circular(PsDimens.space16)),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: PsDimens.space8),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(
+                          context, 'item_entry__terms_and_conditions'),
+                      height: PsDimens.space120,
+                      hintText: Utils.getString(
+                          context, 'item_entry__terms_and_conditions'),
+                      textEditingController: widget.userInputTermsAndConditions,
+                    ),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(
+                          context, 'item_entry__cancelation_policy'),
+                      height: PsDimens.space120,
+                      hintText: Utils.getString(
+                          context, 'item_entry__cancelation_policy'),
+                      textEditingController: widget.userInputCancelationPolicy,
+                    ),
+                    PsTextFieldWidget(
+                      titleText: Utils.getString(
+                          context, 'item_entry__additional_info'),
+                      height: PsDimens.space120,
+                      hintText: Utils.getString(
+                          context, 'item_entry__additional_info'),
+                      // textAboutMe: true,
+                      textEditingController: widget.userInputAdditionalInfo,
+                    ),
+                    const SizedBox(height: PsDimens.space8)
+                  ],
+                ),
+              ),
+              if (flag == PsConst.ADD_NEW_ITEM)
+                Container()
+              else
+                Container(
+                  child: Column(
+                    children: <Widget>[
+                      if (widget.galleryProvider.galleryList.data.isNotEmpty)
+                        _ImageGridWidget(
+                          galleryProvider: widget.galleryProvider,
+                          itemId: itemId,
+                          item: widget.item,
+                          isPro: isPromotion,
+                        )
+                      else
+                        Text(
+                          Utils.getString(
+                              context, 'item_entry__no_image_uploaded'),
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption
+                              .copyWith(color: Colors.blue),
+                        ),
+                      _UploadImgeButtonWidget(
+                        itemId: itemId,
+                        isPromotion: widget.isPromotion,
+                        galleryProvider: widget.galleryProvider,
+                      )
+                    ],
+                  ),
+                ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: PsDimens.space16,
+                    right: PsDimens.space16,
+                    bottom: PsDimens.space8,
+                    top: PsDimens.space8),
+                child: Text(
+                  Utils.getString(context, 'item_entry__pin_location'),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  maxLines: 1,
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.all(PsDimens.space12),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 0.5),
+                    borderRadius: BorderRadius.circular(PsDimens.space16)),
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: PsDimens.space8),
+                    if (!PsConfig.isUseGoogleMap)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8, left: 8),
+                        child: Container(
+                          height: 250,
+                          child: FlutterMap(
+                            mapController: widget.mapController,
+                            options: MapOptions(
+                                center: widget.latLng,
+                                //LatLng(51.5, -0.09), //LatLng(45.5231, -122.6765),
+                                zoom: widget.zoom,
+                                //10.0,
+                                onTap: (LatLng latLngr) {
+                                  FocusScope.of(context)
+                                      .requestFocus(FocusNode());
+                                  _handleTap(_latlng, widget.mapController);
+                                }),
+                            layers: <LayerOptions>[
+                              TileLayerOptions(
+                                urlTemplate:
+                                    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                               ),
-                            )
-                          ])
+                              MarkerLayerOptions(markers: <Marker>[
+                                Marker(
+                                  width: 80.0,
+                                  height: 80.0,
+                                  point: _latlng,
+                                  builder: (BuildContext ctx) => Container(
+                                    child: IconButton(
+                                      icon: Icon(
+                                        Icons.location_on,
+                                        color: PsColors.mainColor,
+                                      ),
+                                      iconSize: 45,
+                                      onPressed: () async {
+                                        final dynamic itemLocationResult =
+                                            await Navigator.pushNamed(
+                                                context, RoutePaths.mapPin,
+                                                arguments: MapPinIntentHolder(
+                                                    flag: PsConst.PIN_MAP,
+                                                    mapLat: widget
+                                                        .valueHolder.cityLat,
+                                                    mapLng: widget
+                                                        .valueHolder.cityLng));
+
+                                        if (itemLocationResult != null &&
+                                            itemLocationResult
+                                                is MapPinCallBackHolder) {
+                                          //
+                                          setState(() {
+                                            _latlng = itemLocationResult.latLng;
+
+                                            widget.mapController
+                                                .move(_latlng, widget.zoom);
+
+                                            widget.userInputLattitude.text =
+                                                itemLocationResult
+                                                    .latLng.latitude
+                                                    .toString();
+                                            widget.userInputLongitude.text =
+                                                itemLocationResult
+                                                    .latLng.longitude
+                                                    .toString();
+
+                                            widget.valueHolder.cityLat =
+                                                widget.userInputLattitude.text;
+                                            widget.valueHolder.cityLng =
+                                                widget.userInputLongitude.text;
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                )
+                              ])
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8, left: 8),
+                        child: Container(
+                          height: 250,
+                          child: googlemap.GoogleMap(
+                              onMapCreated: widget.updateMapController,
+                              initialCameraPosition: kGooglePlex,
+                              circles: <googlemap.Circle>{}
+                                ..add(googlemap.Circle(
+                                  circleId: googlemap.CircleId(
+                                      widget.userInputAddress.toString()),
+                                  center: googlemap.LatLng(
+                                      _latlng.latitude, _latlng.longitude),
+                                  radius: 50,
+                                  fillColor: Colors.blue.withOpacity(0.7),
+                                  strokeWidth: 3,
+                                  strokeColor: Colors.redAccent,
+                                )),
+                              onTap: (googlemap.LatLng latLngr) {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                                _handleGoogleMapTap(
+                                    _latlng, widget.googleMapController);
+                              }),
+                        ),
+                      ),
+                    Visibility(
+                      visible: _locationController.text.isEmpty ? false : true,
+                      child: Row(
+                        children: <Widget>[
+                          Theme(
+                            data: ThemeData(unselectedWidgetColor: Colors.grey),
+                            child: Checkbox(
+                              activeColor: PsColors.mainColor,
+                              value: widget.provider.isPromotionCheckBoxSelect,
+                              onChanged: (bool value) {
+                                setState(() {
+                                  widget.provider.isPromotionCheckBoxSelect =
+                                      value;
+                                  if (widget
+                                      .provider.isPromotionCheckBoxSelect) {
+                                    widget.provider.isPromotion = '1';
+                                    isPromotion = '1';
+                                    isFirstTime = false;
+                                  } else {
+                                    widget.provider.isPromotion = '0';
+                                    isPromotion = '0';
+                                    isFirstTime = false;
+                                  }
+                                });
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: InkWell(
+                              child: Text(
+                                  Utils.getString(
+                                      context, 'item_entry__is_promotion'),
+                                  style: Theme.of(context).textTheme.bodyText1),
+                              onTap: () {
+                                FocusScope.of(context)
+                                    .requestFocus(FocusNode());
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  )
-                else
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8, left: 8),
-                    child: Container(
-                      height: 250,
-                      child: googlemap.GoogleMap(
-                          onMapCreated: widget.updateMapController,
-                          initialCameraPosition: kGooglePlex,
-                          circles: <googlemap.Circle>{}..add(googlemap.Circle(
-                              circleId: googlemap.CircleId(
-                                  widget.userInputAddress.toString()),
-                              center: googlemap.LatLng(
-                                  _latlng.latitude, _latlng.longitude),
-                              radius: 50,
-                              fillColor: Colors.blue.withOpacity(0.7),
-                              strokeWidth: 3,
-                              strokeColor: Colors.redAccent,
-                            )),
-                          onTap: (googlemap.LatLng latLngr) {
+                    Visibility(
+                        visible: false,
+                        child: PsTextFieldWidget(
+                          titleText:
+                              Utils.getString(context, 'item_entry__latitude'),
+                          textAboutMe: false,
+                          textEditingController: widget.userInputLattitude,
+                          onTap: () {
                             FocusScope.of(context).requestFocus(FocusNode());
-                            _handleGoogleMapTap(
-                                _latlng, widget.googleMapController);
-                          }),
-                    ),
-                  ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__latitude'),
-                  textAboutMe: false,
-                  textEditingController: widget.userInputLattitude,
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
+                          },
+                        )),
+                    Visibility(
+                        visible: false,
+                        child: PsTextFieldWidget(
+                          titleText:
+                              Utils.getString(context, 'item_entry__longitude'),
+                          textAboutMe: false,
+                          textEditingController: widget.userInputLongitude,
+                          onTap: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                          },
+                        )),
+                    const SizedBox(height: PsDimens.space8),
+                  ],
                 ),
-                PsTextFieldWidget(
-                  titleText: Utils.getString(context, 'item_entry__longitude'),
-                  textAboutMe: false,
-                  textEditingController: widget.userInputLongitude,
-                  onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                ),
-                const SizedBox(height: PsDimens.space8),
-              ],
-            ),
-          ),
+              ),
 
-          _uploadItemWidget
-          // ])
-        ]);
+              _uploadItemWidget
+              // ])
+            ])
+      ],
+    );
+  }
+
+  StreamSubscription locationSubscription;
+  final _locationController = TextEditingController();
+
+  @override
+  void initState() {
+    ApplicationBloc applicationBloc =
+        Provider.of<ApplicationBloc>(context, listen: false);
+    //Listen for selected Location
+    locationSubscription =
+        applicationBloc.selectedLocation.stream.listen((place) {
+      if (place != null) {
+        _locationController.text = place.name;
+        _goToPlace(place);
+      } else
+        _locationController.text = "";
+    });
+
+    applicationBloc.bounds.stream.listen((bounds) async {
+      final googlemap.GoogleMapController controller =
+          widget.googleMapController;
+      controller
+          .animateCamera(googlemap.CameraUpdate.newLatLngBounds(bounds, 50));
+    });
+    super.initState();
+  }
+
+  Future<void> _goToPlace(Place place) async {
+    print('Go to place');
+    final googlemap.GoogleMapController controller = widget.googleMapController;
+    controller.animateCamera(
+      googlemap.CameraUpdate.newCameraPosition(
+        googlemap.CameraPosition(
+            target: googlemap.LatLng(
+                place.geometry.location.lat, place.geometry.location.lng),
+            zoom: 14.0),
+      ),
+    );
   }
 
   Future<void> _handlePressButton(TextEditingController c) async {
@@ -1516,6 +1763,68 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
       widget.userInputLattitude.text = result.latLng.latitude.toString();
       widget.userInputLongitude.text = result.latLng.longitude.toString();
     }
+  }
+
+  Widget autoComplete() {
+    // Padding(
+    //   padding: EdgeInsets.all(15.0),
+    //   child: Autocomplete<Country>(
+    //     optionsBuilder: (TextEditingValue textEditingValue) {
+    //       return countryOptions
+    //           .where((Country county) => county.name.toLowerCase()
+    //           .startsWith(textEditingValue.text.toLowerCase())
+    //       )
+    //           .toList();
+    //     },
+    //     displayStringForOption: (Country option) => option.name,
+    //     fieldViewBuilder: (
+    //         BuildContext context,
+    //         TextEditingController fieldTextEditingController,
+    //         FocusNode fieldFocusNode,
+    //         VoidCallback onFieldSubmitted
+    //         ) {
+    //       return TextField(
+    //         controller: fieldTextEditingController,
+    //         focusNode: fieldFocusNode,
+    //         style: const TextStyle(fontWeight: FontWeight.bold),
+    //       );
+    //     },
+    //     onSelected: (Country selection) {
+    //       print('Selected: ${selection.name}');
+    //     },
+    //     optionsViewBuilder: (
+    //         BuildContext context,
+    //         AutocompleteOnSelected<Country> onSelected,
+    //         Iterable<Country> options
+    //         ) {
+    //       return Align(
+    //         alignment: Alignment.topLeft,
+    //         child: Material(
+    //           child: Container(
+    //             width: 300,
+    //             color: Colors.cyan,
+    //             child: ListView.builder(
+    //               padding: EdgeInsets.all(10.0),
+    //               itemCount: options.length,
+    //               itemBuilder: (BuildContext context, int index) {
+    //                 final Country option = options.elementAt(index);
+    //
+    //                 return GestureDetector(
+    //                   onTap: () {
+    //                     onSelected(option);
+    //                   },
+    //                   child: ListTile(
+    //                     title: Text(option.name, style: const TextStyle(color: Colors.white)),
+    //                   ),
+    //                 );
+    //               },
+    //             ),
+    //           ),
+    //         ),
+    //       );
+    //     },
+    //   ),
+    // )
   }
 }
 

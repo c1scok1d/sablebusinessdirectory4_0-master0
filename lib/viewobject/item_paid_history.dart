@@ -95,7 +95,7 @@ class ItemPaidHistory extends PsObject<ItemPaidHistory> {
       data['amount'] = object.amount;
       data['payment_method'] = object.paymentMethod;
       data['trans_code'] = object.transCode;
-      data['status'] = object.status;
+      data['status'] = object.city;
       data['added_date'] = object.addedDate;
       data['added_user_id'] = object.addedUserId;
       data['updated_date'] = object.updatedDate;

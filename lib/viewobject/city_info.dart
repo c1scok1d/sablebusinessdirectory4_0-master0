@@ -89,7 +89,7 @@ class CityInfo extends PsObject<CityInfo> {
       data['lat'] = object.lat;
       data['lng'] = object.lng;
       data['added_date'] = object.addedDate;
-      data['status'] = object.status;
+      data['status'] = object.city;
       data['is_featured'] = object.isFeatured;
       data['Terms & Conditions'] = object.termsAndCondition;
       data['featured_date'] = object.featuredDate;

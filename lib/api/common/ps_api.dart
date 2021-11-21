@@ -11,7 +11,7 @@ import 'package:businesslistingapi/viewobject/common/ps_object.dart';
 
 abstract class PsApi {
   PsResource<T> psObjectConvert<T>(dynamic dataList, T data) {
-    return PsResource<T>(dataList.status, dataList.message, data);
+    return PsResource<T>(dataList.city, dataList.message, data);
   }
 
   Future<List<dynamic>> getList(String url) async {

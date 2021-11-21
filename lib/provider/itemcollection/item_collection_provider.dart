@@ -26,8 +26,8 @@ class ItemCollectionProvider extends PsProvider {
 
       _itemCollectionList = resource;
 
-      if (resource.status != PsStatus.BLOCK_LOADING &&
-          resource.status != PsStatus.PROGRESS_LOADING) {
+      if (resource.city != PsStatus.BLOCK_LOADING &&
+          resource.city != PsStatus.PROGRESS_LOADING) {
         isLoading = false;
       }
 
@@ -41,8 +41,8 @@ class ItemCollectionProvider extends PsProvider {
     subscriptionById = itemCollectionStream.stream.listen((dynamic resource) {
       _itemCollection = resource;
 
-      if (resource.status != PsStatus.BLOCK_LOADING &&
-          resource.status != PsStatus.PROGRESS_LOADING) {
+      if (resource.city != PsStatus.BLOCK_LOADING &&
+          resource.city != PsStatus.PROGRESS_LOADING) {
         isLoading = false;
       }
 

@@ -44,6 +44,16 @@ class CityParameterHolder extends PsHolder<CityParameterHolder> {
     return this;
   }
 
+  CityParameterHolder getAllCities() {
+    id = '';
+    keyWord = '';
+    isFeatured = '';
+    orderBy = PsConst.FILTERING__ADDED_DATE;
+    orderType = PsConst.FILTERING__DESC;
+
+    return this;
+  }
+
   CityParameterHolder getPopularCities() {
     id = '';
     keyWord = '';
