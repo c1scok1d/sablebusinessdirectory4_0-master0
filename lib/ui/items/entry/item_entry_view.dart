@@ -547,6 +547,16 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                       onPressed: () {},
                     );
                   });
+            } else if(widget.userInputItemName.text.length<4) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'item_upload__item_name_length'),
+                      onPressed: () {},
+                    );
+                  });
             } else if (widget.categoryController.text == null ||
                 widget.categoryController.text == '') {
               showDialog<dynamic>(
@@ -566,6 +576,86 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                     return WarningDialog(
                       message: Utils.getString(
                           context, 'item_entry__need_subcategory'),
+                      onPressed: () {},
+                    );
+                  });
+            }  else if (widget.cityController.text.isEmpty&&widget.valueHolder.cityId.isEmpty) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'item_upload__item_city_required'),
+                      onPressed: () {},
+                    );
+                  });
+            }   else if (widget.userInputEmail.text.isNotEmpty&&!widget.userInputEmail.text.contains('@')) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'Email Address is invalid'),
+                      onPressed: () {},
+                    );
+                  });
+            } else if (widget.userInputFacebook.text.isNotEmpty&&!widget.userInputFacebook.text.contains('facebook.com')) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'Facebook Address is invalid'),
+                      onPressed: () {},
+                    );
+                  });
+            }  else if (widget.userInputTwitter.text.isNotEmpty&&!widget.userInputTwitter.text.contains('twitter.com')) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'Twitter Address is invalid'),
+                      onPressed: () {},
+                    );
+                  });
+            }  else if (widget.userInputYoutube.text.isNotEmpty&&!widget.userInputYoutube.text.contains('youtube.com')) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'YouTube Address is invalid'),
+                      onPressed: () {},
+                    );
+                  });
+            }else if (widget.userInputInstagram.text.isNotEmpty&&!widget.userInputInstagram.text.contains('instagram.com')) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'Instagram Address is invalid'),
+                      onPressed: () {},
+                    );
+                  });
+            }else if (widget.userInputGoogle.text.isNotEmpty&&!widget.userInputGoogle.text.contains('google.com')) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'Google+ Address is invalid'),
+                      onPressed: () {},
+                    );
+                  });
+            }else if (widget.userInputWebsite.text.isNotEmpty&&!Uri.parse(widget.userInputWebsite.text).isAbsolute) {
+              showDialog<dynamic>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return WarningDialog(
+                      message: Utils.getString(
+                          context, 'Website Address is invalid'),
                       onPressed: () {},
                     );
                   });
@@ -1830,6 +1920,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
     //   ),
     // )
   }
+
 }
 
 class _UploadImgeButtonWidget extends StatefulWidget {

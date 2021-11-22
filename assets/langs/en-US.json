@@ -133,6 +133,8 @@
   "item_entry__longitude": "Longitude",
   "item_entry__save_btn": "SAVE",
   "item_entry__need_item_name": "Business Name is required.",
+  "item_upload__item_name_length": "Business Name must be greater than 4",
+  "item_upload__item_city_required": "Business City is required.",
   "item_entry__need_category": "Business Category is required.",
   "item_entry__need_subcategory": "Business Sub Category is required.",
   "item_entry_item_uploaded": "Business successfully saved",
