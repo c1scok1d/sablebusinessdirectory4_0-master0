@@ -1008,14 +1008,17 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                       textEditingController: widget.userInputOpenTime,
                       onTap: () async {
                         print('Hello');
+
                         FocusScope.of(context).requestFocus(FocusNode());
                         final TimeOfDay timeOfDay = await showTimePicker(
                           context: context,
+
                           initialTime: TimeOfDay.now(),
+
                           builder: (BuildContext context, Widget child) {
                             return MediaQuery(
                               data: MediaQuery.of(context)
-                                  .copyWith(alwaysUse24HourFormat: true),
+                                  .copyWith(alwaysUse24HourFormat: false),
                               child: child,
                             );
                           },
@@ -1046,7 +1049,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                           builder: (BuildContext context, Widget child) {
                             return MediaQuery(
                               data: MediaQuery.of(context)
-                                  .copyWith(alwaysUse24HourFormat: true),
+                                  .copyWith(alwaysUse24HourFormat: false),
                               child: child,
                             );
                           },
@@ -1418,6 +1421,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                         itemId: itemId,
                         isPromotion: widget.isPromotion,
                         galleryProvider: widget.galleryProvider,
+                        provider: widget.provider,
                       )
                     ],
                   ),
@@ -1834,12 +1838,14 @@ class _UploadImgeButtonWidget extends StatefulWidget {
       @required this.itemId,
       this.isPromotion,
       this.item,
-      @required this.galleryProvider})
+      @required this.galleryProvider,
+      @required this.provider})
       : super(key: key);
   final String itemId;
   final Item item;
   final String isPromotion;
   final GalleryProvider galleryProvider;
+  final ItemEntryProvider provider;
 
   @override
   __UploadImgeButtonWidgetState createState() =>
@@ -1852,6 +1858,7 @@ class __UploadImgeButtonWidgetState extends State<_UploadImgeButtonWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print('IsPromotion:${widget.provider.isPromotion}');
     if (widget.itemId == null || widget.itemId.isEmpty) {
       _itemId = widget.galleryProvider.itemId;
     } else {
@@ -1893,13 +1900,15 @@ class __UploadImgeButtonWidgetState extends State<_UploadImgeButtonWidget> {
                 titleText:
                     Utils.getString(context, 'item_entry__upload_image_btn'),
                 onPressed: () async {
+
+                  print('IsPromotion:${widget.provider.isPromotion}');
                   final dynamic retrunData = await Navigator.pushNamed(
                       context, RoutePaths.imageUpload,
                       arguments: ItemEntryImageIntentHolder(
                           flag: '',
                           itemId: _itemId,
                           item: item,
-                          isPromotion: widget.isPromotion,
+                          isPromotion: widget.provider.isPromotion,
                           provider: widget.galleryProvider));
 
                   if (retrunData != null && retrunData is List<Asset>) {
