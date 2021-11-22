@@ -15,6 +15,7 @@ class SubCategoryProvider extends PsProvider {
       : super(repo, limit) {
     _repo = repo;
     print('SubCategory Provider: $hashCode');
+    print('Repo: ${repo.toString()}');
 
     Utils.checkInternetConnectivity().then((bool onValue) {
       isConnectedToInternet = onValue;
