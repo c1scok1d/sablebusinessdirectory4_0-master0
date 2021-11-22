@@ -1,6 +1,7 @@
 class RoutePaths {
   static const String home = '/home';
   static const String introSlider = '/introSlider';
+  static const String permissionRationale = '/permissionRationale';
   static const String itemHome = '/itemHome';
   static const String force_update = '/force_update';
   static const String categoryList = '/categoryList';

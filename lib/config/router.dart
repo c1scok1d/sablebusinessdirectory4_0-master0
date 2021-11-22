@@ -1,4 +1,5 @@
 import 'package:businesslistingapi/provider/city/city_list_view.dart';
+import 'package:businesslistingapi/ui/app_loading/permission_rationale.dart';
 import 'package:flutter/material.dart';
 import 'package:businesslistingapi/constant/route_paths.dart';
 import 'package:businesslistingapi/ui/app_info/app_info_view.dart';
@@ -108,6 +109,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return PageRouteBuilder<dynamic>(
           pageBuilder: (_, Animation<double> a1, Animation<double> a2) =>
               DashboardView());
+    case '${RoutePaths.permissionRationale}':
+      return PageRouteBuilder<dynamic>(
+          pageBuilder: (_, Animation<double> a1, Animation<double> a2) =>
+              PermissionRationale());
 
     case '${RoutePaths.itemHome}':
       final Object args = settings.arguments;

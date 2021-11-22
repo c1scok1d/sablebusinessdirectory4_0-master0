@@ -1,30 +1,32 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+
+import 'package:businesslistingapi/api/common/ps_resource.dart';
+import 'package:businesslistingapi/api/common/ps_status.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
 import 'package:businesslistingapi/config/ps_config.dart';
 import 'package:businesslistingapi/constant/ps_constants.dart';
+import 'package:businesslistingapi/constant/ps_dimens.dart';
+import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/provider/app_info/app_info_provider.dart';
 import 'package:businesslistingapi/provider/clear_all/clear_all_data_provider.dart';
+import 'package:businesslistingapi/repository/app_info_repository.dart';
 import 'package:businesslistingapi/repository/clear_all_data_repository.dart';
 import 'package:businesslistingapi/ui/common/dialog/version_update_dialog.dart';
 import 'package:businesslistingapi/ui/common/dialog/warning_dialog_view.dart';
 import 'package:businesslistingapi/utils/utils.dart';
 import 'package:businesslistingapi/viewobject/common/ps_value_holder.dart';
 import 'package:businesslistingapi/viewobject/holder/app_info_parameter_holder.dart';
+import 'package:businesslistingapi/viewobject/ps_app_info.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:businesslistingapi/api/common/ps_resource.dart';
-import 'package:businesslistingapi/api/common/ps_status.dart';
-import 'package:businesslistingapi/constant/ps_dimens.dart';
-import 'package:businesslistingapi/constant/route_paths.dart';
-import 'package:businesslistingapi/provider/app_info/app_info_provider.dart';
-import 'package:businesslistingapi/repository/app_info_repository.dart';
-import 'package:businesslistingapi/viewobject/ps_app_info.dart';
 import 'package:provider/single_child_widget.dart';
 
 class AppLoadingView extends StatelessWidget {
@@ -32,7 +34,14 @@ class AppLoadingView extends StatelessWidget {
       ClearAllDataProvider clearAllDataProvider, BuildContext context) async {
     String realStartDate = '0';
     String realEndDate = '0';
-    if (await Utils.checkInternetConnectivity()) {
+    bool granted=await Permission.locationAlways.isGranted;
+    print('Granted:$granted');
+    if (!granted) {
+      Navigator.pushReplacementNamed(
+        context,
+        RoutePaths.permissionRationale,
+      );
+    } else if (await Utils.checkInternetConnectivity()) {
       if (provider.psValueHolder == null ||
           provider.psValueHolder.startDate == null) {
         realStartDate =
@@ -52,7 +61,7 @@ class AppLoadingView extends StatelessWidget {
           await provider.loadDeleteHistory(appInfoParameterHolder.toMap());
 
       if (_psAppInfo.status == PsStatus.SUCCESS) {
-       await provider.replaceDate(realStartDate, realEndDate);
+        await provider.replaceDate(realStartDate, realEndDate);
         print(Utils.getString(context, 'app_info__cancel_button_name'));
         print(Utils.getString(context, 'app_info__update_button_name'));
 
@@ -125,9 +134,9 @@ class AppLoadingView extends StatelessWidget {
           Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
               arguments: 0);
         } else {
-           Navigator.pushReplacementNamed(
-          context,
-          RoutePaths.home,
+          Navigator.pushReplacementNamed(
+            context,
+            RoutePaths.home,
           );
         }
       }
@@ -138,21 +147,20 @@ class AppLoadingView extends StatelessWidget {
       if (valueHolder.isToShowIntroSlider == true) {
         Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
             arguments: 0);
-       } else {
-           Navigator.pushReplacementNamed(
+      } else {
+        Navigator.pushReplacementNamed(
           context,
           RoutePaths.home,
-          );
-        }
+        );
+      }
     }
   }
-
 
   dynamic callLogout(
       AppInfoProvider appInfoProvider, int index, BuildContext context) async {
     // updateSelectedIndex( index);
-   await appInfoProvider.replaceLoginUserId('');
-   await appInfoProvider.replaceLoginUserName('');
+    await appInfoProvider.replaceLoginUserId('');
+    await appInfoProvider.replaceLoginUserName('');
     // await deleteTaskProvider.deleteTask();
     await FacebookLogin().logOut();
     await GoogleSignIn().signOut();
@@ -172,62 +180,54 @@ class AppLoadingView extends StatelessWidget {
       PSAppInfo psAppInfo,
       AppInfoProvider appInfoProvider,
       ClearAllDataProvider clearAllDataProvider) async {
-    // if (PsConfig.app_version != psAppInfo.psAppVersion.versionNo) {
-    //   if (psAppInfo.psAppVersion.versionNeedClearData == PsConst.ONE) {
-    //     await clearAllDataProvider.clearAllData();
-    //     checkForceUpdate(context, psAppInfo, appInfoProvider);
-    //   } else {
-    //     checkForceUpdate(context, psAppInfo, appInfoProvider);
-    //   }
-    // } else {
-     await appInfoProvider.replaceVersionForceUpdateData(false);
+    await appInfoProvider.replaceVersionForceUpdateData(false);
 
-      final PsValueHolder valueHolder =
-          Provider.of<PsValueHolder>(context, listen: false);
+    final PsValueHolder valueHolder =
+        Provider.of<PsValueHolder>(context, listen: false);
 
-      if (valueHolder.isToShowIntroSlider == true) {
-        Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
-            arguments: 0);
-      } else {
+    if (valueHolder.isToShowIntroSlider == true) {
+      Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
+          arguments: 0);
+    } else {
       Navigator.pushReplacementNamed(
         context,
         RoutePaths.home,
-        );
-      }
+      );
+    }
     // }
   }
 
-  dynamic checkForceUpdate(BuildContext context, PSAppInfo psAppInfo,
-      AppInfoProvider appInfoProvider) async {
-    if (psAppInfo.psAppVersion.versionForceUpdate == PsConst.ONE) {
-    await  appInfoProvider.replaceAppInfoData(
-          psAppInfo.psAppVersion.versionNo,
-          true,
-          psAppInfo.psAppVersion.versionTitle,
-          psAppInfo.psAppVersion.versionMessage);
-
-      Navigator.pushReplacementNamed(
-        context,
-        RoutePaths.force_update,
-        arguments: psAppInfo.psAppVersion,
-      );
-    } else if (psAppInfo.psAppVersion.versionForceUpdate == PsConst.ZERO) {
-     await appInfoProvider.replaceVersionForceUpdateData(false);
-      callVersionUpdateDialog(context, psAppInfo);
-    } else {
-      final PsValueHolder valueHolder =
-          Provider.of<PsValueHolder>(context, listen: false);
-      if (valueHolder.isToShowIntroSlider == true) {
-        Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
-            arguments: 0);
-       } else {
-           Navigator.pushReplacementNamed(
-          context,
-          RoutePaths.home,
-          );
-        }
-    }
-  }
+  // dynamic checkForceUpdate(BuildContext context, PSAppInfo psAppInfo,
+  //     AppInfoProvider appInfoProvider) async {
+  //   if (psAppInfo.psAppVersion.versionForceUpdate == PsConst.ONE) {
+  //     await appInfoProvider.replaceAppInfoData(
+  //         psAppInfo.psAppVersion.versionNo,
+  //         true,
+  //         psAppInfo.psAppVersion.versionTitle,
+  //         psAppInfo.psAppVersion.versionMessage);
+  //
+  //     Navigator.pushReplacementNamed(
+  //       context,
+  //       RoutePaths.force_update,
+  //       arguments: psAppInfo.psAppVersion,
+  //     );
+  //   } else if (psAppInfo.psAppVersion.versionForceUpdate == PsConst.ZERO) {
+  //     await appInfoProvider.replaceVersionForceUpdateData(false);
+  //     callVersionUpdateDialog(context, psAppInfo);
+  //   } else {
+  //     final PsValueHolder valueHolder =
+  //         Provider.of<PsValueHolder>(context, listen: false);
+  //     if (valueHolder.isToShowIntroSlider == true) {
+  //       Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
+  //           arguments: 0);
+  //     } else {
+  //       Navigator.pushReplacementNamed(
+  //         context,
+  //         RoutePaths.home,
+  //       );
+  //     }
+  //   }
+  // }
 
   dynamic callVersionUpdateDialog(BuildContext context, PSAppInfo psAppInfo) {
     showDialog<dynamic>(
@@ -251,12 +251,13 @@ class AppLoadingView extends StatelessWidget {
                       Provider.of<PsValueHolder>(context, listen: false);
 
                   if (valueHolder.isToShowIntroSlider == true) {
-                    Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
+                    Navigator.pushReplacementNamed(
+                        context, RoutePaths.introSlider,
                         arguments: 0);
                   } else {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    RoutePaths.home,
+                    Navigator.pushReplacementNamed(
+                      context,
+                      RoutePaths.home,
                     );
                   }
                 },
@@ -265,12 +266,13 @@ class AppLoadingView extends StatelessWidget {
                       Provider.of<PsValueHolder>(context, listen: false);
 
                   if (valueHolder.isToShowIntroSlider == true) {
-                    Navigator.pushReplacementNamed(context, RoutePaths.introSlider,
+                    Navigator.pushReplacementNamed(
+                        context, RoutePaths.introSlider,
                         arguments: 0);
                   } else {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    RoutePaths.home,
+                    Navigator.pushReplacementNamed(
+                      context,
+                      RoutePaths.home,
                     );
                   }
 
@@ -386,6 +388,7 @@ class PsButtonWidget extends StatefulWidget {
     @required this.provider,
     @required this.text,
   });
+
   final AppInfoProvider provider;
   final String text;
 
