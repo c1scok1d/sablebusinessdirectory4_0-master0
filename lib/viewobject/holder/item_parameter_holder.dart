@@ -203,6 +203,26 @@ class ItemParameterHolder extends PsHolder<dynamic> {
 
     return this;
   }
+  ItemParameterHolder getNearMeParameterHolder() {
+    keyword = '';
+    cityId = '';
+    catId = '';
+    subCatId = '';
+    isFeatured = '';
+    ratingValue = '';
+    isPromotion = '';
+    lat = '';
+    lng = '';
+    miles = '';
+    orderBy = PsConst.FILTERING__ADDED_DATE;
+    orderType = PsConst.FILTERING__DESC;
+    addedUserId = '';
+    isPaid = '';
+    itemLocationId = '';
+    itemStatusId = '1';
+
+    return this;
+  }
 
   ItemParameterHolder getTrendingParameterHolder() {
     keyword = '';

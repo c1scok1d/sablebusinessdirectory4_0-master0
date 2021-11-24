@@ -31,7 +31,7 @@ class PsNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultPhoto.imgPath == '') {
+    if (defaultPhoto==null||defaultPhoto.imgPath == '') {
       return GestureDetector(
           onTap: onTap,
           child: Image.asset(
@@ -42,12 +42,12 @@ class PsNetworkImage extends StatelessWidget {
           ));
     } else {
       final String fullImagePath =
-          '${PsConfig.ps_app_image_url}${defaultPhoto.imgPath}';
+          '${PsConfig.ps_app_image_url}${defaultPhoto==null?'':defaultPhoto.imgPath}';
       final String thumbnailImagePath =
-          '${PsConfig.ps_app_image_thumbs_url}${defaultPhoto.imgPath}';
+          '${PsConfig.ps_app_image_thumbs_url}${defaultPhoto==null?'':defaultPhoto.imgPath}';
 
       print(
-          'tag : $photoKey${PsConfig.ps_app_image_url}${defaultPhoto.imgPath}');
+          'tag : $photoKey${PsConfig.ps_app_image_url}${defaultPhoto==null?'':defaultPhoto.imgPath}');
       return PsHero(
         transitionOnUserGestures: true,
         tag: photoKey,

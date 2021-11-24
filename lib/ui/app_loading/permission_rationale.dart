@@ -1,7 +1,9 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
+import 'package:businesslistingapi/constant/ps_constants.dart';
 import 'package:businesslistingapi/constant/ps_dimens.dart';
 import 'package:businesslistingapi/constant/route_paths.dart';
+import 'package:businesslistingapi/db/common/ps_shared_preferences.dart';
 import 'package:businesslistingapi/provider/app_info/app_info_provider.dart';
 import 'package:businesslistingapi/provider/clear_all/clear_all_data_provider.dart';
 import 'package:businesslistingapi/repository/app_info_repository.dart';
@@ -134,7 +136,13 @@ class PermissionRationaleView extends State<PermissionRationale> {
                       Map<Permission, PermissionStatus> statuses = await [
                         Permission.locationAlways,
                       ].request();
-                      print(statuses[Permission.locationAlways]);
+                      if(statuses[Permission.locationAlways]==PermissionStatus.granted){
+
+                        (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                      }else{
+
+                        (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                      }
 
                       // Geofence.initialize();
                     },
@@ -150,8 +158,10 @@ class PermissionRationaleView extends State<PermissionRationale> {
                   MaterialButton(
                     height: 50,
                     minWidth: 100,
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.of(context).pop();
+
+                      (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
                       showDeniedDialog();
                     },
                     child: Text(
@@ -351,6 +361,7 @@ class PermissionRationaleView extends State<PermissionRationale> {
                                     .copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: PsColors.black,
+                                  fontSize: 14
                                     )),
                           ),
                         ),
@@ -381,6 +392,7 @@ class PermissionRationaleView extends State<PermissionRationale> {
                             onPressed: () async {
                               if(await Permission.locationAlways.isGranted){
 
+                                (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
                                 Navigator.pushReplacementNamed(
                                   context,
                                   RoutePaths.home,
@@ -393,7 +405,14 @@ class PermissionRationaleView extends State<PermissionRationale> {
                               print(permResult.toString());
                               if(permResult.isDenied){
 
+                                (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
                                 showRationale();
+                              }else if(permResult==PermissionStatus.granted){
+                                (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  RoutePaths.home,
+                                );
                               }
                             },
                             child: const Text('Begin'),

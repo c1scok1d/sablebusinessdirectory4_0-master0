@@ -38,6 +38,8 @@ abstract class PsDao<T extends PsObject<T>> {
   }
 
   Future<dynamic> insertAll(String primaryKey, List<T> objectList) async {
+    print('Cities${objectList.toList().toString()}');
+    print('Cities${objectList.length}');
     final List<String> idList = <String>[];
     final dynamic recordSnapshots = await dao.find(
       await db,

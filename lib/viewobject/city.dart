@@ -104,7 +104,7 @@ class City extends PsObject<City> {
       data['lat'] = object.lat;
       data['lng'] = object.lng;
       data['added_date'] = object.addedDate;
-      data['status'] = object.city;
+      data['status'] = object.status;
       data['is_featured'] = object.isFeatured;
       data['Terms & Conditions'] = object.termsAndCondition;
       data['featured_date'] = object.featuredDate;

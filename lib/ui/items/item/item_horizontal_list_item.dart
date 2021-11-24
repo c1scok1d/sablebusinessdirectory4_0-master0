@@ -86,7 +86,7 @@ class ItemHorizontalListItem extends StatelessWidget {
                           right: PsDimens.space8,
                           bottom: PsDimens.space12),
                       child: Text(
-                        item.city.name,
+                        item.city?.name??'',
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context)
                             .textTheme
@@ -113,9 +113,9 @@ class ItemHorizontalListItem extends StatelessWidget {
                           top: PsDimens.space4,
                           right: PsDimens.space8),
                       child: SmoothStarRating(
-                          key: Key(item.ratingDetail.totalRatingValue),
-                          rating:
-                              double.parse(item.ratingDetail.totalRatingValue),
+                          key: Key(item.ratingDetail?.totalRatingValue),
+                          rating:item.ratingDetail==null?double.parse('0'):
+                              double.parse(item.ratingDetail?.totalRatingValue)??0,
                           allowHalfRating: false,
                           isReadOnly: true,
                           onRated: (double v) async {
@@ -139,12 +139,12 @@ class ItemHorizontalListItem extends StatelessWidget {
                       child: Row(
                         children: <Widget>[
                           Text(
-                              '${item.ratingDetail.totalRatingValue} ${Utils.getString(context, 'feature_slider__rating')}',
+                              '${item.ratingDetail==null?'0':item.ratingDetail.totalRatingValue} ${Utils.getString(context, 'feature_slider__rating')}',
                               textAlign: TextAlign.start,
                               style: Theme.of(context).textTheme.caption),
                           Expanded(
                             child: Text(
-                                '( ${item.ratingDetail.totalRatingCount} ${Utils.getString(context, 'feature_slider__reviewer')} )',
+                                '( ${item.ratingDetail==null?'0':item.ratingDetail.totalRatingCount} ${Utils.getString(context, 'feature_slider__reviewer')} )',
                                 textAlign: TextAlign.start,
                                 softWrap: false,
                                 style: Theme.of(context).textTheme.caption),

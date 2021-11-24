@@ -170,7 +170,7 @@ class PsConfig {
   ///
   /// Promote Item
   ///
-  static const String PROMOTE_FIRST_CHOICE_DAY_OR_DEFAULT_DAY = '7 ';
+  static const String PROMOTE_FIRST_CHOICE_DAY_OR_DEFAULT_DAY = '365 ';
   static const String PROMOTE_SECOND_CHOICE_DAY = '14 ';
   static const String PROMOTE_THIRD_CHOICE_DAY = '30 ';
   static const String PROMOTE_FOURTH_CHOICE_DAY = '60 ';

@@ -28,8 +28,8 @@ class SubCategoryProvider extends PsProvider {
 
       _subCategoryList = resource;
 
-      if (resource.city != PsStatus.BLOCK_LOADING &&
-          resource.city != PsStatus.PROGRESS_LOADING) {
+      if (resource.status != PsStatus.BLOCK_LOADING &&
+          resource.status != PsStatus.PROGRESS_LOADING) {
         isLoading = false;
       }
 

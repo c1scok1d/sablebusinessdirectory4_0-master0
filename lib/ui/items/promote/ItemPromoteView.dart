@@ -1,10 +1,6 @@
 import 'dart:io';
 
 import 'package:braintree_payment/braintree_payment.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:flutter/material.dart';
 import 'package:businesslistingapi/api/common/ps_resource.dart';
 import 'package:businesslistingapi/api/ps_api_service.dart';
 import 'package:businesslistingapi/config/ps_colors.dart';
@@ -35,6 +31,10 @@ import 'package:businesslistingapi/viewobject/holder/item_paid_history_parameter
 import 'package:businesslistingapi/viewobject/holder/paid_history_holder.dart';
 import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:businesslistingapi/viewobject/item_paid_history.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -44,6 +44,7 @@ class ItemPromoteView extends StatefulWidget {
   const ItemPromoteView({Key key, @required this.item}) : super(key: key);
 
   final Item item;
+
   @override
   _ItemPromoteViewState createState() => _ItemPromoteViewState();
 }
@@ -86,7 +87,8 @@ class _ItemPromoteViewState extends State<ItemPromoteView>
     tokenRepository = Provider.of<TokenRepository>(context);
     userRepository = Provider.of<UserRepository>(context);
 
-    print('----------------------------------ITEM PROMOTE VIEW-----------------');
+    print(
+        '----------------------------------ITEM PROMOTE VIEW-----------------');
     return PsWidgetWithMultiProvider(
       child: MultiProvider(
         providers: <SingleChildWidget>[
@@ -201,6 +203,18 @@ class AdsStartDateDropDownWidgetState
         if (itemPaidHistoryProvider == null) {
           return Container();
         } else {
+          if (itemPaidHistoryProvider.selectedDateTime == null) {
+            itemPaidHistoryProvider.selectedDateTime = DateTime.now();
+            itemPaidHistoryProvider.selectedDate = DateFormat.yMMMMd('en_US')
+                    .format(itemPaidHistoryProvider.selectedDateTime) +
+                ' ' +
+                DateFormat.Hms('en_US')
+                    .format(itemPaidHistoryProvider.selectedDateTime);
+
+            startDateController.text = itemPaidHistoryProvider.selectedDate;
+          }
+          // itemPaidHistoryProvider.selectedDateTime==null;
+          // startDateController.text=='';
           return Column(
             children: <Widget>[
               Padding(
@@ -244,6 +258,7 @@ class AdsHowManyDayWidget extends StatefulWidget {
 
   final Item item;
   final TokenProvider tokenProvider;
+
   @override
   State<StatefulWidget> createState() {
     return AdsHowManyDayWidgetState();
@@ -263,6 +278,7 @@ class AdsHowManyDayWidgetState extends State<AdsHowManyDayWidget> {
   String startDate;
   String stripePublishableKey;
   String payStackKey;
+
   // static String text = getEnterDateCountController.text;
   @override
   Widget build(BuildContext context) {
@@ -318,7 +334,8 @@ class AdsHowManyDayWidgetState extends State<AdsHowManyDayWidget> {
               }
 
               final int resultStartTimeStamp =
-                  Utils.getTimeStampDividedByOneThousand(provider.selectedDateTime);
+                  Utils.getTimeStampDividedByOneThousand(
+                      provider.selectedDateTime);
 
               if (provider != null) {
                 final dynamic returnData = await Navigator.pushNamed(
@@ -407,7 +424,8 @@ class AdsHowManyDayWidgetState extends State<AdsHowManyDayWidget> {
               }
 
               final int reultStartTimeStamp =
-                  Utils.getTimeStampDividedByOneThousand( provider.selectedDateTime);
+                  Utils.getTimeStampDividedByOneThousand(
+                      provider.selectedDateTime);
 
               if (provider != null) {
                 final ItemPaidHistoryParameterHolder
@@ -512,7 +530,8 @@ class AdsHowManyDayWidgetState extends State<AdsHowManyDayWidget> {
               }
 
               final int resultStartTimeStamp =
-                  Utils.getTimeStampDividedByOneThousand(provider.selectedDateTime);
+                  Utils.getTimeStampDividedByOneThousand(
+                      provider.selectedDateTime);
 
               if (provider != null) {
                 final dynamic returnData = await Navigator.pushNamed(
@@ -560,7 +579,8 @@ class AdsHowManyDayWidgetState extends State<AdsHowManyDayWidget> {
             final AppInfoProvider appInfoProvider =
                 Provider.of<AppInfoProvider>(context, listen: false);
             final int reultStartTimeStamp =
-                Utils.getTimeStampDividedByOneThousand( provider.selectedDateTime);
+                Utils.getTimeStampDividedByOneThousand(
+                    provider.selectedDateTime);
 
             Future<void> _handlePaymentSuccess(
                 PaymentSuccessResponse response) async {
@@ -713,8 +733,9 @@ class AdsHowManyDayWidgetState extends State<AdsHowManyDayWidget> {
           final String currencySymbol =
               appInfoprovider.appInfo.data.currencySymbol;
 
-          final double amountByFirstChoice = double.parse(oneDay) *
-              double.parse(PsConfig.PROMOTE_FIRST_CHOICE_DAY_OR_DEFAULT_DAY);
+          const double amountByFirstChoice = 25;
+          // final double amountByFirstChoice = double.parse(oneDay) *
+          //     double.parse(PsConfig.PROMOTE_FIRST_CHOICE_DAY_OR_DEFAULT_DAY);
           final double amountBySecondChoice = double.parse(oneDay) *
               double.parse(PsConfig.PROMOTE_SECOND_CHOICE_DAY);
           final double amountByThirdChoice = double.parse(oneDay) *
@@ -812,402 +833,402 @@ class AdsHowManyDayWidgetState extends State<AdsHowManyDayWidget> {
               ),
 
               //Second Choice
-              InkWell(
-                onTap: () {
-                  getSecondChoiceDate = true;
-                  if (mounted) {
-                    setState(() {
-                      getSecondChoiceDate = true;
-                      getFirstChoiceDate = false;
-                      getThirdChoiceDate = false;
-                      getFourthChoiceDate = false;
-                      getFifthChoiceDate = false;
-                      getDefaultChoiceDate = false;
-                      getEnterDateCountController.clear();
-                      amount = amountBySecondChoice.toString();
-                      howManyDay = PsConfig.PROMOTE_SECOND_CHOICE_DAY;
-                    });
-                  }
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: PsDimens.space72,
-                  margin: const EdgeInsets.only(
-                      left: PsDimens.space12, right: PsDimens.space12),
-                  decoration: BoxDecoration(
-                    color: Utils.isLightMode(context)
-                        ? Colors.white60
-                        : Colors.black54,
-                    borderRadius: BorderRadius.circular(PsDimens.space4),
-                    border: Border.all(
-                        color: Utils.isLightMode(context)
-                            ? Colors.grey[200]
-                            : Colors.black87),
-                  ),
-                  child: Ink(
-                    color: PsColors.backgroundColor,
-                    child: Row(
-                      children: <Widget>[
-                        if (getSecondChoiceDate)
-                          Container(
-                            width: PsDimens.space4,
-                            height: double.infinity,
-                            color: PsColors.mainColor,
-                          ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(PsDimens.space8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Text(Utils.getString(context,
-                                            'item_promote__promote_for') +
-                                        PsConfig.PROMOTE_SECOND_CHOICE_DAY +
-                                        Utils.getString(context,
-                                            'item_promote__promote_for_days')),
-                                    Text(Utils.getString(
-                                            context, currencySymbol) +
-                                        Utils.getPriceFormat(
-                                            amountBySecondChoice.toString())),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: PsDimens.space12),
-                                  child: Text(
-                                      PsConfig.PROMOTE_SECOND_CHOICE_DAY +
-                                          Utils.getString(
-                                              context, 'item_promote__days')),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              // InkWell(
+              //   onTap: () {
+              //     getSecondChoiceDate = true;
+              //     if (mounted) {
+              //       setState(() {
+              //         getSecondChoiceDate = true;
+              //         getFirstChoiceDate = false;
+              //         getThirdChoiceDate = false;
+              //         getFourthChoiceDate = false;
+              //         getFifthChoiceDate = false;
+              //         getDefaultChoiceDate = false;
+              //         getEnterDateCountController.clear();
+              //         amount = amountBySecondChoice.toString();
+              //         howManyDay = PsConfig.PROMOTE_SECOND_CHOICE_DAY;
+              //       });
+              //     }
+              //   },
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width,
+              //     height: PsDimens.space72,
+              //     margin: const EdgeInsets.only(
+              //         left: PsDimens.space12, right: PsDimens.space12),
+              //     decoration: BoxDecoration(
+              //       color: Utils.isLightMode(context)
+              //           ? Colors.white60
+              //           : Colors.black54,
+              //       borderRadius: BorderRadius.circular(PsDimens.space4),
+              //       border: Border.all(
+              //           color: Utils.isLightMode(context)
+              //               ? Colors.grey[200]
+              //               : Colors.black87),
+              //     ),
+              //     child: Ink(
+              //       color: PsColors.backgroundColor,
+              //       child: Row(
+              //         children: <Widget>[
+              //           if (getSecondChoiceDate)
+              //             Container(
+              //               width: PsDimens.space4,
+              //               height: double.infinity,
+              //               color: PsColors.mainColor,
+              //             ),
+              //           Expanded(
+              //             child: Padding(
+              //               padding: const EdgeInsets.all(PsDimens.space8),
+              //               child: Row(
+              //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //                 children: <Widget>[
+              //                   Column(
+              //                     crossAxisAlignment: CrossAxisAlignment.start,
+              //                     mainAxisAlignment:
+              //                         MainAxisAlignment.spaceEvenly,
+              //                     children: <Widget>[
+              //                       Text(Utils.getString(context,
+              //                               'item_promote__promote_for') +
+              //                           PsConfig.PROMOTE_SECOND_CHOICE_DAY +
+              //                           Utils.getString(context,
+              //                               'item_promote__promote_for_days')),
+              //                       Text(Utils.getString(
+              //                               context, currencySymbol) +
+              //                           Utils.getPriceFormat(
+              //                               amountBySecondChoice.toString())),
+              //                     ],
+              //                   ),
+              //                   Padding(
+              //                     padding: const EdgeInsets.only(
+              //                         right: PsDimens.space12),
+              //                     child: Text(
+              //                         PsConfig.PROMOTE_SECOND_CHOICE_DAY +
+              //                             Utils.getString(
+              //                                 context, 'item_promote__days')),
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //           )
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
               //Third Choice
-              InkWell(
-                onTap: () {
-                  getThirdChoiceDate = true;
-                  if (mounted) {
-                    setState(() {
-                      getThirdChoiceDate = true;
-                      getFirstChoiceDate = false;
-                      getSecondChoiceDate = false;
-                      getFourthChoiceDate = false;
-                      getFifthChoiceDate = false;
-                      getDefaultChoiceDate = false;
-                      getEnterDateCountController.clear();
-                      amount = amountByThirdChoice.toString();
-                      howManyDay = PsConfig.PROMOTE_THIRD_CHOICE_DAY;
-                    });
-                  }
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: PsDimens.space72,
-                  margin: const EdgeInsets.only(
-                      left: PsDimens.space12, right: PsDimens.space12),
-                  decoration: BoxDecoration(
-                    color: Utils.isLightMode(context)
-                        ? Colors.white60
-                        : Colors.black54,
-                    borderRadius: BorderRadius.circular(PsDimens.space4),
-                    border: Border.all(
-                        color: Utils.isLightMode(context)
-                            ? Colors.grey[200]
-                            : Colors.black87),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      if (getThirdChoiceDate)
-                        Container(
-                          width: PsDimens.space4,
-                          height: double.infinity,
-                          color: PsColors.mainColor,
-                        ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(PsDimens.space8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  Text(Utils.getString(context,
-                                          'item_promote__promote_for') +
-                                      PsConfig.PROMOTE_THIRD_CHOICE_DAY +
-                                      Utils.getString(context,
-                                          'item_promote__promote_for_days')),
-                                  Text(
-                                      Utils.getString(context, currencySymbol) +
-                                          Utils.getPriceFormat(
-                                              amountByThirdChoice.toString())),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    right: PsDimens.space12),
-                                child: Text(PsConfig.PROMOTE_THIRD_CHOICE_DAY +
-                                    Utils.getString(
-                                        context, 'item_promote__days')),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              // InkWell(
+              //   onTap: () {
+              //     getThirdChoiceDate = true;
+              //     if (mounted) {
+              //       setState(() {
+              //         getThirdChoiceDate = true;
+              //         getFirstChoiceDate = false;
+              //         getSecondChoiceDate = false;
+              //         getFourthChoiceDate = false;
+              //         getFifthChoiceDate = false;
+              //         getDefaultChoiceDate = false;
+              //         getEnterDateCountController.clear();
+              //         amount = amountByThirdChoice.toString();
+              //         howManyDay = PsConfig.PROMOTE_THIRD_CHOICE_DAY;
+              //       });
+              //     }
+              //   },
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width,
+              //     height: PsDimens.space72,
+              //     margin: const EdgeInsets.only(
+              //         left: PsDimens.space12, right: PsDimens.space12),
+              //     decoration: BoxDecoration(
+              //       color: Utils.isLightMode(context)
+              //           ? Colors.white60
+              //           : Colors.black54,
+              //       borderRadius: BorderRadius.circular(PsDimens.space4),
+              //       border: Border.all(
+              //           color: Utils.isLightMode(context)
+              //               ? Colors.grey[200]
+              //               : Colors.black87),
+              //     ),
+              //     child: Row(
+              //       children: <Widget>[
+              //         if (getThirdChoiceDate)
+              //           Container(
+              //             width: PsDimens.space4,
+              //             height: double.infinity,
+              //             color: PsColors.mainColor,
+              //           ),
+              //         Expanded(
+              //           child: Padding(
+              //             padding: const EdgeInsets.all(PsDimens.space8),
+              //             child: Row(
+              //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //               children: <Widget>[
+              //                 Column(
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   mainAxisAlignment:
+              //                       MainAxisAlignment.spaceEvenly,
+              //                   children: <Widget>[
+              //                     Text(Utils.getString(context,
+              //                             'item_promote__promote_for') +
+              //                         PsConfig.PROMOTE_THIRD_CHOICE_DAY +
+              //                         Utils.getString(context,
+              //                             'item_promote__promote_for_days')),
+              //                     Text(
+              //                         Utils.getString(context, currencySymbol) +
+              //                             Utils.getPriceFormat(
+              //                                 amountByThirdChoice.toString())),
+              //                   ],
+              //                 ),
+              //                 Padding(
+              //                   padding: const EdgeInsets.only(
+              //                       right: PsDimens.space12),
+              //                   child: Text(PsConfig.PROMOTE_THIRD_CHOICE_DAY +
+              //                       Utils.getString(
+              //                           context, 'item_promote__days')),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         )
+              //       ],
+              //     ),
+              //   ),
+              // ),
 
               //Fourth Choice
-              InkWell(
-                onTap: () {
-                  getFourthChoiceDate = true;
-                  if (mounted) {
-                    setState(() {
-                      getFourthChoiceDate = true;
-                      getFirstChoiceDate = false;
-                      getSecondChoiceDate = false;
-                      getThirdChoiceDate = false;
-                      getFifthChoiceDate = false;
-                      getDefaultChoiceDate = false;
-                      getEnterDateCountController.clear();
-                      amount = amountByFourthChoice.toString();
-                      howManyDay = PsConfig.PROMOTE_FOURTH_CHOICE_DAY;
-                    });
-                  }
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: PsDimens.space72,
-                  margin: const EdgeInsets.only(
-                      left: PsDimens.space12, right: PsDimens.space12),
-                  decoration: BoxDecoration(
-                    color: Utils.isLightMode(context)
-                        ? Colors.white60
-                        : Colors.black54,
-                    borderRadius: BorderRadius.circular(PsDimens.space4),
-                    border: Border.all(
-                        color: Utils.isLightMode(context)
-                            ? Colors.grey[200]
-                            : Colors.black87),
-                  ),
-                  child: Ink(
-                    color: PsColors.backgroundColor,
-                    child: Row(
-                      children: <Widget>[
-                        if (getFourthChoiceDate)
-                          Container(
-                            width: PsDimens.space4,
-                            height: double.infinity,
-                            color: PsColors.mainColor,
-                          ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.all(PsDimens.space8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    Text(Utils.getString(context,
-                                            'item_promote__promote_for') +
-                                        PsConfig.PROMOTE_FOURTH_CHOICE_DAY +
-                                        Utils.getString(context,
-                                            'item_promote__promote_for_days')),
-                                    Text(Utils.getString(
-                                            context, currencySymbol) +
-                                        Utils.getPriceFormat(
-                                            amountByFourthChoice.toString())),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: PsDimens.space12),
-                                  child: Text(
-                                      PsConfig.PROMOTE_FOURTH_CHOICE_DAY +
-                                          Utils.getString(
-                                              context, 'item_promote__days')),
-                                ),
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              // InkWell(
+              //   onTap: () {
+              //     getFourthChoiceDate = true;
+              //     if (mounted) {
+              //       setState(() {
+              //         getFourthChoiceDate = true;
+              //         getFirstChoiceDate = false;
+              //         getSecondChoiceDate = false;
+              //         getThirdChoiceDate = false;
+              //         getFifthChoiceDate = false;
+              //         getDefaultChoiceDate = false;
+              //         getEnterDateCountController.clear();
+              //         amount = amountByFourthChoice.toString();
+              //         howManyDay = PsConfig.PROMOTE_FOURTH_CHOICE_DAY;
+              //       });
+              //     }
+              //   },
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width,
+              //     height: PsDimens.space72,
+              //     margin: const EdgeInsets.only(
+              //         left: PsDimens.space12, right: PsDimens.space12),
+              //     decoration: BoxDecoration(
+              //       color: Utils.isLightMode(context)
+              //           ? Colors.white60
+              //           : Colors.black54,
+              //       borderRadius: BorderRadius.circular(PsDimens.space4),
+              //       border: Border.all(
+              //           color: Utils.isLightMode(context)
+              //               ? Colors.grey[200]
+              //               : Colors.black87),
+              //     ),
+              //     child: Ink(
+              //       color: PsColors.backgroundColor,
+              //       child: Row(
+              //         children: <Widget>[
+              //           if (getFourthChoiceDate)
+              //             Container(
+              //               width: PsDimens.space4,
+              //               height: double.infinity,
+              //               color: PsColors.mainColor,
+              //             ),
+              //           Expanded(
+              //             child: Padding(
+              //               padding: const EdgeInsets.all(PsDimens.space8),
+              //               child: Row(
+              //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //                 children: <Widget>[
+              //                   Column(
+              //                     crossAxisAlignment: CrossAxisAlignment.start,
+              //                     mainAxisAlignment:
+              //                         MainAxisAlignment.spaceEvenly,
+              //                     children: <Widget>[
+              //                       Text(Utils.getString(context,
+              //                               'item_promote__promote_for') +
+              //                           PsConfig.PROMOTE_FOURTH_CHOICE_DAY +
+              //                           Utils.getString(context,
+              //                               'item_promote__promote_for_days')),
+              //                       Text(Utils.getString(
+              //                               context, currencySymbol) +
+              //                           Utils.getPriceFormat(
+              //                               amountByFourthChoice.toString())),
+              //                     ],
+              //                   ),
+              //                   Padding(
+              //                     padding: const EdgeInsets.only(
+              //                         right: PsDimens.space12),
+              //                     child: Text(
+              //                         PsConfig.PROMOTE_FOURTH_CHOICE_DAY +
+              //                             Utils.getString(
+              //                                 context, 'item_promote__days')),
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //           )
+              //         ],
+              //       ),
+              //     ),
+              //   ),
+              // ),
 
               //Fifth Choice
-              InkWell(
-                onTap: () {
-                  getFifthChoiceDate = true;
-                  if (mounted) {
-                    setState(() {
-                      getFifthChoiceDate = true;
-                      getFirstChoiceDate = false;
-                      getSecondChoiceDate = false;
-                      getThirdChoiceDate = false;
-                      getFourthChoiceDate = false;
-                      getDefaultChoiceDate = false;
-                    });
-                  }
-                },
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: PsDimens.space72,
-                  margin: const EdgeInsets.only(
-                      left: PsDimens.space12, right: PsDimens.space12),
-                  decoration: BoxDecoration(
-                    color: Utils.isLightMode(context)
-                        ? Colors.white60
-                        : Colors.black54,
-                    borderRadius: BorderRadius.circular(PsDimens.space4),
-                    border: Border.all(
-                        color: Utils.isLightMode(context)
-                            ? Colors.grey[200]
-                            : Colors.black87),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      if (getFifthChoiceDate)
-                        Container(
-                          width: PsDimens.space4,
-                          height: double.infinity,
-                          color: PsColors.mainColor,
-                        ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(PsDimens.space8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  Text(Utils.getString(
-                                      context, 'item_promote__customs')),
-                                  if (getEnterDateCountController.text != '' &&
-                                      double.parse(getEnterDateCountController.text) >
-                                          0.0)
-                                    Text(Utils.getString(context, currencySymbol) +
-                                        Utils.getPriceFormat((double.parse(
-                                                    getEnterDateCountController
-                                                        .text) *
-                                                double.parse(appInfoprovider
-                                                    .appInfo.data.oneDay))
-                                            .toString()))
-                                  else
-                                    Text(Utils.getString(context, currencySymbol) +
-                                        getEnterDateCountController.text)
-                                ],
-                              ),
-                              Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: PsDimens.space12),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Container(
-                                          width: PsDimens.space60,
-                                          height: PsDimens.space32,
-                                          margin: const EdgeInsets.all(2),
-                                          decoration: BoxDecoration(
-                                            color: Utils.isLightMode(context)
-                                                ? Colors.white60
-                                                : Colors.black54,
-                                            borderRadius: BorderRadius.circular(
-                                                PsDimens.space4),
-                                            border: Border.all(
-                                                color:
-                                                    Utils.isLightMode(context)
-                                                        ? Colors.grey[200]
-                                                        : Colors.black87),
-                                          ),
-                                          child: TextField(
-                                              onChanged: (String text) {
-                                                print('dddd');
-                                                if (double.parse(
-                                                        getEnterDateCountController
-                                                            .text) >
-                                                    0.0) {
-                                                  if (mounted) {
-                                                    setState(() {});
-                                                  }
-                                                }
-                                              },
-                                              onTap: () {
-                                                getFifthChoiceDate = true;
-                                                if (mounted) {
-                                                  setState(() {
-                                                    getFifthChoiceDate = true;
-                                                    getFirstChoiceDate = false;
-                                                    getSecondChoiceDate = false;
-                                                    getThirdChoiceDate = false;
-                                                    getFourthChoiceDate = false;
-                                                    getDefaultChoiceDate =
-                                                        false;
-                                                  });
-                                                }
-                                              },
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              maxLines: null,
-                                              controller:
-                                                  getEnterDateCountController,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyText1,
-                                              decoration: const InputDecoration(
-                                                contentPadding: EdgeInsets.only(
-                                                    left: PsDimens.space28,
-                                                    bottom: PsDimens.space16),
-                                                border: InputBorder.none,
-                                              ))),
-                                      Text(Utils.getString(
-                                          context, 'item_promote__days')),
-                                    ],
-                                  )),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              // InkWell(
+              //   onTap: () {
+              //     getFifthChoiceDate = true;
+              //     if (mounted) {
+              //       setState(() {
+              //         getFifthChoiceDate = true;
+              //         getFirstChoiceDate = false;
+              //         getSecondChoiceDate = false;
+              //         getThirdChoiceDate = false;
+              //         getFourthChoiceDate = false;
+              //         getDefaultChoiceDate = false;
+              //       });
+              //     }
+              //   },
+              //   child: Container(
+              //     width: MediaQuery.of(context).size.width,
+              //     height: PsDimens.space72,
+              //     margin: const EdgeInsets.only(
+              //         left: PsDimens.space12, right: PsDimens.space12),
+              //     decoration: BoxDecoration(
+              //       color: Utils.isLightMode(context)
+              //           ? Colors.white60
+              //           : Colors.black54,
+              //       borderRadius: BorderRadius.circular(PsDimens.space4),
+              //       border: Border.all(
+              //           color: Utils.isLightMode(context)
+              //               ? Colors.grey[200]
+              //               : Colors.black87),
+              //     ),
+              //     child: Row(
+              //       children: <Widget>[
+              //         if (getFifthChoiceDate)
+              //           Container(
+              //             width: PsDimens.space4,
+              //             height: double.infinity,
+              //             color: PsColors.mainColor,
+              //           ),
+              //         Expanded(
+              //           child: Padding(
+              //             padding: const EdgeInsets.all(PsDimens.space8),
+              //             child: Row(
+              //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //               children: <Widget>[
+              //                 Column(
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   mainAxisAlignment:
+              //                       MainAxisAlignment.spaceEvenly,
+              //                   children: <Widget>[
+              //                     Text(Utils.getString(
+              //                         context, 'item_promote__customs')),
+              //                     if (getEnterDateCountController.text != '' &&
+              //                         double.parse(getEnterDateCountController.text) >
+              //                             0.0)
+              //                       Text(Utils.getString(context, currencySymbol) +
+              //                           Utils.getPriceFormat((double.parse(
+              //                                       getEnterDateCountController
+              //                                           .text) *
+              //                                   double.parse(appInfoprovider
+              //                                       .appInfo.data.oneDay))
+              //                               .toString()))
+              //                     else
+              //                       Text(Utils.getString(context, currencySymbol) +
+              //                           getEnterDateCountController.text)
+              //                   ],
+              //                 ),
+              //                 Padding(
+              //                     padding: const EdgeInsets.only(
+              //                         right: PsDimens.space12),
+              //                     child: Row(
+              //                       children: <Widget>[
+              //                         Container(
+              //                             width: PsDimens.space60,
+              //                             height: PsDimens.space32,
+              //                             margin: const EdgeInsets.all(2),
+              //                             decoration: BoxDecoration(
+              //                               color: Utils.isLightMode(context)
+              //                                   ? Colors.white60
+              //                                   : Colors.black54,
+              //                               borderRadius: BorderRadius.circular(
+              //                                   PsDimens.space4),
+              //                               border: Border.all(
+              //                                   color:
+              //                                       Utils.isLightMode(context)
+              //                                           ? Colors.grey[200]
+              //                                           : Colors.black87),
+              //                             ),
+              //                             child: TextField(
+              //                                 onChanged: (String text) {
+              //                                   print('dddd');
+              //                                   if (double.parse(
+              //                                           getEnterDateCountController
+              //                                               .text) >
+              //                                       0.0) {
+              //                                     if (mounted) {
+              //                                       setState(() {});
+              //                                     }
+              //                                   }
+              //                                 },
+              //                                 onTap: () {
+              //                                   getFifthChoiceDate = true;
+              //                                   if (mounted) {
+              //                                     setState(() {
+              //                                       getFifthChoiceDate = true;
+              //                                       getFirstChoiceDate = false;
+              //                                       getSecondChoiceDate = false;
+              //                                       getThirdChoiceDate = false;
+              //                                       getFourthChoiceDate = false;
+              //                                       getDefaultChoiceDate =
+              //                                           false;
+              //                                     });
+              //                                   }
+              //                                 },
+              //                                 keyboardType:
+              //                                     TextInputType.number,
+              //                                 maxLines: null,
+              //                                 controller:
+              //                                     getEnterDateCountController,
+              //                                 style: Theme.of(context)
+              //                                     .textTheme
+              //                                     .bodyText1,
+              //                                 decoration: const InputDecoration(
+              //                                   contentPadding: EdgeInsets.only(
+              //                                       left: PsDimens.space28,
+              //                                       bottom: PsDimens.space16),
+              //                                   border: InputBorder.none,
+              //                                 ))),
+              //                         Text(Utils.getString(
+              //                             context, 'item_promote__days')),
+              //                       ],
+              //                     )),
+              //               ],
+              //             ),
+              //           ),
+              //         )
+              //       ],
+              //     ),
+              //   ),
+              // ),
               const SizedBox(height: PsDimens.space16),
-              if (appInfoprovider.appInfo.data.paypalEnable ==
-                  PsConst.PAYPAL_ENABLE)
-                paypalButtonWidget,
+              // if (appInfoprovider.appInfo.data.paypalEnable ==
+              //     PsConst.PAYPAL_ENABLE)
+              //   paypalButtonWidget,
               if (appInfoprovider.appInfo.data.stripeEnable ==
                   PsConst.STRIPE_ENABLE)
                 stripeButtonWidget,
-              if (appInfoprovider.appInfo.data.razorEnable ==
-                  PsConst.RAZOR_ENABLE)
-                razorButtonWidget,
-
-              if (appInfoprovider.appInfo.data.payStackEnable == PsConst.ONE)
-                payStackButtonWidget,
+              // if (appInfoprovider.appInfo.data.razorEnable ==
+              //     PsConst.RAZOR_ENABLE)
+              //   razorButtonWidget,
+              //
+              // if (appInfoprovider.appInfo.data.payStackEnable == PsConst.ONE)
+              //   payStackButtonWidget,
               const SizedBox(height: PsDimens.space32),
             ],
           );

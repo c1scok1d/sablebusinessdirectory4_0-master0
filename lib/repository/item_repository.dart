@@ -96,13 +96,14 @@ class ItemRepository extends PsRepository {
       double miles,
       ItemParameterHolder holder,
       {bool isLoadFromServer = true}) async {
+    print('getItemListByLoc start');
     // Server Call
     if (isConnectedToInternet) {
       final PsResource<List<Item>> _resource =
       await _psApiService.getItemListByLocation(
           holder.toMap(), limit, offset, lat, lng, miles);
 
-      print('Param Key ${_resource.toString()}');
+      print('getItemListByLoc ${_resource.toString()}');
       if (_resource.status == PsStatus.SUCCESS) {
         // Create Map List
         print('Status is success');
