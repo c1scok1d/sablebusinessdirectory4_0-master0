@@ -19,6 +19,7 @@ import 'package:businesslistingapi/provider/city/popular_city_provider.dart';
 import 'package:businesslistingapi/provider/city/recommanded_city_provider.dart';
 import 'package:businesslistingapi/provider/item/discount_item_provider.dart';
 import 'package:businesslistingapi/provider/item/feature_item_provider.dart';
+import 'package:businesslistingapi/provider/item/item_provider.dart';
 import 'package:businesslistingapi/provider/item/near_me_item_provider.dart';
 import 'package:businesslistingapi/provider/item/search_item_provider.dart';
 import 'package:businesslistingapi/provider/item/trending_item_provider.dart';
@@ -307,7 +308,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                   final bool isConnectedToIntenet = value ?? bool;
                   if (!isConnectedToIntenet) {
                     Fluttertoast.showToast(
-                        msg: 'No Internet Connectiion. Please try again !',
+                        msg: 'No Internet Connection. Please try again !',
                         toastLength: Toast.LENGTH_LONG,
                         gravity: ToastGravity.BOTTOM,
                         timeInSecForIosWeb: 1,
@@ -376,7 +377,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                       ItemParameterHolder().getTrendingParameterHolder());
                   _featuredItemProvider.resetFeatureItemList(
                       ItemParameterHolder().getFeaturedParameterHolder());
-                  _nearMeItemProvider.resetFeatureItemList(globalCoordinate);
+                  _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
                   _discountItemProvider.resetDiscountItemList(
                       ItemParameterHolder().getDiscountParameterHolder());
                   _popularCityProvider
@@ -520,8 +521,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    if(hasAlreadyListened)
-      return;
+    if (hasAlreadyListened) return;
     print('😡 initPlatform state');
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -533,7 +533,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     Geofence.requestPermissions();
     Coordinate c = await Geofence.getCurrentLocation();
     setState(() {
-      _nearMeItemProvider.resetFeatureItemList(c);
+      _nearMeItemProvider.resetNearMeItemList(c);
       globalCoordinate = c;
     });
     startBackgroundTracking(c);
@@ -543,7 +543,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     Geofence.startListeningForLocationChanges();
     if (!hasAlreadyListened) {
       Geofence.backgroundLocationUpdated.stream.listen((event) {
-
         globalCoordinate = event;
         hasAlreadyListened = true;
         // print('$TAG logging from flutter ${event.longitude}');
@@ -1238,8 +1237,14 @@ class _HomeNearMeItemHorizontalListWidget extends StatefulWidget {
 
 class __HomeNearMeItemHorizontalListWidgetState
     extends State<_HomeNearMeItemHorizontalListWidget> {
+
+  ItemRepository itemRepo;
+  PsValueHolder psValueHolder;
+
   @override
   Widget build(BuildContext context) {
+    itemRepo = Provider.of<ItemRepository>(context);
+    psValueHolder = Provider.of<PsValueHolder>(context);
     return SliverToBoxAdapter(
       child: Consumer<NearMeItemProvider>(
         builder: (BuildContext context, NearMeItemProvider itemProvider,
@@ -1292,32 +1297,90 @@ class __HomeNearMeItemHorizontalListWidgetState
                                 } else {
                                   final Item item =
                                       itemProvider.itemList.data[index];
-                                  return ItemHorizontalListItem(
-                                    coreTagKey:
-                                        itemProvider.hashCode.toString() +
-                                            item.id, //'feature',
-                                    item: itemProvider.itemList.data[index],
-                                    onTap: () async {
-                                      print(itemProvider.itemList.data[index]
-                                          .defaultPhoto.imgPath);
-                                      final ItemDetailIntentHolder holder =
-                                          ItemDetailIntentHolder(
-                                        itemId: item.id,
-                                        heroTagImage: '',
-                                        heroTagTitle: '',
-                                        heroTagOriginalPrice: '',
-                                        heroTagUnitPrice: '',
-                                      );
 
-                                      final dynamic result =
-                                          await Navigator.pushNamed(
-                                              context, RoutePaths.itemDetail,
-                                              arguments: holder);
-                                      if (result == null) {
-                                        setState(() {
-                                          itemProvider.resetFeatureItemList(
-                                              widget.globalCoordinate);
-                                        });
+                                  ItemDetailProvider itemDetailProvider = ItemDetailProvider(
+                                      repo: itemRepo,
+                                      psValueHolder: psValueHolder);
+
+                                  final String loginUserId =
+                                      Utils.checkUserLoginId(psValueHolder);
+                                  ;
+                                  print('-----------------${item.id}');
+                                  return FutureBuilder<dynamic>(
+                                    future: itemDetailProvider.loadItem(
+                                        item.id, loginUserId),
+                                    builder: (context, snapshot) {
+                                      if (itemDetailProvider != null &&
+                                          itemDetailProvider.itemDetail !=
+                                              null &&
+                                          itemDetailProvider.itemDetail.data !=
+                                              null) {
+                                        return ItemHorizontalListItem(
+                                          coreTagKey:
+                                              itemProvider.hashCode.toString() +
+                                                  item.id, //'feature',
+                                          // item: itemProvider.itemList.data[index],
+                                          item: itemDetailProvider
+                                              .itemDetail.data,
+                                          onTap: () async {
+                                            // print(itemProvider.itemList.data[index]
+                                            //     .defaultPhoto?.imgPath);
+                                            final ItemDetailIntentHolder
+                                                holder = ItemDetailIntentHolder(
+                                              itemId: item.id,
+                                              heroTagImage: '',
+                                              heroTagTitle: '',
+                                              heroTagOriginalPrice: '',
+                                              heroTagUnitPrice: '',
+                                            );
+
+                                            final dynamic result =
+                                                await Navigator.pushNamed(
+                                                    context,
+                                                    RoutePaths.itemDetail,
+                                                    arguments: holder);
+                                            if (result == null) {
+                                              setState(() {
+                                                itemProvider
+                                                    .resetNearMeItemList(widget
+                                                        .globalCoordinate);
+                                              });
+                                            }
+                                          },
+                                        );
+                                      } else {
+                                        return ItemHorizontalListItem(
+                                          coreTagKey:
+                                          itemProvider.hashCode.toString() +
+                                              item.id, //'feature',
+                                          // item: itemProvider.itemList.data[index],
+                                          item: item,
+                                          onTap: () async {
+                                            // print(itemProvider.itemList.data[index]
+                                            //     .defaultPhoto?.imgPath);
+                                            final ItemDetailIntentHolder
+                                            holder = ItemDetailIntentHolder(
+                                              itemId: item.id,
+                                              heroTagImage: '',
+                                              heroTagTitle: '',
+                                              heroTagOriginalPrice: '',
+                                              heroTagUnitPrice: '',
+                                            );
+
+                                            final dynamic result =
+                                            await Navigator.pushNamed(
+                                                context,
+                                                RoutePaths.itemDetail,
+                                                arguments: holder);
+                                            if (result == null) {
+                                              setState(() {
+                                                itemProvider
+                                                    .resetNearMeItemList(widget
+                                                    .globalCoordinate);
+                                              });
+                                            }
+                                          },
+                                        );
                                       }
                                     },
                                   );

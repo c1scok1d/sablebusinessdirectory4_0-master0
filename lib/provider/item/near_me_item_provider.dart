@@ -103,7 +103,7 @@ class NearMeItemProvider extends PsProvider {
     }
   }
 
-  Future<void> resetFeatureItemList(Coordinate c) async {
+  Future<void> resetNearMeItemList(Coordinate c) async {
     isConnectedToInternet = await Utils.checkInternetConnectivity();
 
     updateOffset(0);

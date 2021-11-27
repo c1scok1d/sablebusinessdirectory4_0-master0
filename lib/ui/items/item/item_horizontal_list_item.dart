@@ -55,7 +55,7 @@ class ItemHorizontalListItem extends StatelessWidget {
                             height: double.infinity,
                             boxfit: BoxFit.cover,
                             onTap: () {
-                              Utils.psPrint(item.defaultPhoto.imgParentId);
+                              Utils.psPrint(item.defaultPhoto?.imgParentId);
                               onTap();
                             },
                           ),
