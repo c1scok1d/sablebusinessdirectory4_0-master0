@@ -139,9 +139,14 @@ class PermissionRationaleView extends State<PermissionRationale> {
                       if(statuses[Permission.locationAlways]==PermissionStatus.granted){
 
                         (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          RoutePaths.home,
+                        );
                       }else{
 
-                        (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                        (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
+                        showDeniedDialog();
                       }
 
                       // Geofence.initialize();
@@ -261,8 +266,10 @@ class PermissionRationaleView extends State<PermissionRationale> {
                   MaterialButton(
                     height: 50,
                     minWidth: 100,
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.of(context).pop();
+
+                      (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
                       Navigator.pushReplacementNamed(
                         context,
                         RoutePaths.home,
@@ -303,12 +310,12 @@ class PermissionRationaleView extends State<PermissionRationale> {
     }
     getNextImage();
 
+
+    Permission.locationWhenInUse.request().then((value){
+      print(value);
+    });
     // final dynamic data = EasyLocalizationProvider.of(context).data;
-    return
-        // EasyLocalizationProvider(
-        //   data: data,
-        //   child:
-        MultiProvider(
+    return MultiProvider(
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<ClearAllDataProvider>(
             lazy: false,
@@ -399,15 +406,15 @@ class PermissionRationaleView extends State<PermissionRationale> {
                                 );
                                 return;
                               }
-                               PermissionStatus permResult =
-                                  await
-                                Permission.locationAlways.request();
-                              print(permResult.toString());
-                              if(permResult.isDenied){
+                               // PermissionStatus permResult =
+                               //    await
+                               //  Permission.locationAlways.request();
+                              // print(permResult.toString());
+                              if(await Permission.locationAlways.isDenied){
 
                                 (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
                                 showRationale();
-                              }else if(permResult==PermissionStatus.granted){
+                              }else if(await Permission.locationAlways.isGranted){
                                 (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
                                 Navigator.pushReplacementNamed(
                                   context,
