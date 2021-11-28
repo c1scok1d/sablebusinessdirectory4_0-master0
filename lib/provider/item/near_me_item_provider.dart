@@ -80,7 +80,7 @@ class NearMeItemProvider extends PsProvider {
         PsStatus.PROGRESS_LOADING,
         c.latitude,
         c.longitude,
-        100,
+        20,
         ItemParameterHolder().getSearchParameterHolder());
   }
 
@@ -98,7 +98,7 @@ class NearMeItemProvider extends PsProvider {
           PsStatus.PROGRESS_LOADING,
           c.latitude,
           c.longitude,
-          100,
+          20,
           ItemParameterHolder().getSearchParameterHolder());
     }
   }
@@ -117,7 +117,7 @@ class NearMeItemProvider extends PsProvider {
         PsStatus.PROGRESS_LOADING,
         c.latitude,
         c.longitude,
-        100,
+        20,
         ItemParameterHolder().getSearchParameterHolder());
   }
 }
