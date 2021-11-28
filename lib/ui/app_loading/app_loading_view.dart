@@ -34,14 +34,15 @@ class AppLoadingView extends StatelessWidget {
       ClearAllDataProvider clearAllDataProvider, BuildContext context) async {
     String realStartDate = '0';
     String realEndDate = '0';
-    bool granted=await Permission.locationAlways.isGranted;
+    /*bool granted=await Permission.locationAlways.isGranted;
     print('Granted:$granted');
     if (!granted) {
       Navigator.pushReplacementNamed(
         context,
         RoutePaths.permissionRationale,
       );
-    } else if (await Utils.checkInternetConnectivity()) {
+    } else */
+    if (await Utils.checkInternetConnectivity()) {
       if (provider.psValueHolder == null ||
           provider.psValueHolder.startDate == null) {
         realStartDate =
