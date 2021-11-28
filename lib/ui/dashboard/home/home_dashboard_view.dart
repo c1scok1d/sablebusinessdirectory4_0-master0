@@ -562,16 +562,16 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
           //     ? print('Distance: $dis  ==${c.latitude},${c.longitude}')
           //     : print(
           //     'Dis: $dis ==lat1:${c.latitude}==ln1:${c.longitude}==lat2:${event.latitude}==ln2:${event.longitude}');
-          if ((dis * 1000) < 5000) {
-            if (c.transitionType == GeolocationEvent.entry && !c.isNear) {
+          if ((dis * 1000) < PsConst.RADIUS) {
+            if (c.transitionType == GeolocationEvent.entry) {
               print('Entering ${c.item_name}');
               c.isNear = true;
               if (c == null) {
                 print('$TAG Could not set notification, Item not found');
                 return;
               }
-              String firstName = "";
-              SharedPreferences sharedPreferences =
+              String firstName = '';
+              final SharedPreferences sharedPreferences =
                   await PsSharedPreferences.instance.futureShared;
               try {
                 firstName = sharedPreferences
@@ -580,15 +580,32 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
               } on Exception catch (e) {
                 print('$TAG Could not get the name');
               }
+              if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
+                scheduleNotification(
+                    'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
+                    'There are '+geofences.length.toString()+' black owned businesses near you!',
+                    GeolocationEvent.entry,
+                    int.parse(c.id),
+                    paypload: c.id,
+                    item: c);
+              } else {
+                scheduleNotification(
+                    'Good news',
+                    'There are  '+geofences.length.toString()+' black owned businesses near you!',
+                    GeolocationEvent.entry,
+                    int.parse(c.id),
+                    paypload: c.id,
+                    item: c);
+              }
 
               scheduleNotification(
                   'Good news $firstName ',
-                  'There are black owned businesses near you!',
+                  'There are ' +geofences.length.toString()+ ' black owned businesses near you!',
                   GeolocationEvent.entry,
                   x,
                   paypload: c.id,
                   item: c);
-            } else if (c.transitionType == GeolocationEvent.dwell && c.isNear) {
+            } else if (c.transitionType == GeolocationEvent.dwell && c.isPromotion == '1') { // should be && c.isPaid
               print('Dwelling ${c.item_name}');
               if (c == null) {
                 print('$TAG Could not set notification, Item not found');
@@ -607,10 +624,8 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                   'Stop in and say Hi!', GeolocationEvent.dwell, x,
                   paypload: c.id, item: c);
             }
-          } else if (c.isNear) {
+          } else if (c.transitionType == GeolocationEvent.exit && c.isfeatured == '1') {
             print('Exiting ${c.item_name}');
-            c.isNear = false;
-            if (c.transitionType == GeolocationEvent.exit) {
               if (c == null) {
                 print('$TAG Could not set notification, Item not found');
                 return;
@@ -621,12 +636,10 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
               try {
                 firstName = sharedPreferences
                     .getString(PsConst.VALUE_HOLDER__USER_NAME);
+
               } on Exception catch (e) {
-                print('$TAG Could not get the name');
-              }
-              // if(!c.transitionType=)
               scheduleNotification(
-                  "$TAG Don't miss an opportunity to buy black.",
+                  "Don't miss an opportunity to buy black.",
                   'You are near ${c.item_name}',
                   GeolocationEvent.exit,
                   x,
@@ -726,13 +739,23 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         } on Exception catch (e) {
           print('$TAG Could not get the name');
         }
-        scheduleNotification(
-            'Good news $firstName ',
-            'There are black owned businesses near you!',
-            GeolocationEvent.entry,
-            int.parse(c.id),
-            paypload: c.id,
-            item: c);
+        if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
+          scheduleNotification(
+              'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
+              'There are black owned businesses near you!',
+              GeolocationEvent.entry,
+              int.parse(c.id),
+              paypload: c.id,
+              item: c);
+        } else {
+          scheduleNotification(
+              'Good news $firstName ',
+              'There are black owned businesses near you!',
+              GeolocationEvent.entry,
+              int.parse(c.id),
+              paypload: c.id,
+              item: c);
+        }
       });
     });
     Geofence.startListening(GeolocationEvent.dwell, (entry) {
@@ -758,7 +781,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     });
     Geofence.startListening(GeolocationEvent.exit, (entry) {
       print('$TAG Exiting ${entry.id}');
-      getGeoCity(entry.id).then((c) async {
+      getGeoCity(entry.id).then((SimpleGeofence c) async {
         if (c == null) {
           print('$TAG Could not set notification, Item not found');
           return;
@@ -772,14 +795,24 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         } on Exception catch (e) {
           print('$TAG Could not get the name');
         }
-        // if(!c.transitionType=)
-        scheduleNotification(
-            "$TAG Don't miss an opportunity to buy black.",
-            'You are near ${c.item_name}',
-            GeolocationEvent.exit,
-            int.parse(c.id),
-            paypload: c.id,
-            item: c);
+        if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
+          scheduleNotification(
+              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) +
+                  "Don't miss an opportunity to buy black.",
+              'You are near ${c.item_name}',
+              GeolocationEvent.exit,
+              int.parse(c.id),
+              paypload: c.id,
+              item: c);
+        } else {
+          scheduleNotification(
+              "Don't miss an opportunity to buy black.",
+              'You are near ${c.item_name}',
+              GeolocationEvent.exit,
+              int.parse(c.id),
+              paypload: c.id,
+              item: c);
+        }
       });
     });
   }
@@ -867,126 +900,28 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
   Future<void> requestPermission() async {
     print('REQUESTING PERMISSION');
-    if (await Permission.locationAlways.isDenied) {
-      showDialog<void>(
-        context: context,
-        builder: (context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0)),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                      height: 60,
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(PsDimens.space8),
-                      decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5)),
-                          color: PsColors.mainColor),
-                      child: Row(
-                        children: <Widget>[
-                          const SizedBox(width: PsDimens.space4),
-                          Icon(
-                            Icons.pin_drop,
-                            color: PsColors.white,
-                          ),
-                          const SizedBox(width: PsDimens.space4),
-                          Text(
-                            'Special Permission',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              color: PsColors.white,
-                            ),
-                          ),
-                        ],
-                      )),
-                  const SizedBox(height: PsDimens.space20),
-                  Container(
-                    padding: const EdgeInsets.only(
-                        left: PsDimens.space16,
-                        right: PsDimens.space16,
-                        top: PsDimens.space8,
-                        bottom: PsDimens.space8),
-                    child: Text(
-                      'To alert you when you are near a registered business, '
-                      'this app requires special permission to access your location while working in the background.\n '
-                      'We respect user privacy. Your location will never be recorded or shared for any reason.\n'
-                      "Tap 'Deny' to proceed without receiving notification alerts.\n"
-                      "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
-                      style: Theme.of(context).textTheme.subtitle2,
-                    ),
-                  ),
-                  const SizedBox(height: PsDimens.space20),
-                  Divider(
-                    thickness: 0.5,
-                    height: 1,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  ButtonBar(
-                    children: [
-                      MaterialButton(
-                        height: 50,
-                        minWidth: 100,
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-
-                          Map<Permission, PermissionStatus> statuses = await [
-                            Permission.locationWhenInUse,
-                            Permission.locationAlways,
-                            //Permission.storage,
-                            //Permission.camera,
-                          ].request();
-                          print(statuses[Permission.locationWhenInUse]);
-                          print(statuses[Permission.locationAlways]);
-
-                          print(statuses[Permission.storage]);
-                          Geofence.initialize();
-                          // Geofence.requestPermissions();
-                        },
-                        child: Text(
-                          'Continue',
-                          style: Theme.of(context)
-                              .textTheme
-                              .button
-                              .copyWith(color: PsColors.mainColor),
-                        ),
-                      ),
-                      MaterialButton(
-                        height: 50,
-                        minWidth: 100,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          showDeniedDialog();
-                        },
-                        child: Text(
-                          'No',
-                          style: Theme.of(context)
-                              .textTheme
-                              .button
-                              .copyWith(color: PsColors.mainColor),
-                        ),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          );
-        },
-      );
-    } else {
+    if (await Permission.locationWhenInUse.isDenied){
       Map<Permission, PermissionStatus> statuses = await [
         Permission.locationWhenInUse,
-        Permission.locationAlways,
+        //Permission.locationAlways,
         //Permission.storage,
         //Permission.camera,
       ].request();
       print(statuses[Permission.locationWhenInUse]);
-      print(statuses[Permission.locationAlways]);
+      //print(statuses[Permission.locationAlways]);
+    }
+    if (await Permission.locationAlways.isDenied) {
+      Navigator.pushReplacementNamed(
+        context,
+        RoutePaths.permissionRationale,
+      );
+    } else {
+      /*Map<Permission, PermissionStatus> statuses = await [
+        Permission.locationAlways,
+        //Permission.storage,
+        //Permission.camera,
+      ].request();
+      print(statuses[Permission.locationAlways]);*/
       Geofence.initialize();
     }
   }
