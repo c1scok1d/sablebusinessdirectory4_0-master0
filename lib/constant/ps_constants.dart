@@ -51,6 +51,8 @@ class PsConst {
   static const String ZERO = '0';
   static const String THREE = '3';
 
+  static const double RADIUS = 15.0;
+
   static const String FILTERING_PRICE = 'unit_price';
 
   static const String ADD_NEW_ITEM = 'ADD_NEW_ITEM';
