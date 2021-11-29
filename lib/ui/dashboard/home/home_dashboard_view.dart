@@ -184,8 +184,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         }
       });
     }
-    // initPlatformState();
-    requestPermission();
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('launcher_icon');
@@ -233,7 +231,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     print('HOME NOW');
 
     initPlatformState();
-    // startBackgroundTracking();
     return MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<BlogProvider>(
@@ -494,7 +491,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             )));
   }
 
-  Future<void> startBackgroundTracking(Coordinate c) async {
+  Future<void> startBackgroundTracking(Coordinate globalCoordinate) async {
     print('$TAG startBackgroundTracking');
 
     final SearchItemProvider provider =
@@ -513,9 +510,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         30,
         0,
         PsStatus.PROGRESS_LOADING,
-        c.latitude,
-        c.longitude,
-        100,
+        globalCoordinate.latitude,
+        globalCoordinate.longitude,
+        PsConst.RADIUS,
         itemParameterHolder.getSearchParameterHolder());
   }
 
@@ -531,15 +528,19 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     //Will be handles by handler
     Geofence.initialize();
     Geofence.requestPermissions();
-    Coordinate c = await Geofence.getCurrentLocation();
+    Coordinate globalCoordinate = await Geofence.getCurrentLocation();
     setState(() {
-      _nearMeItemProvider.resetNearMeItemList(c);
-      globalCoordinate = c;
+      _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
+      //globalCoordinate = c;
     });
-    startBackgroundTracking(c);
-    print('$TAG Your latitude is ${c.latitude} and longitude ${c.longitude}');
+    // permission check
+    requestPermission();
+    // if permission check good start geoNotifications
+    startBackgroundTracking(globalCoordinate);
+    print('$TAG Your latitude is ${globalCoordinate.latitude} and longitude ${globalCoordinate.longitude}');
 
     // Geofence.backgroundLocationUpdated.stream;
+    //ios
     Geofence.startListeningForLocationChanges();
     if (!hasAlreadyListened) {
       Geofence.backgroundLocationUpdated.stream.listen((event) {
@@ -565,11 +566,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
           if ((dis * 1000) < PsConst.RADIUS) {
             if (c.transitionType == GeolocationEvent.entry) {
               print('Entering ${c.item_name}');
-              c.isNear = true;
-              if (c == null) {
-                print('$TAG Could not set notification, Item not found');
-                return;
-              }
+
               String firstName = '';
               final SharedPreferences sharedPreferences =
                   await PsSharedPreferences.instance.futureShared;
@@ -597,7 +594,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                     paypload: c.id,
                     item: c);
               }
-
               scheduleNotification(
                   'Good news $firstName ',
                   'There are ' +geofences.length.toString()+ ' black owned businesses near you!',
@@ -607,7 +603,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                   item: c);
             } else if (c.transitionType == GeolocationEvent.dwell && c.isPromotion == '1') { // should be && c.isPaid
               print('Dwelling ${c.item_name}');
-              if (c == null) {
+              /*if (c == null) {
                 print('$TAG Could not set notification, Item not found');
                 return;
               }
@@ -619,14 +615,15 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                     .getString(PsConst.VALUE_HOLDER__USER_NAME);
               } on Exception catch (e) {
                 print('$TAG Could not get the name');
-              }
+              } */
               scheduleNotification('You are near ${c.item_name}',
                   'Stop in and say Hi!', GeolocationEvent.dwell, x,
                   paypload: c.id, item: c);
+              c.transitionType = GeolocationEvent.dwell;
             }
           } else if (c.transitionType == GeolocationEvent.exit && c.isfeatured == '1') {
             print('Exiting ${c.item_name}');
-              if (c == null) {
+              /*if (c == null) {
                 print('$TAG Could not set notification, Item not found');
                 return;
               }
@@ -636,20 +633,19 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
               try {
                 firstName = sharedPreferences
                     .getString(PsConst.VALUE_HOLDER__USER_NAME);
-
               } on Exception catch (e) {
-              scheduleNotification(
-                  "Don't miss an opportunity to buy black.",
-                  'You are near ${c.item_name}',
-                  GeolocationEvent.exit,
-                  x,
-                  paypload: c.id,
-                  item: c);
-            }
+                print('$TAG Could not get the name');
+            } */
+            scheduleNotification(
+                "Don't miss an opportunity to buy black.",
+                'You are near ${c.item_name}',
+                GeolocationEvent.exit,
+                x,
+                paypload: c.id,
+                item: c);
+            c.transitionType = GeolocationEvent.exit;
           }
         });
-        // for (Item c in _recentCityProvider.cityList.data) {
-        // }
       });
     }
     setState(() {});
@@ -673,50 +669,53 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
   void registerGeofences(PsResource<List<Item>> event) {
     print('$TAG RegisterGeofences ${event.data.first.paidStatus}');
     for (Item i in event.data) {
-      if (i.paidStatus != null && i.paidStatus.trim() == 'Progress') {
+      if (i.isPaid == '1') {
         geofences.putIfAbsent(
             i.id,
-            () => SimpleGeofence(
-                i.id,
-                double.parse(i.lat),
-                double.parse(i.lng),
-                i.isFeatured,
-                i.isPromotion,
-                i.cityId,
-                i.name,
-                i.defaultPhoto?.imgPath,
-                5000,
-                GEOFENCE_EXPIRATION_IN_MILLISECONDS,
-                GeolocationEvent.dwell));
-      } else {
+                () =>
+                SimpleGeofence(
+                    i.id,
+                    double.parse(i.lat),
+                    double.parse(i.lng),
+                    i.isFeatured,
+                    i.isPromotion,
+                    i.cityId,
+                    i.name,
+                    i.defaultPhoto?.imgPath,
+                    5000,
+                    GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                    GeolocationEvent.dwell));
+      } else if (i.isFeatured == '1' || i.isPromotion == '1') {
         geofences.putIfAbsent(
             '${i.id}-a',
-            () => SimpleGeofence(
-                i.id,
-                double.parse(i.lat),
-                double.parse(i.lng),
-                i.isFeatured,
-                i.isPromotion,
-                i.cityId,
-                i.name,
-                i.defaultPhoto?.imgPath,
-                5000,
-                GEOFENCE_EXPIRATION_IN_MILLISECONDS,
-                GeolocationEvent.entry));
+                () =>
+                SimpleGeofence(
+                    i.id,
+                    double.parse(i.lat),
+                    double.parse(i.lng),
+                    i.isFeatured,
+                    i.isPromotion,
+                    i.cityId,
+                    i.name,
+                    i.defaultPhoto?.imgPath,
+                    5000,
+                    GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                    GeolocationEvent.entry));
         geofences.putIfAbsent(
             '${i.id}-b',
-            () => SimpleGeofence(
-                i.id,
-                double.parse(i.lat),
-                double.parse(i.lng),
-                i.isFeatured,
-                i.isPromotion,
-                i.cityId,
-                i.name,
-                i.defaultPhoto?.imgPath,
-                5000,
-                GEOFENCE_EXPIRATION_IN_MILLISECONDS,
-                GeolocationEvent.exit));
+                () =>
+                SimpleGeofence(
+                    i.id,
+                    double.parse(i.lat),
+                    double.parse(i.lng),
+                    i.isFeatured,
+                    i.isPromotion,
+                    i.cityId,
+                    i.name,
+                    i.defaultPhoto?.imgPath,
+                    5000,
+                    GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                    GeolocationEvent.exit));
       }
     }
     Geofence.removeAllGeolocations();
@@ -742,15 +741,15 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
           scheduleNotification(
               'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
-              'There are black owned businesses near you!',
+              'There are '+geofences.length.toString()+' black owned businesses near you!',
               GeolocationEvent.entry,
               int.parse(c.id),
               paypload: c.id,
               item: c);
         } else {
           scheduleNotification(
-              'Good news $firstName ',
-              'There are black owned businesses near you!',
+              'Good news',
+              'There are '+geofences.length.toString()+' black owned businesses near you!',
               GeolocationEvent.entry,
               int.parse(c.id),
               paypload: c.id,
