@@ -38,7 +38,9 @@ import 'package:businesslistingapi/ui/common/dialog/rating_dialog/style.dart';
 import 'package:businesslistingapi/ui/common/ps_admob_banner_widget.dart';
 import 'package:businesslistingapi/ui/common/ps_frame_loading_widget.dart';
 import 'package:businesslistingapi/ui/common/ps_textfield_widget_with_icon.dart';
+import 'package:businesslistingapi/ui/dashboard/core/dashboard_view.dart';
 import 'package:businesslistingapi/ui/dashboard/home/blog_slider.dart';
+import 'package:businesslistingapi/ui/items/detail/item_detail_view.dart';
 import 'package:businesslistingapi/ui/items/item/item_horizontal_list_item.dart';
 import 'package:businesslistingapi/utils/save_file.dart';
 import 'package:businesslistingapi/utils/utils.dart';
@@ -192,7 +194,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onSelectNotification: null);
+        onSelectNotification: onSelectNotification);
 
 // You can can also directly ask the permission about its status.
 //     if (await Permission.location.isRestricted) {
@@ -204,12 +206,18 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     if (context == null) {
       widget.onNotiClicked(payload);
     } else {
-      return showDialog<dynamic>(
-        context: context,
-        builder: (_) {
-          return NotiDialog(message: '$payload');
-        },
-      );
+      if(payload.contains('Item x')){
+        await Navigator.push(
+          context,
+          MaterialPageRoute<void>(builder: (context) => DashboardView()),
+        );
+      }else {
+        await Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+              builder: (context) => ItemDetailView(itemId: payload,)),
+        );
+      }
     }
   }
 
@@ -541,6 +549,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
     // Geofence.backgroundLocationUpdated.stream;
     //ios
+    bool hasDisplayedEnter=false;
+    bool hasDisplayedDwell=false;
+    bool hasDisplayedExit=false;
     Geofence.startListeningForLocationChanges();
     if (!hasAlreadyListened) {
       Geofence.backgroundLocationUpdated.stream.listen((event) {
@@ -553,12 +564,15 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
           print('$TAG Items are empty');
           return;
         }
+        int nearGeofences=0;
         int x = 0;
         geofences.forEach((key, c) async {
           x++;
           double dis = calculateDistance(
               c.latitude, c.longitude, event.latitude, event.longitude);
 
+          final SharedPreferences sharedPreferences =
+          await PsSharedPreferences.instance.futureShared;
           // dis < 1000
           //     ? print('Distance: $dis  ==${c.latitude},${c.longitude}')
           //     : print(
@@ -566,10 +580,8 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
           if ((dis * 1000) < PsConst.RADIUS) {
             if (c.transitionType == GeolocationEvent.entry) {
               print('Entering ${c.item_name}');
-
+              nearGeofences++;
               String firstName = '';
-              final SharedPreferences sharedPreferences =
-                  await PsSharedPreferences.instance.futureShared;
               try {
                 firstName = sharedPreferences
                     .getString(PsConst.VALUE_HOLDER__USER_NAME);
@@ -577,75 +589,74 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
               } on Exception catch (e) {
                 print('$TAG Could not get the name');
               }
-              if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
-                scheduleNotification(
-                    'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
-                    'There are '+geofences.length.toString()+' black owned businesses near you!',
-                    GeolocationEvent.entry,
-                    int.parse(c.id),
-                    paypload: c.id,
-                    item: c);
-              } else {
-                scheduleNotification(
-                    'Good news',
-                    'There are  '+geofences.length.toString()+' black owned businesses near you!',
-                    GeolocationEvent.entry,
-                    int.parse(c.id),
-                    paypload: c.id,
-                    item: c);
-              }
-              scheduleNotification(
-                  'Good news $firstName ',
-                  'There are ' +geofences.length.toString()+ ' black owned businesses near you!',
-                  GeolocationEvent.entry,
-                  x,
-                  paypload: c.id,
-                  item: c);
+
             } else if (c.transitionType == GeolocationEvent.dwell && c.isPromotion == '1') { // should be && c.isPaid
               print('Dwelling ${c.item_name}');
-              /*if (c == null) {
-                print('$TAG Could not set notification, Item not found');
-                return;
+              var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
+
+              final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
+              final now = DateTime.now();
+              final difference = now.difference(before).inMinutes;
+              if(difference>=15&&!hasDisplayedDwell){
+                hasDisplayedDwell=true;
+                scheduleNotification('You are near ${c.item_name}',
+                    'Stop in and say Hi!', GeolocationEvent.dwell,
+                    paypload: c.id, item: c);
               }
-              String firstName = "";
-              SharedPreferences sharedPreferences =
-                  await PsSharedPreferences.instance.futureShared;
-              try {
-                firstName = sharedPreferences
-                    .getString(PsConst.VALUE_HOLDER__USER_NAME);
-              } on Exception catch (e) {
-                print('$TAG Could not get the name');
-              } */
-              scheduleNotification('You are near ${c.item_name}',
-                  'Stop in and say Hi!', GeolocationEvent.dwell, x,
-                  paypload: c.id, item: c);
               c.transitionType = GeolocationEvent.dwell;
             }
           } else if (c.transitionType == GeolocationEvent.exit && c.isfeatured == '1') {
             print('Exiting ${c.item_name}');
-              /*if (c == null) {
-                print('$TAG Could not set notification, Item not found');
-                return;
-              }
-              String firstName = "";
-              SharedPreferences sharedPreferences =
-                  await PsSharedPreferences.instance.futureShared;
-              try {
-                firstName = sharedPreferences
-                    .getString(PsConst.VALUE_HOLDER__USER_NAME);
-              } on Exception catch (e) {
-                print('$TAG Could not get the name');
-            } */
-            scheduleNotification(
-                "Don't miss an opportunity to buy black.",
-                'You are near ${c.item_name}',
-                GeolocationEvent.exit,
-                x,
-                paypload: c.id,
-                item: c);
+
+            var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
+
+            final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
+            final now = DateTime.now();
+            final difference = now.difference(before).inMinutes;
+            if(difference>=15&&!hasDisplayedExit){
+              hasDisplayedExit=true;
+              scheduleNotification(
+                  "Don't miss an opportunity to buy black.",
+                  'You are near ${c.item_name}',
+                  GeolocationEvent.exit,
+                  paypload: c.id,
+                  item: c);
+            }
             c.transitionType = GeolocationEvent.exit;
           }
         });
+        if(!hasDisplayedEnter){
+
+          hasDisplayedEnter=true;
+          PsSharedPreferences.instance.futureShared.then((sharedPreferences) {
+
+            String firstName = '';
+            try {
+              firstName = sharedPreferences
+                  .getString(PsConst.VALUE_HOLDER__USER_NAME);
+              firstName ??= '';
+            } on Exception catch (e) {
+              print('$TAG Could not get the name');
+            }
+            if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
+              int timestamp = DateTime.now().millisecondsSinceEpoch;
+              sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
+              scheduleNotification(
+                  'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
+                  'There are '+nearGeofences.toString()+' black owned businesses near you!',
+                  GeolocationEvent.entry);
+            } else {
+              int timestamp = DateTime.now().millisecondsSinceEpoch;
+              sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
+              scheduleNotification(
+                  'Good news',
+                  'There are  '+nearGeofences.toString()+' black owned businesses near you!',
+                  GeolocationEvent.entry,);
+            }
+          });
+
+
+        }
       });
     }
     setState(() {});
@@ -738,23 +749,23 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         } on Exception catch (e) {
           print('$TAG Could not get the name');
         }
-        if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
-          scheduleNotification(
-              'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
-              'There are '+geofences.length.toString()+' black owned businesses near you!',
-              GeolocationEvent.entry,
-              int.parse(c.id),
-              paypload: c.id,
-              item: c);
-        } else {
-          scheduleNotification(
-              'Good news',
-              'There are '+geofences.length.toString()+' black owned businesses near you!',
-              GeolocationEvent.entry,
-              int.parse(c.id),
-              paypload: c.id,
-              item: c);
-        }
+        // if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
+        //   scheduleNotification(
+        //       'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
+        //       'There are '+geofences.length.toString()+' black owned businesses near you!',
+        //       GeolocationEvent.entry,
+        //       int.parse(c.id),
+        //       paypload: c.id,
+        //       item: c);
+        // } else {
+        //   scheduleNotification(
+        //       'Good news',
+        //       'There are '+geofences.length.toString()+' black owned businesses near you!',
+        //       GeolocationEvent.entry,
+        //       int.parse(c.id),
+        //       paypload: c.id,
+        //       item: c);
+        // }
       });
     });
     Geofence.startListening(GeolocationEvent.dwell, (entry) {
@@ -773,9 +784,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         } on Exception catch (e) {
           print('$TAG Could not get the name');
         }
-        scheduleNotification('You are near ${c.item_name}',
-            'Stop in and say Hi!', GeolocationEvent.dwell, int.parse(c.id),
-            paypload: c.id, item: c);
+        // scheduleNotification('You are near ${c.item_name}',
+        //     'Stop in and say Hi!', GeolocationEvent.dwell, int.parse(c.id),
+        //     paypload: c.id, item: c);
       });
     });
     Geofence.startListening(GeolocationEvent.exit, (entry) {
@@ -794,24 +805,24 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         } on Exception catch (e) {
           print('$TAG Could not get the name');
         }
-        if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
-          scheduleNotification(
-              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) +
-                  "Don't miss an opportunity to buy black.",
-              'You are near ${c.item_name}',
-              GeolocationEvent.exit,
-              int.parse(c.id),
-              paypload: c.id,
-              item: c);
-        } else {
-          scheduleNotification(
-              "Don't miss an opportunity to buy black.",
-              'You are near ${c.item_name}',
-              GeolocationEvent.exit,
-              int.parse(c.id),
-              paypload: c.id,
-              item: c);
-        }
+        // if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
+        //   scheduleNotification(
+        //       sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) +
+        //           "Don't miss an opportunity to buy black.",
+        //       'You are near ${c.item_name}',
+        //       GeolocationEvent.exit,
+        //       int.parse(c.id),
+        //       paypload: c.id,
+        //       item: c);
+        // } else {
+        //   scheduleNotification(
+        //       "Don't miss an opportunity to buy black.",
+        //       'You are near ${c.item_name}',
+        //       GeolocationEvent.exit,
+        //       int.parse(c.id),
+        //       paypload: c.id,
+        //       item: c);
+        // }
       });
     });
   }
@@ -819,7 +830,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
   static String TAG = 'GEOFENCES NEW:';
 
   Future<void> scheduleNotification(
-      String title, String subtitle, GeolocationEvent event, int id,
+      String title, String subtitle, GeolocationEvent event,
       {String paypload = "Item x", SimpleGeofence item}) async {
     print("$TAG scheduling one with $title and $subtitle");
     // var rng = new Random();
@@ -827,7 +838,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // Bitmap bitmap = await Bitmap.fromProvider(NetworkImage(PsConfig.ps_app_image_url+city.defaultPhoto.imgPath));
 
     Future.delayed(const Duration(seconds: 5), () {}).then((result) async {
-      if (item.imageId == null) {
+      if (item==null||item.imageId == null) {
         final androidPlatformChannelSpecifics =
             const AndroidNotificationDetails(
                 '1123', 'Geofences', 'Geofence alert',
@@ -840,7 +851,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             iOS: iOSPlatformChannelSpecifics);
         await flutterLocalNotificationsPlugin.show(
             // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
-            id,
+            1,
             title,
             subtitle,
             platformChannelSpecifics,
@@ -849,19 +860,29 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         var mfile = await SaveFile()
             .saveImage(PsConfig.ps_app_image_url + item.imageId ?? '');
         print(mfile.absolute.path);
+        var smallPictureStyleInformation = BigPictureStyleInformation(
+            FilePathAndroidBitmap(mfile.absolute.path),
+            largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
+            contentTitle: '$title',
+            htmlFormatContentTitle: true,
+            summaryText: '$subtitle',
+            hideExpandedLargeIcon: true,
+            htmlFormatSummaryText: true);
         var bigPictureStyleInformation = BigPictureStyleInformation(
             FilePathAndroidBitmap(mfile.absolute.path),
             largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
             contentTitle: '$title',
             htmlFormatContentTitle: true,
             summaryText: '$subtitle',
+            hideExpandedLargeIcon: false,
             htmlFormatSummaryText: true);
         final androidPlatformChannelSpecifics = AndroidNotificationDetails(
             '1123', 'Geofences', 'Geofence alert',
             importance: Importance.high,
             priority: Priority.high,
-            styleInformation: bigPictureStyleInformation,
+            styleInformation: event==GeolocationEvent.exit?smallPictureStyleInformation:bigPictureStyleInformation,
             largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
+
             ticker: 'ticker');
         final iOSPlatformChannelSpecifics = IOSNotificationDetails(
             attachments: <IOSNotificationAttachment>[
@@ -872,7 +893,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             iOS: iOSPlatformChannelSpecifics);
         await flutterLocalNotificationsPlugin.show(
             // rng.nextInt(100000), title, subtitle, platformChannelSpecifics,
-            id,
+            1,
             title,
             subtitle,
             platformChannelSpecifics,
