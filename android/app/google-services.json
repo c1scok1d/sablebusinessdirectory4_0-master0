@@ -14,8 +14,12 @@
       },
       "oauth_client": [
         {
-          "client_id": "142135780540-qr1vu4rnpu02dplog34672d4gftabtk6.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "142135780540-4d493n2vjotuliocsmvsd6rtqb7h6fck.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sable.businesslistingapi",
+            "certificate_hash": "3e18add8c5cd5b25c8cf060030fee46da8a55620"
+          }
         }
       ],
       "api_key": [
@@ -25,12 +29,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "142135780540-qr1vu4rnpu02dplog34672d4gftabtk6.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       },
       "admob_app_id": "ca-app-pub-2494959558505145~8609252296"
