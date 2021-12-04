@@ -1004,7 +1004,9 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                       keyboardType: TextInputType.multiline,
                       textEditingController: widget.userInputItemDescription,
                     ),
-                    PsDropdownBaseWithControllerWidget(
+                    Visibility(
+                      visible: false,
+                      child: PsDropdownBaseWithControllerWidget(
                         title: Utils.getString(context, 'item_entry__status'),
                         textEditingController: widget.statusController,
                         onTap: () async {
@@ -1028,7 +1030,10 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                             });
                           }
                         }),
-                    Row(
+                    ),
+                    Visibility(
+                      visible: false,
+                      child: Row(
                       children: <Widget>[
                         Theme(
                           data: ThemeData(unselectedWidgetColor: Colors.grey),
@@ -1064,7 +1069,7 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                           ),
                         ),
                       ],
-                    ),
+                    )),
                     const SizedBox(height: PsDimens.space8)
                   ],
                 ),
@@ -1198,21 +1203,27 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                       hintText: Utils.getString(context, 'item_entry__phone_1'),
                       textEditingController: widget.userInputPhone1,
                     ),
-                    PsTextFieldWidget(
+                    Visibility(
+                      visible: false,
+                      child: PsTextFieldWidget(
                       titleText:
                           Utils.getString(context, 'item_entry__phone_2'),
                       keyboardType: TextInputType.phone,
                       hintText: Utils.getString(context, 'item_entry__phone_2'),
                       textEditingController: widget.userInputPhone2,
                     ),
-                    PsTextFieldWidget(
+                    ),
+                    Visibility(
+                      visible: false,
+                    child: PsTextFieldWidget(
                       titleText:
                           Utils.getString(context, 'item_entry__phone_3'),
                       keyboardType: TextInputType.phone,
                       hintText: Utils.getString(context, 'item_entry__phone_3'),
                       textEditingController: widget.userInputPhone3,
                     ),
-                    PsTextFieldWidget(
+                    ),
+                     PsTextFieldWidget(
                       titleText: Utils.getString(context, 'item_entry__email'),
                       keyboardType: TextInputType.emailAddress,
                       hintText: Utils.getString(context, 'item_entry__email'),
@@ -1333,19 +1344,38 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                             // ),
 
                           ],
-                        )),
-                    // PsTextFieldWidget(
-                    //   titleText:
-                    //       Utils.getString(context, 'item_entry__address'),
-                    //   keyboardType: TextInputType.streetAddress,
-                    //   height: PsDimens.space120,
-                    //   hintText: Utils.getString(context, 'item_entry__address'),
-                    //   textAboutMe: true,
-                    //   textEditingController: widget.userInputAddress,
-                    //   onTap: () async {
-                    //     _handlePressButton(widget.userInputAddress);
-                    //   },
-                    // ),
+                        ),
+                    ),
+                    Visibility(
+                      visible: _locationController.text.isEmpty ? false : true,
+                      child: Padding(
+                      padding: const EdgeInsets.only(right: 8, left: 8),
+                      child: Container(
+                        height: 250,
+                        child: googlemap.GoogleMap(
+                            onMapCreated: widget.updateMapController,
+                            initialCameraPosition: kGooglePlex,
+                            circles: <googlemap.Circle>{}
+                              ..add(googlemap.Circle(
+                                circleId: googlemap.CircleId(
+                                    widget.userInputAddress.toString()),
+                                center: googlemap.LatLng(
+                                    _latlng.latitude, _latlng.longitude),
+                                //radius: 50,
+                                //fillColor: Colors.blue.withOpacity(0.7),
+                                //strokeWidth: 3,
+                                //strokeColor: Colors.redAccent,
+                              )),
+                            onTap: (googlemap.LatLng latLngr) {
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
+                              _handleGoogleMapTap(
+                                  _latlng, widget.googleMapController);
+                              print(_latlng);
+                            }),
+                      ),
+                    ),
+                    ),
                     const SizedBox(height: PsDimens.space8)
                   ],
                 ),
@@ -1529,12 +1559,18 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                   maxLines: 1,
                 ),
               ),
-              Container(
+              Visibility(
+                  visible: true,
+                  child: Container(
                 margin: const EdgeInsets.all(PsDimens.space12),
                 decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey, width: 0.5),
                     borderRadius: BorderRadius.circular(PsDimens.space16)),
-                child: Column(
+                  )
+    ),
+                Visibility(
+                  visible: false,
+                  child: Column(
                   children: <Widget>[
                     const SizedBox(height: PsDimens.space8),
                     if (!PsConfig.isUseGoogleMap)
@@ -1709,8 +1745,8 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                         )),
                     const SizedBox(height: PsDimens.space8),
                   ],
+    ),
                 ),
-              ),
 
               _uploadItemWidget
               // ])
