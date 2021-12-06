@@ -230,8 +230,32 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "fl_location",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/fl_location-1.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "fl_location_platform_interface",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/fl_location_platform_interface-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "fl_location_web",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/fl_location_web-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///C:/src/flutter/packages/flutter",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_activity_recognition",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_activity_recognition-1.2.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -258,6 +282,12 @@
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_facebook_login-3.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
+    },
+    {
+      "name": "flutter_foreground_task",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/flutter_foreground_task-3.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "flutter_geofence",
@@ -438,6 +468,12 @@
       "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/geocoder-0.2.1",
       "packageUri": "lib/",
       "languageVersion": "2.0"
+    },
+    {
+      "name": "geofence_service",
+      "rootUri": "../packages/geofence_service",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "geolocator",
@@ -849,9 +885,9 @@
     },
     {
       "name": "shared_preferences",
-      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-2.0.5",
+      "rootUri": "file:///C:/src/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-2.0.8",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.14"
     },
     {
       "name": "shared_preferences_linux",
@@ -1178,7 +1214,7 @@
       "languageVersion": "2.2"
     }
   ],
-  "generated": "2021-12-03T14:45:50.528978Z",
+  "generated": "2021-12-06T00:20:46.128356Z",
   "generator": "pub",
   "generatorVersion": "2.14.0"
 }

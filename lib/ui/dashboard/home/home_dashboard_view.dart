@@ -56,10 +56,11 @@ import 'package:businesslistingapi/viewobject/holder/item_parameter_holder.dart'
 import 'package:businesslistingapi/viewobject/item.dart';
 import 'package:businesslistingapi/viewobject/item_collection_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_geofence/geofence.dart';
+import 'package:flutter_geofence/geofence.dart' as geo;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geofence_service/geofence_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -102,9 +103,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
   PopularCityProvider _popularCityProvider;
   CityProvider _cityProvider;
   RecommandedCityProvider _recommandedCityProvider;
-  Coordinate globalCoordinate;
+  geo.Coordinate globalCoordinate;
   final int count = 8;
-
+  var _geofenceService;
   final RateMyApp _rateMyApp = RateMyApp(
       preferencesPrefix: 'rateMyApp_',
       minDays: 0,
@@ -186,6 +187,24 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         }
       });
     }
+    // Create a [GeofenceService] instance and set options.
+     _geofenceService = GeofenceService.instance.setup(
+        interval: 5000,
+        accuracy: 100,
+        loiteringDelayMs: 60000,
+        statusChangeDelayMs: 10000,
+        useActivityRecognition: true,
+        allowMockLocations: false,
+        printDevLog: false,
+        geofenceRadiusSortType: GeofenceRadiusSortType.DESC);
+
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
+      _geofenceService.addGeofenceStatusChangeListener(_onGeofenceStatusChanged);
+      _geofenceService.addLocationChangeListener(_onLocationChanged);
+      _geofenceService.addLocationServicesStatusChangeListener(_onLocationServicesStatusChanged);
+      _geofenceService.addActivityChangeListener(_onActivityChanged);
+      _geofenceService.addStreamErrorListener(_onError);
+    });
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
     var initializationSettingsAndroid =
         new AndroidInitializationSettings('launcher_icon');
@@ -286,7 +305,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                 _nearMeItemProvider = NearMeItemProvider(
                     repo: itemRepo,
                     limit: PsConfig.FEATURE_PRODUCT_LOADING_LIMIT);
-                // globalCoordinate=Entypo.awareness_ribbon
+                // globalgeo.Coordinate=Entypo.awareness_ribbon
 
                 _nearMeItemProvider.loadItemList(globalCoordinate);
                 return _nearMeItemProvider;
@@ -371,135 +390,193 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
               //         .caption
               //         .copyWith(color: PsColors.white)),
             ),
-            body: Container(
-              color: PsColors.coreBackgroundColor,
-              child: RefreshIndicator(
-                onRefresh: () {
-                  _blogProvider.resetBlogList();
-                  _searchItemProvider.resetLatestItemList(
-                      ItemParameterHolder().getLatestParameterHolder());
-                  _trendingItemProvider.resetTrendingItemList(
-                      ItemParameterHolder().getTrendingParameterHolder());
-                  _featuredItemProvider.resetFeatureItemList(
-                      ItemParameterHolder().getFeaturedParameterHolder());
-                  _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
-                  _discountItemProvider.resetDiscountItemList(
-                      ItemParameterHolder().getDiscountParameterHolder());
-                  _popularCityProvider
-                      .resetPopularCityList()
-                      .then((dynamic value) {
-                    // Utils.psPrint("Is Has Internet " + value);
-                    final bool isConnectedToIntenet = value ?? bool;
-                    if (!isConnectedToIntenet) {
-                      Fluttertoast.showToast(
-                          msg: 'No Internet Connection. Please try again !',
-                          toastLength: Toast.LENGTH_LONG,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.blueGrey,
-                          textColor: Colors.white);
-                    }
-                  });
-                  _cityProvider.resetCityListByKey(
-                      CityParameterHolder().getRecentCities());
-                  return _recommandedCityProvider.resetRecommandedCityList();
+            body: WillStartForegroundTask(
+                onWillStart: () async {
+                  // You can add a foreground task start condition.
+                  return _geofenceService.isRunningService;
                 },
-                child: CustomScrollView(
-                  controller: widget._scrollController,
-                  scrollDirection: Axis.vertical,
-                  slivers: <Widget>[
-                    _MyHomeHeaderWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 1, 1.0,
-                                  curve: Curves.fastOutSlowIn))),
-                      userInputItemNameTextEditingController:
-                          userInputItemNameTextEditingController,
-                      psValueHolder: valueHolder, //animation
-                    ),
-                    _HomeFeaturedItemHorizontalListWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 3, 1.0,
-                                  curve: Curves.fastOutSlowIn))),
-                    ),
-                    _HomeNearMeItemHorizontalListWidget(
-                      globalCoordinate: globalCoordinate,
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 3, 1.0,
-                                  curve: Curves.fastOutSlowIn))),
-                    ),
-                    _HomePopularCityHorizontalListWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 2, 1.0,
-                                  curve: Curves.fastOutSlowIn))),
-                    ),
-                    _HomeRecommandedCityHorizontalListWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 4, 1.0,
-                                  curve: Curves.fastOutSlowIn))),
-                    ),
-                    _HomeNewCityHorizontalListWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 6, 1.0,
-                                  curve: Curves.fastOutSlowIn))), //animation
-                    ),
-                    _HomeBlogSliderWidget(
-                      animationController: widget.animationController,
-
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 7, 1.0,
-                                  curve: Curves.fastOutSlowIn))), //animation
-                    ),
-                    _HomeTrendingItemHorizontalListWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 5, 1.0,
-                                  curve: Curves.fastOutSlowIn))), //animation
-                    ),
-                    _HomeNewPlaceHorizontalListWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 4, 1.0,
-                                  curve: Curves.fastOutSlowIn))), //animation
-                    ),
-                    _HomeOnPromotionHorizontalListWidget(
-                      animationController: widget.animationController,
-                      animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                          CurvedAnimation(
-                              parent: widget.animationController,
-                              curve: Interval((1 / count) * 3, 1.0,
-                                  curve: Curves.fastOutSlowIn))), //animation
-                    ),
-                  ],
+                androidNotificationOptions: const AndroidNotificationOptions(
+                  channelId: 'geofence_service_notification_channel',
+                  channelName: 'Geofence Service Notification',
+                  channelDescription: 'This notification appears when the geofence service is running in the background.',
+                  channelImportance: NotificationChannelImportance.HIGH,
+                  priority: NotificationPriority.HIGH,
+                  isSticky: false,
                 ),
-              ),
-            )));
+                iosNotificationOptions: const IOSNotificationOptions(),
+                notificationTitle: 'Geofence Service is running',
+                notificationText: 'Tap to return to the app',
+                child:Container(
+                  color: PsColors.coreBackgroundColor,
+                  child: RefreshIndicator(
+                    onRefresh: () {
+                      _blogProvider.resetBlogList();
+                      _searchItemProvider.resetLatestItemList(
+                          ItemParameterHolder().getLatestParameterHolder());
+                      _trendingItemProvider.resetTrendingItemList(
+                          ItemParameterHolder().getTrendingParameterHolder());
+                      _featuredItemProvider.resetFeatureItemList(
+                          ItemParameterHolder().getFeaturedParameterHolder());
+                      _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
+                      _discountItemProvider.resetDiscountItemList(
+                          ItemParameterHolder().getDiscountParameterHolder());
+                      _popularCityProvider
+                          .resetPopularCityList()
+                          .then((dynamic value) {
+                        // Utils.psPrint("Is Has Internet " + value);
+                        final bool isConnectedToIntenet = value ?? bool;
+                        if (!isConnectedToIntenet) {
+                          Fluttertoast.showToast(
+                              msg: 'No Internet Connection. Please try again !',
+                              toastLength: Toast.LENGTH_LONG,
+                              gravity: ToastGravity.BOTTOM,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.blueGrey,
+                              textColor: Colors.white);
+                        }
+                      });
+                      _cityProvider.resetCityListByKey(
+                          CityParameterHolder().getRecentCities());
+                      return _recommandedCityProvider.resetRecommandedCityList();
+                    },
+                    child: CustomScrollView(
+                      controller: widget._scrollController,
+                      scrollDirection: Axis.vertical,
+                      slivers: <Widget>[
+                        _MyHomeHeaderWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 1, 1.0,
+                                      curve: Curves.fastOutSlowIn))),
+                          userInputItemNameTextEditingController:
+                          userInputItemNameTextEditingController,
+                          psValueHolder: valueHolder, //animation
+                        ),
+                        _HomeFeaturedItemHorizontalListWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 3, 1.0,
+                                      curve: Curves.fastOutSlowIn))),
+                        ),
+                        _HomeNearMeItemHorizontalListWidget(
+                          globalCoordinate: globalCoordinate,
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 3, 1.0,
+                                      curve: Curves.fastOutSlowIn))),
+                        ),
+                        _HomePopularCityHorizontalListWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 2, 1.0,
+                                      curve: Curves.fastOutSlowIn))),
+                        ),
+                        _HomeRecommandedCityHorizontalListWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 4, 1.0,
+                                      curve: Curves.fastOutSlowIn))),
+                        ),
+                        _HomeNewCityHorizontalListWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 6, 1.0,
+                                      curve: Curves.fastOutSlowIn))), //animation
+                        ),
+                        _HomeBlogSliderWidget(
+                          animationController: widget.animationController,
+
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 7, 1.0,
+                                      curve: Curves.fastOutSlowIn))), //animation
+                        ),
+                        _HomeTrendingItemHorizontalListWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 5, 1.0,
+                                      curve: Curves.fastOutSlowIn))), //animation
+                        ),
+                        _HomeNewPlaceHorizontalListWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 4, 1.0,
+                                      curve: Curves.fastOutSlowIn))), //animation
+                        ),
+                        _HomeOnPromotionHorizontalListWidget(
+                          animationController: widget.animationController,
+                          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
+                              CurvedAnimation(
+                                  parent: widget.animationController,
+                                  curve: Interval((1 / count) * 3, 1.0,
+                                      curve: Curves.fastOutSlowIn))), //animation
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+            ),
+            ));
+  }
+// This function is to be called when the geofence status is changed.
+  Future<void> _onGeofenceStatusChanged(
+      Geofence geofence,
+      GeofenceRadius geofenceRadius,
+      GeofenceStatus geofenceStatus,
+      Location location) async {
+    print('geofence: ${geofence.toJson()}');
+    print('geofenceRadius: ${geofenceRadius.toJson()}');
+    print('geofenceStatus: ${geofenceStatus.toString()}');
+    actOnGeofence(geofenceStatus,geofence);
+    // _geofenceStreamController.sink.add(geofence);
   }
 
-  Future<void> startBackgroundTracking(Coordinate globalCoordinate) async {
+// This function is to be called when the activity has changed.
+  void _onActivityChanged(Activity prevActivity, Activity currActivity) {
+    print('prevActivity: ${prevActivity.toJson()}');
+    print('currActivity: ${currActivity.toJson()}');
+    // _activityStreamController.sink.add(currActivity);
+  }
+
+// This function is to be called when the location has changed.
+  void _onLocationChanged(Location location) {
+    print('location: ${location.toJson()}');
+  }
+
+// This function is to be called when a location services status change occurs
+// since the service was started.
+  void _onLocationServicesStatusChanged(bool status) {
+    print('isLocationServicesEnabled: $status');
+  }
+
+// This function is used to handle errors that occur in the service.
+  void _onError(error) {
+    final errorCode = getErrorCodesFromError(error);
+    if (errorCode == null) {
+      print('Undefined error: $error');
+      return;
+    }
+
+    print('ErrorCode: $errorCode');
+  }
+  Future<void> startBackgroundTracking(geo.Coordinate globalCoordinate) async {
     print('$TAG startBackgroundTracking');
 
     final SearchItemProvider provider =
@@ -533,10 +610,12 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
+
+    geo.Geofence.initialize();
+    geo.Geofence.requestPermissions();
+    globalCoordinate = await geo.Geofence.getCurrentLocation();
     //Will be handles by handler
-    Geofence.initialize();
-    Geofence.requestPermissions();
-    Coordinate globalCoordinate = await Geofence.getCurrentLocation();
+    // geo.Coordinate globalCoordinate = await Geofence.g;
     setState(() {
       _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
       //globalCoordinate = c;
@@ -547,118 +626,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     startBackgroundTracking(globalCoordinate);
     print('$TAG Your latitude is ${globalCoordinate.latitude} and longitude ${globalCoordinate.longitude}');
 
-    // Geofence.backgroundLocationUpdated.stream;
-    //ios
-    bool hasDisplayedEnter=false;
-    bool hasDisplayedDwell=false;
-    bool hasDisplayedExit=false;
-    Geofence.startListeningForLocationChanges();
-    if (!hasAlreadyListened) {
-      Geofence.backgroundLocationUpdated.stream.listen((event) {
-        globalCoordinate = event;
-        hasAlreadyListened = true;
-        // print('$TAG logging from flutter ${event.longitude}');
 
-        // startBackgroundTracking(event);
-        if (geofences == null || geofences.isEmpty) {
-          print('$TAG Items are empty');
-          return;
-        }
-        int nearGeofences=0;
-        int x = 0;
-        geofences.forEach((key, c) async {
-          x++;
-          double dis = calculateDistance(
-              c.latitude, c.longitude, event.latitude, event.longitude);
-
-          final SharedPreferences sharedPreferences =
-          await PsSharedPreferences.instance.futureShared;
-          // dis < 1000
-          //     ? print('Distance: $dis  ==${c.latitude},${c.longitude}')
-          //     : print(
-          //     'Dis: $dis ==lat1:${c.latitude}==ln1:${c.longitude}==lat2:${event.latitude}==ln2:${event.longitude}');
-          if ((dis * 1000) < PsConst.RADIUS) {
-            if (c.transitionType == GeolocationEvent.entry) {
-              print('Entering ${c.item_name}');
-              nearGeofences++;
-              String firstName = '';
-              try {
-                firstName = sharedPreferences
-                    .getString(PsConst.VALUE_HOLDER__USER_NAME);
-                firstName ??= '';
-              } on Exception catch (e) {
-                print('$TAG Could not get the name');
-              }
-
-            } else if (c.transitionType == GeolocationEvent.dwell && c.isPromotion == '1') { // should be && c.isPaid
-              print('Dwelling ${c.item_name}');
-              var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
-
-              final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
-              final now = DateTime.now();
-              final difference = now.difference(before).inMinutes;
-              if(difference>=15&&!hasDisplayedDwell){
-                hasDisplayedDwell=true;
-                scheduleNotification('You are near ${c.item_name}',
-                    'Stop in and say Hi!', GeolocationEvent.dwell,
-                    paypload: c.id, item: c);
-              }
-              c.transitionType = GeolocationEvent.dwell;
-            }
-          } else if (c.transitionType == GeolocationEvent.exit && c.isfeatured == '1') {
-            print('Exiting ${c.item_name}');
-
-            var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
-
-            final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
-            final now = DateTime.now();
-            final difference = now.difference(before).inMinutes;
-            if(difference>=15&&!hasDisplayedExit){
-              hasDisplayedExit=true;
-              scheduleNotification(
-                  "Don't miss an opportunity to buy black.",
-                  'You are near ${c.item_name}',
-                  GeolocationEvent.exit,
-                  paypload: c.id,
-                  item: c);
-            }
-            c.transitionType = GeolocationEvent.exit;
-          }
-        });
-        if(!hasDisplayedEnter){
-
-          hasDisplayedEnter=true;
-          PsSharedPreferences.instance.futureShared.then((sharedPreferences) {
-
-            String firstName = '';
-            try {
-              firstName = sharedPreferences
-                  .getString(PsConst.VALUE_HOLDER__USER_NAME);
-              firstName ??= '';
-            } on Exception catch (e) {
-              print('$TAG Could not get the name');
-            }
-            if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
-              int timestamp = DateTime.now().millisecondsSinceEpoch;
-              sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
-              scheduleNotification(
-                  'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
-                  'There are '+nearGeofences.toString()+' black owned businesses near you!',
-                  GeolocationEvent.entry);
-            } else {
-              int timestamp = DateTime.now().millisecondsSinceEpoch;
-              sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
-              scheduleNotification(
-                  'Good news',
-                  'There are  '+nearGeofences.toString()+' black owned businesses near you!',
-                  GeolocationEvent.entry,);
-            }
-          });
-
-
-        }
-      });
-    }
     setState(() {});
   }
 
@@ -677,9 +645,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
   static HashMap<String, SimpleGeofence> geofences =
       HashMap<String, SimpleGeofence>();
 
-  void registerGeofences(PsResource<List<Item>> event) {
-    print('$TAG RegisterGeofences ${event.data.first.paidStatus}');
-    for (Item i in event.data) {
+  void registerGeofences(PsResource<List<Item>> items) {
+    print('$TAG RegisterGeofences ${items.data.first.paidStatus}');
+    for (Item i in items.data) {
       if (i.isPaid == '1') {
         geofences.putIfAbsent(
             i.id,
@@ -693,9 +661,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                     i.cityId,
                     i.name,
                     i.defaultPhoto?.imgPath,
-                    5000,
+                    [GeofenceRadius(id: i.id,length: 5000)],
                     GEOFENCE_EXPIRATION_IN_MILLISECONDS,
-                    GeolocationEvent.dwell));
+                    GeofenceStatus.DWELL));
       } else if (i.isFeatured == '1' || i.isPromotion == '1') {
         geofences.putIfAbsent(
             '${i.id}-a',
@@ -709,9 +677,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                     i.cityId,
                     i.name,
                     i.defaultPhoto?.imgPath,
-                    5000,
+                    [GeofenceRadius(id: i.id,length: 5000)],
                     GEOFENCE_EXPIRATION_IN_MILLISECONDS,
-                    GeolocationEvent.entry));
+                    GeofenceStatus.ENTER));
         geofences.putIfAbsent(
             '${i.id}-b',
                 () =>
@@ -724,113 +692,121 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                     i.cityId,
                     i.name,
                     i.defaultPhoto?.imgPath,
-                    5000,
+                    [GeofenceRadius(id: i.id,length: 5000)],
                     GEOFENCE_EXPIRATION_IN_MILLISECONDS,
-                    GeolocationEvent.exit));
+                    GeofenceStatus.EXIT));
       }
     }
-    Geofence.removeAllGeolocations();
+    // Geofence.removeAllGeolocations();
+    _geofenceService.clearGeofenceList();
+    List<Geofence> _geofenceList=[];
     geofences.forEach((key, value) {
-      Geofence.addGeolocation(value.toGeofence(), value.transitionType);
+      _geofenceList.add(value.toGeofence());
     });
-    Geofence.startListening(GeolocationEvent.entry, (entry) {
-      print('$TAG Entering ${entry.id}');
-      getGeoCity(entry.id).then((SimpleGeofence c) async {
-        if (c == null) {
-          print('$TAG Could not set notification, Item not found');
-          return;
+
+    _geofenceService.start(_geofenceList).catchError(_onError);
+
+  }
+  int nearGeofences=0;
+  int x = 0;   bool hasDisplayedEnter=false;
+  bool hasDisplayedDwell=false;
+  bool hasDisplayedExit=false;
+  Future<void> actOnGeofence(GeofenceStatus geofenceStatus, Geofence geofence) async {
+    print('actOnGeofence');
+
+    final SharedPreferences sharedPreferences =
+        await PsSharedPreferences.instance.futureShared;
+    getGeoCity(geofence.id).then((SimpleGeofence c) async {
+      if (c == null) {
+        print('$TAG Could not set notification, Item not found');
+        return;
+      }
+      if(geofenceStatus==c.transitionType&&geofenceStatus==GeofenceStatus.EXIT&& c.isfeatured == '1'){
+        print('Exiting ${c.item_name}');
+
+        var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
+
+        final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
+        final now = DateTime.now();
+        final difference = now.difference(before).inMinutes;
+        if(difference>=15&&!hasDisplayedExit){
+          hasDisplayedExit=true;
+          scheduleNotification(
+              "Don't miss an opportunity to buy black.",
+              'You are near ${c.item_name}',
+              GeofenceStatus.EXIT,
+              paypload: c.id,
+              item: c);
         }
-        String firstName = "";
-        SharedPreferences sharedPreferences =
-            await PsSharedPreferences.instance.futureShared;
+        c.transitionType = GeofenceStatus.EXIT;
+      }else if(geofenceStatus==c.transitionType&&geofenceStatus==GeofenceStatus.DWELL && c.isPromotion == '1'){
+        print('Dwelling ${c.item_name}');
+        var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
+
+        final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
+        final now = DateTime.now();
+        final difference = now.difference(before).inMinutes;
+        if(difference>=15&&!hasDisplayedDwell){
+          hasDisplayedDwell=true;
+          scheduleNotification('You are near ${c.item_name}',
+              'Stop in and say Hi!', GeofenceStatus.DWELL,
+              paypload: c.id, item: c);
+        }
+        c.transitionType = GeofenceStatus.DWELL;
+      }else if(geofenceStatus==c.transitionType&&geofenceStatus==GeofenceStatus.ENTER){
+
+        print('Entering ${c.item_name}');
+        nearGeofences++;
+        String firstName = '';
         try {
-          firstName =
-              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
+          firstName = sharedPreferences
+              .getString(PsConst.VALUE_HOLDER__USER_NAME);
+          firstName ??= '';
         } on Exception catch (e) {
           print('$TAG Could not get the name');
         }
-        // if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
-        //   scheduleNotification(
-        //       'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
-        //       'There are '+geofences.length.toString()+' black owned businesses near you!',
-        //       GeolocationEvent.entry,
-        //       int.parse(c.id),
-        //       paypload: c.id,
-        //       item: c);
-        // } else {
-        //   scheduleNotification(
-        //       'Good news',
-        //       'There are '+geofences.length.toString()+' black owned businesses near you!',
-        //       GeolocationEvent.entry,
-        //       int.parse(c.id),
-        //       paypload: c.id,
-        //       item: c);
-        // }
-      });
+      }
+
+      if(!hasDisplayedEnter){
+
+        hasDisplayedEnter=true;
+        PsSharedPreferences.instance.futureShared.then((sharedPreferences) {
+
+          String firstName = '';
+          try {
+            firstName = sharedPreferences
+                .getString(PsConst.VALUE_HOLDER__USER_NAME);
+            firstName ??= '';
+          } on Exception catch (e) {
+            print('$TAG Could not get the name');
+          }
+          if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
+            int timestamp = DateTime.now().millisecondsSinceEpoch;
+            sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
+            scheduleNotification(
+                'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
+                'There are '+nearGeofences.toString()+' black owned businesses near you!',
+                GeofenceStatus.ENTER);
+          } else {
+            int timestamp = DateTime.now().millisecondsSinceEpoch;
+            sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
+            scheduleNotification(
+              'Good news',
+              'There are  '+nearGeofences.toString()+' black owned businesses near you!',
+              GeofenceStatus.ENTER,);
+          }
+        });
+
+
+      }
     });
-    Geofence.startListening(GeolocationEvent.dwell, (entry) {
-      print('$TAG Dwelling ${entry.id}');
-      getGeoCity(entry.id).then((SimpleGeofence c) async {
-        if (c == null) {
-          print('$TAG Could not set notification, Item not found');
-          return;
-        }
-        String firstName = "";
-        SharedPreferences sharedPreferences =
-            await PsSharedPreferences.instance.futureShared;
-        try {
-          firstName =
-              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
-        } on Exception catch (e) {
-          print('$TAG Could not get the name');
-        }
-        // scheduleNotification('You are near ${c.item_name}',
-        //     'Stop in and say Hi!', GeolocationEvent.dwell, int.parse(c.id),
-        //     paypload: c.id, item: c);
-      });
-    });
-    Geofence.startListening(GeolocationEvent.exit, (entry) {
-      print('$TAG Exiting ${entry.id}');
-      getGeoCity(entry.id).then((SimpleGeofence c) async {
-        if (c == null) {
-          print('$TAG Could not set notification, Item not found');
-          return;
-        }
-        String firstName = "";
-        SharedPreferences sharedPreferences =
-            await PsSharedPreferences.instance.futureShared;
-        try {
-          firstName =
-              sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME);
-        } on Exception catch (e) {
-          print('$TAG Could not get the name');
-        }
-        // if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
-        //   scheduleNotification(
-        //       sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) +
-        //           "Don't miss an opportunity to buy black.",
-        //       'You are near ${c.item_name}',
-        //       GeolocationEvent.exit,
-        //       int.parse(c.id),
-        //       paypload: c.id,
-        //       item: c);
-        // } else {
-        //   scheduleNotification(
-        //       "Don't miss an opportunity to buy black.",
-        //       'You are near ${c.item_name}',
-        //       GeolocationEvent.exit,
-        //       int.parse(c.id),
-        //       paypload: c.id,
-        //       item: c);
-        // }
-      });
-    });
+
   }
 
   static String TAG = 'GEOFENCES NEW:';
 
   Future<void> scheduleNotification(
-      String title, String subtitle, GeolocationEvent event,
+      String title, String subtitle, GeofenceStatus event,
       {String paypload = "Item x", SimpleGeofence item}) async {
     print("$TAG scheduling one with $title and $subtitle");
     // var rng = new Random();
@@ -880,7 +856,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             '1123', 'Geofences', 'Geofence alert',
             importance: Importance.high,
             priority: Priority.high,
-            styleInformation: event==GeolocationEvent.exit?smallPictureStyleInformation:bigPictureStyleInformation,
+            styleInformation: event==GeofenceStatus.EXIT?smallPictureStyleInformation:bigPictureStyleInformation,
             largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
 
             ticker: 'ticker');
@@ -942,7 +918,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         //Permission.camera,
       ].request();
       print(statuses[Permission.locationAlways]);*/
-      Geofence.initialize();
+      // Geofence.initialize();
     }
   }
 
@@ -1183,7 +1159,7 @@ class _HomeNearMeItemHorizontalListWidget extends StatefulWidget {
 
   final AnimationController animationController;
   final Animation<double> animation;
-  final Coordinate globalCoordinate;
+  final geo.Coordinate globalCoordinate;
 
   @override
   __HomeNearMeItemHorizontalListWidgetState createState() =>
