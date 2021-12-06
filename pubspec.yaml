@@ -33,7 +33,7 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
  
-  shared_preferences: 2.0.5
+  shared_preferences: 2.0.8
   http: 0.13.1
   provider: 5.0.0
   connectivity: 3.0.3 
@@ -50,6 +50,8 @@ dependencies:
     path: packages/easy_localization
   latlong:
     path: packages/latlong
+  geofence_service:
+      path: packages/geofence_service
   flutter_geofence:
     path: packages/flutter_geofence
 #  flutter_geofence:

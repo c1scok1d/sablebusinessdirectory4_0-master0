@@ -1,4 +1,7 @@
-import 'package:flutter_geofence/geofence.dart';
+// import 'package:flutter_geofence/geofence.dart';
+import 'package:geofence_service/geofence_service.dart';
+import 'package:geofence_service/models/geofence.dart';
+import 'package:geofence_service/models/geofence_radius.dart';
 
 class SimpleGeofence {
   String id;
@@ -7,9 +10,9 @@ class SimpleGeofence {
   String isfeatured, isPromotion;
   String city_id;
   String item_name, imageId;
-  double radius;
+  List<GeofenceRadius> radius;
   double expirationDuration;
-  GeolocationEvent transitionType;
+  GeofenceStatus transitionType;
   int loiteringDelay = 60000;
   bool isNear=false;
 
@@ -27,11 +30,18 @@ class SimpleGeofence {
       this.transitionType);
 
 
-  Geolocation toGeofence() {
-    return Geolocation(
+  // Geolocation toGeofence() {
+  //   return Geolocation(
+  //       latitude: latitude, longitude: longitude, radius: radius, id: id);
+  // }
+
+  Geofence toGeofence() {
+    return Geofence(
         latitude: latitude, longitude: longitude, radius: radius, id: id);
   }
   SimpleGeofence m(){
     return this;
   }
 }
+
+// enum GeolocationEvent =GeofenceStatus();

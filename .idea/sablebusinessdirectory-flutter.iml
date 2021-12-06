@@ -51,6 +51,9 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/flutter_geofence/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/packages/flutter_geofence/build" />
       <excludeFolder url="file://$MODULE_DIR$/packages/flutter_geofence/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/geofence_service/.dart_tool" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/geofence_service/build" />
+      <excludeFolder url="file://$MODULE_DIR$/packages/geofence_service/.pub" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
