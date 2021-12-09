@@ -416,5 +416,6 @@ class GeofenceService {
 
     final nowDateTime = DateTime.now().toString();
     dev.log('$nowDateTime\t$message');
+    print('$nowDateTime\t$message');
   }
 }

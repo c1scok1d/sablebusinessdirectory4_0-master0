@@ -193,12 +193,17 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         accuracy: 100,
         loiteringDelayMs: 60000,
         statusChangeDelayMs: 10000,
-        useActivityRecognition: true,
-        allowMockLocations: false,
+        // loiteringDelayMs: 5000,
+        // statusChangeDelayMs: 1000,
+        // useActivityRecognition: true,
+        useActivityRecognition: false,
+        // allowMockLocations: false,
+        allowMockLocations: true,
         printDevLog: false,
         geofenceRadiusSortType: GeofenceRadiusSortType.DESC);
 
     WidgetsBinding.instance?.addPostFrameCallback((_) {
+      print('$TAG: add postCallBack');
       _geofenceService.addGeofenceStatusChangeListener(_onGeofenceStatusChanged);
       _geofenceService.addLocationChangeListener(_onLocationChanged);
       _geofenceService.addLocationServicesStatusChangeListener(_onLocationServicesStatusChanged);
@@ -614,6 +619,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     geo.Geofence.initialize();
     geo.Geofence.requestPermissions();
     globalCoordinate = await geo.Geofence.getCurrentLocation();
+    print('$TAG Coordinates:${globalCoordinate}');
     //Will be handles by handler
     // geo.Coordinate globalCoordinate = await Geofence.g;
     setState(() {
@@ -880,18 +886,27 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
   Future<SimpleGeofence> getGeoCity(String id) {
     print('$TAG getGeoCity ');
+    var mValue;
     geofences.forEach((key, value) {
-      if (key.contains('-')) {
+      if (key.endsWith('-a')||key.endsWith('-b')) {
         if (key.split('-')[0] == id) {
-          return Future.value(value);
+          print('$TAG: Matching- ($id-${key})');
+          mValue=value;
+          return;
+        }else{
+          print('$TAG: Matching ($id-${key.split('-')[0]})');
         }
       } else {
         if (key == id) {
-          return Future.value(value);
+          print('$TAG: Matching- ($id-${key})');
+          mValue=value;
+          return ;
+        }else{
+          print('$TAG: Matching ($id-${key})');
         }
       }
     });
-    return Future.value(null);
+    return Future.value(mValue);
   }
 
   Future<void> requestPermission() async {
