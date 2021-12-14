@@ -105,7 +105,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
   RecommandedCityProvider _recommandedCityProvider;
   geo.Coordinate globalCoordinate;
   final int count = 8;
-  var _geofenceService;
+  GeofenceService _geofenceService;
   final RateMyApp _rateMyApp = RateMyApp(
       preferencesPrefix: 'rateMyApp_',
       minDays: 0,
@@ -590,7 +590,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     bool isConnectedToInternet = await Utils.checkInternetConnectivity();
     final StreamController<PsResource<List<Item>>> itemListStream =
         StreamController<PsResource<List<Item>>>.broadcast();
-    itemListStream.stream.listen((event) {
+      itemListStream.stream.listen((event) {
       print('Fetch some items ${event.data.length}');
       registerGeofences(event);
     });
@@ -709,7 +709,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     geofences.forEach((key, value) {
       _geofenceList.add(value.toGeofence());
     });
-
     _geofenceService.start(_geofenceList).catchError(_onError);
 
   }
