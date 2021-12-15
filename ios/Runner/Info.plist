@@ -54,7 +54,7 @@
 	<key>FacebookAppID</key>
 	<string>1395137620874464</string>
 	<key>FacebookDisplayName</key>
-	<string>Flutter Multi City</string>
+	<string>Sable Business Directory</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-8907881762519005~5353008960</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -84,6 +84,8 @@
 	<string>$(PRODUCT_NAME) would like to use your camera to upload your profile photo and item photo.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>$(PRODUCT_NAME) contacts use.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Used to provide geofence services in the background.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>$(PRODUCT_NAME) location use.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -92,8 +94,6 @@
 	<string>This app does not require access to the microphone.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>$(PRODUCT_NAME) motion use.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Used to provide geofence services in the background.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to the photo library to upload your profile photo and item photo.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
@@ -101,7 +101,7 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
-    <string>location</string>
+		<string>location</string>
 		<string>remote-notification</string>
 	</array>
 	<key>UIFileSharingEnabled</key>

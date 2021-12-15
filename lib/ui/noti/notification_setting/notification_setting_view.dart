@@ -137,10 +137,9 @@ class __NotificationSettingWidgetState
         value: isGeoEnabled,
         onChanged: (bool value) async {
 
-          if (isGeoEnabled == true) {
+          if (isGeoEnabled != true) {
             bool isShown = await Permission.locationAlways.shouldShowRequestRationale;
-            if(isShown){
-
+            if(await Permission.locationAlways.isGranted){
               showDialog<void>(context: context, builder: (context) {
 
                 return Dialog(
@@ -207,7 +206,7 @@ class __NotificationSettingWidgetState
 
                                 Map<Permission, PermissionStatus> statuses = await [
                                 Permission.locationAlways,
-                                    Permission.storage,
+                                   // Permission.storage,
                                 ].request();
                                 print(statuses[Permission.locationAlways]);                              },
                               child: Text(
@@ -244,12 +243,12 @@ class __NotificationSettingWidgetState
             }else{
 
             }
-            Map<Permission, PermissionStatus> statuses = await [
+            /*Map<Permission, PermissionStatus> statuses = await [
               Permission.storage,
               Permission.camera,
             ].request();
 
-            print(statuses[Permission.storage]);
+            print(statuses[Permission.storage]); */
           }
           final SharedPreferences x =
           await PsSharedPreferences.instance.futureShared;

@@ -1546,7 +1546,9 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                     ],
                   ),
                 ),
-              Padding(
+              Visibility(
+                  visible: false,
+                  child: Padding(
                 padding: const EdgeInsets.only(
                     left: PsDimens.space16,
                     right: PsDimens.space16,
@@ -1559,8 +1561,9 @@ class _AllControllerTextWidgetState extends State<AllControllerTextWidget> {
                   maxLines: 1,
                 ),
               ),
+              ),
               Visibility(
-                  visible: true,
+                  visible: false,
                   child: Container(
                 margin: const EdgeInsets.all(PsDimens.space12),
                 decoration: BoxDecoration(

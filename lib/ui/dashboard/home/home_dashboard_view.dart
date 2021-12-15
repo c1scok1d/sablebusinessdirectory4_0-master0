@@ -310,6 +310,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                 _nearMeItemProvider = NearMeItemProvider(
                     repo: itemRepo,
                     limit: PsConfig.FEATURE_PRODUCT_LOADING_LIMIT);
+                print(_nearMeItemProvider.toString());
                 // globalgeo.Coordinate=Entypo.awareness_ribbon
 
                 _nearMeItemProvider.loadItemList(globalCoordinate);
@@ -401,16 +402,16 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                   return _geofenceService.isRunningService;
                 },
                 androidNotificationOptions: const AndroidNotificationOptions(
-                  channelId: 'geofence_service_notification_channel',
-                  channelName: 'Geofence Service Notification',
-                  channelDescription: 'This notification appears when the geofence service is running in the background.',
+                  channelId: 'sable_blackbusiness_alerts',
+                  channelName: 'Sable Black Business Alerts',
+                  channelDescription: 'This notification appears when nearby a black owned business.',
                   channelImportance: NotificationChannelImportance.HIGH,
                   priority: NotificationPriority.HIGH,
                   isSticky: false,
                 ),
                 iosNotificationOptions: const IOSNotificationOptions(),
-                notificationTitle: 'Geofence Service is running',
-                notificationText: 'Tap to return to the app',
+                notificationTitle: 'Sable Black Business Alerts',
+                notificationText: 'Tap to clear',
                 child:Container(
                   color: PsColors.coreBackgroundColor,
                   child: RefreshIndicator(
@@ -631,8 +632,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // if permission check good start geoNotifications
     startBackgroundTracking(globalCoordinate);
     print('$TAG Your latitude is ${globalCoordinate.latitude} and longitude ${globalCoordinate.longitude}');
-
-
     setState(() {});
   }
 
@@ -702,6 +701,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                     GEOFENCE_EXPIRATION_IN_MILLISECONDS,
                     GeofenceStatus.EXIT));
       }
+      nearGeofences ++;
     }
     // Geofence.removeAllGeolocations();
     _geofenceService.clearGeofenceList();
@@ -734,7 +734,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
         final now = DateTime.now();
         final difference = now.difference(before).inMinutes;
-        if(difference>=15&&!hasDisplayedExit){
+        //if(difference>=15&&!hasDisplayedExit){
           hasDisplayedExit=true;
           scheduleNotification(
               "Don't miss an opportunity to buy black.",
@@ -742,7 +742,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
               GeofenceStatus.EXIT,
               paypload: c.id,
               item: c);
-        }
+        //}
         c.transitionType = GeofenceStatus.EXIT;
       }else if(geofenceStatus==c.transitionType&&geofenceStatus==GeofenceStatus.DWELL && c.isPromotion == '1'){
         print('Dwelling ${c.item_name}');
@@ -751,17 +751,15 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
         final now = DateTime.now();
         final difference = now.difference(before).inMinutes;
-        if(difference>=15&&!hasDisplayedDwell){
+        //if(difference>=15&&!hasDisplayedDwell){
           hasDisplayedDwell=true;
           scheduleNotification('You are near ${c.item_name}',
               'Stop in and say Hi!', GeofenceStatus.DWELL,
               paypload: c.id, item: c);
-        }
+        //}
         c.transitionType = GeofenceStatus.DWELL;
       }else if(geofenceStatus==c.transitionType&&geofenceStatus==GeofenceStatus.ENTER){
-
         print('Entering ${c.item_name}');
-        nearGeofences++;
         String firstName = '';
         try {
           firstName = sharedPreferences
@@ -785,19 +783,49 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
           } on Exception catch (e) {
             print('$TAG Could not get the name');
           }
+
+          String foo;
           if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
             int timestamp = DateTime.now().millisecondsSinceEpoch;
             sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
+            switch(nearGeofences){
+              case 0: {
+                foo = 'There are no black owned businesses near you!';
+              }
+              break;
+              case 1:{
+                foo = 'There is '+nearGeofences.toString()+' black owned business near you!';
+              }
+              break;
+              default: {
+                foo ='There are '+nearGeofences.toString()+' black owned businesses near you!';
+              }
+              break;
+            }
             scheduleNotification(
                 'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
-                'There are '+nearGeofences.toString()+' black owned businesses near you!',
+                foo,
                 GeofenceStatus.ENTER);
           } else {
             int timestamp = DateTime.now().millisecondsSinceEpoch;
             sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
+            switch(nearGeofences){
+              case 0: {
+                foo = 'There are no black owned businesses near you!';
+              }
+              break;
+              case 1:{
+                foo = 'There is '+nearGeofences.toString()+' black owned business near you!';
+              }
+              break;
+              default: {
+                foo ='There are '+nearGeofences.toString()+' black owned businesses near you!';
+              }
+              break;
+            }
             scheduleNotification(
               'Good news',
-              'There are  '+nearGeofences.toString()+' black owned businesses near you!',
+              foo,
               GeofenceStatus.ENTER,);
           }
         });

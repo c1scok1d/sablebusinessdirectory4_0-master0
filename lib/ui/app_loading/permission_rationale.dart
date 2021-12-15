@@ -394,21 +394,35 @@ class PermissionRationaleView extends State<PermissionRationale> {
                                   RoutePaths.home,
                                 );
                                 return;
-                              }
-                               PermissionStatus permResult =
-                                  await
-                                Permission.locationAlways.request();
-                              print(permResult.toString());
-                              if(permResult.isDenied){
-
-                                (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
-                                showRationale();
-                              }else if(permResult==PermissionStatus.granted){
-                                (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                              } else {
+                               /* (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
                                 Navigator.pushReplacementNamed(
                                   context,
                                   RoutePaths.home,
                                 );
+                                return; */
+                                PermissionStatus permResult =
+                                await
+                                Permission.locationAlways.request();
+                                print(permResult.toString());
+                                if(permResult.isPermanentlyDenied){
+                                  (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    RoutePaths.home,
+                                  );
+                                  return;
+                                } else if(permResult.isDenied){
+                                  (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
+                                  showRationale();
+                                }else if(permResult==PermissionStatus.granted){
+                                  (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    RoutePaths.home,
+                                  );
+                                  return;
+                                }
                               }
                             },
                             child: const Text('Begin'),
