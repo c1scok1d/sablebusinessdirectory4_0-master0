@@ -23,11 +23,13 @@ import 'package:businesslistingapi/provider/item/item_provider.dart';
 import 'package:businesslistingapi/provider/item/near_me_item_provider.dart';
 import 'package:businesslistingapi/provider/item/search_item_provider.dart';
 import 'package:businesslistingapi/provider/item/trending_item_provider.dart';
+import 'package:businesslistingapi/provider/user/user_provider.dart';
 import 'package:businesslistingapi/repository/blog_repository.dart';
 import 'package:businesslistingapi/repository/category_repository.dart';
 import 'package:businesslistingapi/repository/city_repository.dart';
 import 'package:businesslistingapi/repository/item_collection_repository.dart';
 import 'package:businesslistingapi/repository/item_repository.dart';
+import 'package:businesslistingapi/repository/user_repository.dart';
 import 'package:businesslistingapi/ui/city/item/city_horizontal_list_item.dart';
 import 'package:businesslistingapi/ui/city/item/popular_city_horizontal_list_item.dart';
 import 'package:businesslistingapi/ui/common/dialog/confirm_dialog_view.dart';
@@ -629,9 +631,18 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     });
     // permission check
     requestPermission();
-    // if permission check good start geoNotifications
-    startBackgroundTracking(globalCoordinate);
-    print('$TAG Your latitude is ${globalCoordinate.latitude} and longitude ${globalCoordinate.longitude}');
+
+    // if geoservice is enabled start geoNotifications
+    final SharedPreferences sharedPreferences =
+    await PsSharedPreferences.instance.futureShared;
+    bool isEnabled = sharedPreferences.getBool(PsConst.GEO_SERVICE_KEY);
+    if(isEnabled) {
+      startBackgroundTracking(globalCoordinate);
+      print('$TAG Your latitude is ${globalCoordinate
+          .latitude} and longitude ${globalCoordinate.longitude}');
+    }
+
+
     setState(() {});
   }
 
@@ -729,11 +740,11 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       if(geofenceStatus==c.transitionType&&geofenceStatus==GeofenceStatus.EXIT&& c.isfeatured == '1'){
         print('Exiting ${c.item_name}');
 
-        var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
+        //var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
 
-        final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
-        final now = DateTime.now();
-        final difference = now.difference(before).inMinutes;
+        //final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
+        //final now = DateTime.now();
+        //final difference = now.difference(before).inMinutes;
         //if(difference>=15&&!hasDisplayedExit){
           hasDisplayedExit=true;
           scheduleNotification(
@@ -771,69 +782,38 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       }
 
       if(!hasDisplayedEnter){
-
         hasDisplayedEnter=true;
         PsSharedPreferences.instance.futureShared.then((sharedPreferences) {
-
-          String firstName = '';
-          try {
-            firstName = sharedPreferences
-                .getString(PsConst.VALUE_HOLDER__USER_NAME);
-            firstName ??= '';
-          } on Exception catch (e) {
-            print('$TAG Could not get the name');
-          }
-
-          String foo;
-          if(sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != '' && sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) != null) {
-            int timestamp = DateTime.now().millisecondsSinceEpoch;
-            sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
+          String message;
+            sharedPreferences.setInt('LAST_NOT_TIME', DateTime.now().millisecondsSinceEpoch);
             switch(nearGeofences){
-              case 0: {
-                foo = 'There are no black owned businesses near you!';
-              }
-              break;
-              case 1:{
-                foo = 'There is '+nearGeofences.toString()+' black owned business near you!';
-              }
-              break;
-              default: {
-                foo ='There are '+nearGeofences.toString()+' black owned businesses near you!';
-              }
-              break;
+              case 0:
+                message = 'There are no black owned businesses near you!';
+                break;
+              case 1:
+                message = 'There is '+nearGeofences.toString()+' black owned business near you!';
+                break;
+              default:
+                message ='There are '+nearGeofences.toString()+' black owned businesses near you!';
+                break;
             }
-            scheduleNotification(
-                'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
-                foo,
-                GeofenceStatus.ENTER);
-          } else {
-            int timestamp = DateTime.now().millisecondsSinceEpoch;
-            sharedPreferences.setInt('LAST_NOT_TIME', timestamp);
-            switch(nearGeofences){
-              case 0: {
-                foo = 'There are no black owned businesses near you!';
-              }
-              break;
-              case 1:{
-                foo = 'There is '+nearGeofences.toString()+' black owned business near you!';
-              }
-              break;
-              default: {
-                foo ='There are '+nearGeofences.toString()+' black owned businesses near you!';
-              }
-              break;
+
+            if (sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) == null ||
+                sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME) == '') {
+              scheduleNotification(
+                  'Good news',
+                  message,
+                  GeofenceStatus.ENTER);
+            } else {
+              scheduleNotification(
+                  'Good news '+sharedPreferences.getString(PsConst.VALUE_HOLDER__USER_NAME),
+                  message,
+                  GeofenceStatus.ENTER);
             }
-            scheduleNotification(
-              'Good news',
-              foo,
-              GeofenceStatus.ENTER,);
-          }
+          //}
         });
-
-
       }
     });
-
   }
 
   static String TAG = 'GEOFENCES NEW:';
