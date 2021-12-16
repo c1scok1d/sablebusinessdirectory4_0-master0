@@ -137,7 +137,6 @@ class PermissionRationaleView extends State<PermissionRationale> {
                         Permission.locationAlways,
                       ].request();
                       if(statuses[Permission.locationAlways]==PermissionStatus.granted){
-
                         (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
                       }
                       // Geofence.initialize();
