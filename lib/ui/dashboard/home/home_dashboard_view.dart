@@ -871,7 +871,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             priority: Priority.high,
             styleInformation: event==GeofenceStatus.EXIT?smallPictureStyleInformation:bigPictureStyleInformation,
             largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
-
             ticker: 'ticker');
         final iOSPlatformChannelSpecifics = IOSNotificationDetails(
             attachments: <IOSNotificationAttachment>[
