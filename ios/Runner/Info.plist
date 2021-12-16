@@ -37,7 +37,7 @@
 			<string>Bundle ID</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fluttermulticity1.page.link</string>
+				<string>com.sable.businesslistingapi</string>
 			</array>
 		</dict>
 		<dict>
@@ -45,14 +45,18 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.000000000000-00000000000000000000000000000000</string>
+				<string>com.googleusercontent.apps.142135780540-2452k7gq234i9qp3hsunkneuboaf8h1q</string>
 			</array>
 		</dict>
 	</array>
+
+
+
+
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
-	<string>1395137620874464</string>
+	<string>2106220289466501</string>
 	<key>FacebookDisplayName</key>
 	<string>Sable Business Directory</string>
 	<key>GADApplicationIdentifier</key>
