@@ -403,14 +403,14 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                 },
                 androidNotificationOptions: const AndroidNotificationOptions(
                   channelId: 'sable_blackbusiness_alerts',
-                  channelName: 'Sable Black Business Alerts',
+                  channelName: 'Black Business Alerts',
                   channelDescription: 'This notification appears when nearby a black owned business.',
                   channelImportance: NotificationChannelImportance.HIGH,
                   priority: NotificationPriority.HIGH,
                   isSticky: false,
                 ),
                 iosNotificationOptions: const IOSNotificationOptions(),
-                notificationTitle: 'Sable Black Business Alerts',
+                notificationTitle: 'Black Business Alerts',
                 notificationText: 'Tap to clear',
                 child:Container(
                   color: PsColors.coreBackgroundColor,
@@ -938,29 +938,18 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
   Future<void> requestPermission() async {
     print('REQUESTING PERMISSION');
-    if (await Permission.locationWhenInUse.isDenied){
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.locationWhenInUse,
-        //Permission.locationAlways,
-        //Permission.storage,
-        //Permission.camera,
-      ].request();
+    final Map<Permission, PermissionStatus> statuses = await [
+      Permission.locationWhenInUse,
+      Permission.locationAlways,
+    ].request();
+    if (!(statuses[Permission.locationWhenInUse]).isGranted && !(statuses[Permission.locationWhenInUse]).isPermanentlyDenied) {
       print(statuses[Permission.locationWhenInUse]);
-      //print(statuses[Permission.locationAlways]);
-    }
-    if (await Permission.locationAlways.isDenied) {
-      Navigator.pushReplacementNamed(
-        context,
-        RoutePaths.permissionRationale,
-      );
-    } else {
-      /*Map<Permission, PermissionStatus> statuses = await [
-        Permission.locationAlways,
-        //Permission.storage,
-        //Permission.camera,
-      ].request();
-      print(statuses[Permission.locationAlways]);*/
-      // Geofence.initialize();
+      if (!(statuses[Permission.locationAlways]).isGranted && !(statuses[Permission.locationAlways]).isPermanentlyDenied) {
+        Navigator.pushReplacementNamed(
+          context,
+          RoutePaths.permissionRationale,
+        );
+      }
     }
   }
 
