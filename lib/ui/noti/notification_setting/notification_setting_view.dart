@@ -137,9 +137,8 @@ class __NotificationSettingWidgetState
         value: isGeoEnabled,
         onChanged: (bool value) async {
 
-          if (isGeoEnabled != true) {
-            bool isShown = await Permission.locationAlways.shouldShowRequestRationale;
-            if(await Permission.locationAlways.isGranted){
+          if (!isGeoEnabled) {
+            if(!await Permission.locationAlways.isGranted){
               showDialog<void>(context: context, builder: (context) {
 
                 return Dialog(
@@ -241,7 +240,7 @@ class __NotificationSettingWidgetState
                 );
               },);
             }else{
-
+              (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
             }
             /*Map<Permission, PermissionStatus> statuses = await [
               Permission.storage,
