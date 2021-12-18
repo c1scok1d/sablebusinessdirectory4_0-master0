@@ -213,11 +213,11 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       _geofenceService.addStreamErrorListener(_onError);
     });
 // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-    var initializationSettingsAndroid =
+    AndroidInitializationSettings initializationSettingsAndroid =
         new AndroidInitializationSettings('launcher_icon');
-    var initializationSettingsIOS =
+    IOSInitializationSettings initializationSettingsIOS =
         IOSInitializationSettings(onDidReceiveLocalNotification: null);
-    var initializationSettings = InitializationSettings(
+    InitializationSettings initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: onSelectNotification);
@@ -235,13 +235,13 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       if(payload.contains('Item x')){
         await Navigator.push(
           context,
-          MaterialPageRoute<void>(builder: (context) => DashboardView()),
+          MaterialPageRoute<void>(builder: (BuildContext context) => DashboardView()),
         );
       }else {
         await Navigator.push(
           context,
           MaterialPageRoute<void>(
-              builder: (context) => ItemDetailView(itemId: payload,)),
+              builder: (BuildContext context) => ItemDetailView(itemId: payload,)),
         );
       }
     }
@@ -405,15 +405,15 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                 },
                 androidNotificationOptions: const AndroidNotificationOptions(
                   channelId: 'sable_blackbusiness_alerts',
-                  channelName: 'Black Business Alerts',
+                  channelName: 'Black Owned Business Alerts',
                   channelDescription: 'This notification appears when nearby a black owned business.',
                   channelImportance: NotificationChannelImportance.HIGH,
                   priority: NotificationPriority.HIGH,
                   isSticky: false,
                 ),
                 iosNotificationOptions: const IOSNotificationOptions(),
-                notificationTitle: 'Black Business Alerts',
-                notificationText: 'Tap to clear',
+                notificationTitle: 'BoB Alerts',
+                notificationText: 'Alerts when near a registered Black Owned Businesses!',
                 child:Container(
                   color: PsColors.coreBackgroundColor,
                   child: RefreshIndicator(
@@ -576,7 +576,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
 // This function is used to handle errors that occur in the service.
   void _onError(error) {
-    final errorCode = getErrorCodesFromError(error);
+    final ErrorCodes errorCode = getErrorCodesFromError(error);
     if (errorCode == null) {
       print('Undefined error: $error');
       return;
@@ -584,7 +584,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
     print('ErrorCode: $errorCode');
   }
-  Future<void> startBackgroundTracking(geo.Coordinate globalCoordinate) async {
+  Future<void> startBackgroundTracking() async {
     print('$TAG startBackgroundTracking');
 
     final SearchItemProvider provider =
@@ -611,8 +611,8 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    if (hasAlreadyListened) return;
-    print('😡 initPlatform state');
+    //if (hasAlreadyListened) return;
+    print('initPlatform state');
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
@@ -630,14 +630,14 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
       //globalCoordinate = c;
     });
     // permission check
-    requestPermission();
+    checkPermissions();
 
     // if geoservice is enabled start geoNotifications
     final SharedPreferences sharedPreferences =
     await PsSharedPreferences.instance.futureShared;
     bool isEnabled = sharedPreferences.getBool(PsConst.GEO_SERVICE_KEY);
     if(isEnabled) {
-      startBackgroundTracking(globalCoordinate);
+      startBackgroundTracking();
       print('$TAG Your latitude is ${globalCoordinate
           .latitude} and longitude ${globalCoordinate.longitude}');
     }
@@ -647,9 +647,9 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
   }
 
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
+    double p = 0.017453292519943295;
+    double Function(num radians) c = cos;
+    double a = 0.5 -
         c((lat2 - lat1) * p) / 2 +
         c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * asin(sqrt(a));
@@ -717,7 +717,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // Geofence.removeAllGeolocations();
     _geofenceService.clearGeofenceList();
     List<Geofence> _geofenceList=[];
-    geofences.forEach((key, value) {
+    geofences.forEach((String key, SimpleGeofence value) {
       _geofenceList.add(value.toGeofence());
     });
     _geofenceService.start(_geofenceList).catchError(_onError);
@@ -757,11 +757,11 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         c.transitionType = GeofenceStatus.EXIT;
       }else if(geofenceStatus==c.transitionType&&geofenceStatus==GeofenceStatus.DWELL && c.isPromotion == '1'){
         print('Dwelling ${c.item_name}');
-        var latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
+        int latestNotTime=sharedPreferences.getInt('LAST_NOT_TIME');
 
-        final before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
-        final now = DateTime.now();
-        final difference = now.difference(before).inMinutes;
+        final DateTime before = DateTime.fromMillisecondsSinceEpoch(latestNotTime);
+        final DateTime now = DateTime.now();
+        final int difference = now.difference(before).inMinutes;
         //if(difference>=15&&!hasDisplayedDwell){
           hasDisplayedDwell=true;
           scheduleNotification('You are near ${c.item_name}',
@@ -783,7 +783,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
       if(!hasDisplayedEnter){
         hasDisplayedEnter=true;
-        PsSharedPreferences.instance.futureShared.then((sharedPreferences) {
+        PsSharedPreferences.instance.futureShared.then((SharedPreferences sharedPreferences) {
           String message;
             sharedPreferences.setInt('LAST_NOT_TIME', DateTime.now().millisecondsSinceEpoch);
             switch(nearGeofences){
@@ -826,16 +826,16 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // Future.delayed(Duration(seconds: 5)).then((value) => null);
     // Bitmap bitmap = await Bitmap.fromProvider(NetworkImage(PsConfig.ps_app_image_url+city.defaultPhoto.imgPath));
 
-    Future.delayed(const Duration(seconds: 5), () {}).then((result) async {
+    Future.delayed(const Duration(seconds: 5), () {}).then((Object result) async {
       if (item==null||item.imageId == null) {
-        final androidPlatformChannelSpecifics =
+        final AndroidNotificationDetails androidPlatformChannelSpecifics =
             const AndroidNotificationDetails(
                 '1123', 'Geofences', 'Geofence alert',
                 importance: Importance.high,
                 priority: Priority.high,
                 ticker: 'ticker');
-        final iOSPlatformChannelSpecifics = IOSNotificationDetails();
-        final platformChannelSpecifics = NotificationDetails(
+        final IOSNotificationDetails iOSPlatformChannelSpecifics = IOSNotificationDetails();
+        final NotificationDetails platformChannelSpecifics = NotificationDetails(
             android: androidPlatformChannelSpecifics,
             iOS: iOSPlatformChannelSpecifics);
         await flutterLocalNotificationsPlugin.show(
@@ -846,10 +846,10 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             platformChannelSpecifics,
             payload: paypload);
       } else {
-        var mfile = await SaveFile()
+        File mfile = await SaveFile()
             .saveImage(PsConfig.ps_app_image_url + item.imageId ?? '');
         print(mfile.absolute.path);
-        var smallPictureStyleInformation = BigPictureStyleInformation(
+        BigPictureStyleInformation smallPictureStyleInformation = BigPictureStyleInformation(
             FilePathAndroidBitmap(mfile.absolute.path),
             largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
             contentTitle: '$title',
@@ -857,7 +857,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             summaryText: '$subtitle',
             hideExpandedLargeIcon: true,
             htmlFormatSummaryText: true);
-        var bigPictureStyleInformation = BigPictureStyleInformation(
+        BigPictureStyleInformation bigPictureStyleInformation = BigPictureStyleInformation(
             FilePathAndroidBitmap(mfile.absolute.path),
             largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
             contentTitle: '$title',
@@ -865,18 +865,18 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
             summaryText: '$subtitle',
             hideExpandedLargeIcon: false,
             htmlFormatSummaryText: true);
-        final androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
             '1123', 'Geofences', 'Geofence alert',
             importance: Importance.high,
             priority: Priority.high,
             styleInformation: event==GeofenceStatus.EXIT?smallPictureStyleInformation:bigPictureStyleInformation,
             largeIcon: FilePathAndroidBitmap(mfile.absolute.path),
             ticker: 'ticker');
-        final iOSPlatformChannelSpecifics = IOSNotificationDetails(
+        final IOSNotificationDetails iOSPlatformChannelSpecifics = IOSNotificationDetails(
             attachments: <IOSNotificationAttachment>[
               IOSNotificationAttachment(mfile.absolute.path)
             ]);
-        final platformChannelSpecifics = NotificationDetails(
+        final NotificationDetails platformChannelSpecifics = NotificationDetails(
             android: androidPlatformChannelSpecifics,
             iOS: iOSPlatformChannelSpecifics);
         await flutterLocalNotificationsPlugin.show(
@@ -892,8 +892,8 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
 
   Future<SimpleGeofence> getGeoCity(String id) {
     print('$TAG getGeoCity ');
-    var mValue;
-    geofences.forEach((key, value) {
+    SimpleGeofence mValue;
+    geofences.forEach((String key, SimpleGeofence value) {
       if (key.endsWith('-a')||key.endsWith('-b')) {
         if (key.split('-')[0] == id) {
           print('$TAG: Matching- ($id-${key})');
@@ -915,27 +915,73 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     return Future.value(mValue);
   }
 
-  Future<void> requestPermission() async {
+  Future<void> checkPermissions() async {
     print('REQUESTING PERMISSION');
-    final Map<Permission, PermissionStatus> statuses = await [
-      Permission.locationWhenInUse,
-      Permission.locationAlways,
-    ].request();
-    if (!(statuses[Permission.locationWhenInUse]).isGranted && !(statuses[Permission.locationWhenInUse]).isPermanentlyDenied) {
-      print(statuses[Permission.locationWhenInUse]);
-      if (!(statuses[Permission.locationAlways]).isGranted && !(statuses[Permission.locationAlways]).isPermanentlyDenied) {
-        Navigator.pushReplacementNamed(
-          context,
-          RoutePaths.permissionRationale,
-        );
-      }
+
+    final PermissionStatus locationWhenInUse = await Permission.locationWhenInUse.status;
+    switch (locationWhenInUse) {
+      case PermissionStatus.granted:
+        print('Granted');
+        final PermissionStatus locationAlways = await Permission.locationAlways.status;
+        switch (locationAlways) {
+          case PermissionStatus.granted:
+            print('Granted');
+            (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+            break;
+          case PermissionStatus.denied:
+            print('denied');
+            Navigator.pushReplacementNamed(
+              context,
+              RoutePaths.permissionRationale,
+            );
+            break;
+          case PermissionStatus.restricted:
+            print('restricted');
+            (await PsSharedPreferences.instance.futureShared).setBool(
+                PsConst.GEO_SERVICE_KEY, false);
+            Navigator.pushReplacementNamed(
+              context,
+              RoutePaths.permissionRationale,
+            );
+            break;
+          case PermissionStatus.permanentlyDenied:
+            print('Permanently denied');
+            (await PsSharedPreferences.instance.futureShared).setBool(
+                PsConst.GEO_SERVICE_KEY, false);
+            Navigator.pushReplacementNamed(
+              context,
+              RoutePaths.permissionRationale,
+            );
+            break;
+          default:
+        }
+        break;
+      case PermissionStatus.denied:
+        print('denied');
+        final Map<Permission, PermissionStatus> status = await [
+          Permission.locationWhenInUse
+        ].request();
+        print(status[Permission.locationWhenInUse]);
+        //checkLocationAlways(globalCoordinate);
+        break;
+      case PermissionStatus.restricted:
+        print('restricted');
+        (await PsSharedPreferences.instance.futureShared).setBool(
+            PsConst.GEO_SERVICE_KEY, false);
+        break;
+      case PermissionStatus.permanentlyDenied:
+        print('Permanently denied');
+        (await PsSharedPreferences.instance.futureShared).setBool(
+            PsConst.GEO_SERVICE_KEY, false);
+        break;
+      default:
     }
   }
 
   void showDeniedDialog() {
     showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return Dialog(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
@@ -998,7 +1044,6 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
                       minWidth: 100,
                       onPressed: () async {
                         Navigator.of(context).pop();
-
                         AppSettings.openAppSettings(asAnotherTask: true);
                       },
                       child: Text(
@@ -1250,7 +1295,7 @@ class __HomeNearMeItemHorizontalListWidgetState
                                   return FutureBuilder<dynamic>(
                                     future: itemDetailProvider.loadItem(
                                         item.id, loginUserId),
-                                    builder: (context, snapshot) {
+                                    builder: (BuildContext context, AsyncSnapshot snapshot) {
                                       if (itemDetailProvider != null &&
                                           itemDetailProvider.itemDetail !=
                                               null &&
