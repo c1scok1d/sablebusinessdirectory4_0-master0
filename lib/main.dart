@@ -213,7 +213,6 @@ class _PSAppState extends State<PSApp> {
           Permission.locationWhenInUse
         ].request();
         print(status[Permission.locationWhenInUse]);
-
         break;
       case PermissionStatus.restricted:
         print('restricted');

@@ -266,7 +266,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     print('HOME NOW');
 
     initPlatformState();
-    initializeGeofence();
+    //initializeGeofence();
     return MultiProvider(
         providers: <SingleChildWidget>[
           ChangeNotifierProvider<BlogProvider>(
@@ -760,16 +760,25 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
     geo.Geofence.initialize();
-    //geo.Geofence.requestPermissions();
+    geo.Geofence.requestPermissions();
+    final SharedPreferences sharedPreferences =
+    await PsSharedPreferences.instance.futureShared;
+    final bool isEnabled = sharedPreferences.getBool(PsConst.GEO_SERVICE_KEY);
+
+    if(isEnabled) {
+      startBackgroundTracking();
+    }
     globalCoordinate = await geo.Geofence.getCurrentLocation();
+    geo.Geofence.getCurrentLocation().then((coordinate) {
+      print('$TAG Coordinates: $globalCoordinate');
+      setState(() {
+        _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
+      });
+    });
     setState(() {});
   }
 
   Future<void>initializeGeofence() async {
-    print('$TAG Coordinates: $globalCoordinate');
-    setState(() {
-      _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
-    });
     // if geoservice is enabled start geoNotifications
     final SharedPreferences sharedPreferences =
     await PsSharedPreferences.instance.futureShared;
