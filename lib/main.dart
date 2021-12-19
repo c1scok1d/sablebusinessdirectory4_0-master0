@@ -205,24 +205,24 @@ class _PSAppState extends State<PSApp> {
     final PermissionStatus locationWhenInUse = await Permission.locationWhenInUse.status;
     switch (locationWhenInUse) {
       case PermissionStatus.granted:
-        print('Granted');
+        print('$TAG locationWhenInUse Granted');
         break;
       case PermissionStatus.denied:
-        print('denied');
+        print('$TAG locationWhenInUse Denied');
         final Map<Permission, PermissionStatus> status = await [
           Permission.locationWhenInUse
         ].request();
         print(status[Permission.locationWhenInUse]);
         break;
       case PermissionStatus.restricted:
-        print('restricted');
+        print('$TAG locationWhenInUse Restricted');
         final Map<Permission, PermissionStatus> status = await [
           Permission.locationWhenInUse
         ].request();
         print(status[Permission.locationWhenInUse]);
         break;
       case PermissionStatus.permanentlyDenied:
-        print('Permanently denied');
+        print('$TAG locationWhenInUse Permanently denied');
         (await PsSharedPreferences.instance.futureShared).setBool(
             PsConst.GEO_SERVICE_KEY, false);
         break;

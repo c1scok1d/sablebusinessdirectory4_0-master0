@@ -761,14 +761,7 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     if (!mounted)
       return;
     geo.Geofence.initialize();
-    geo.Geofence.requestPermissions();
-    final SharedPreferences sharedPreferences =
-    await PsSharedPreferences.instance.futureShared;
-    final bool isEnabled = sharedPreferences.getBool(PsConst.GEO_SERVICE_KEY);
-
-    if(isEnabled) {
-      startBackgroundTracking();
-    }
+    //geo.Geofence.requestPermissions();
     globalCoordinate = await geo.Geofence.getCurrentLocation();
     geo.Geofence.getCurrentLocation().then((coordinate) {
       print('$TAG Coordinates: $globalCoordinate');
@@ -776,18 +769,14 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
         _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
       });
     });
-    setState(() {});
-  }
-
-  Future<void>initializeGeofence() async {
-    // if geoservice is enabled start geoNotifications
     final SharedPreferences sharedPreferences =
     await PsSharedPreferences.instance.futureShared;
     final bool isEnabled = sharedPreferences.getBool(PsConst.GEO_SERVICE_KEY);
 
     if(isEnabled) {
-    startBackgroundTracking();
+      startBackgroundTracking();
     }
+    setState(() {});
   }
 
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
