@@ -18,6 +18,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:flutter_geofence/geofence.dart' as geo;
+
 
 class PermissionRationale extends StatefulWidget {
   @override
@@ -132,14 +134,12 @@ class PermissionRationaleView extends State<PermissionRationale> {
                     minWidth: 100,
                     onPressed: () async {
                       Navigator.of(context).pop();
-
-                      Map<Permission, PermissionStatus> statuses = await [
-                        Permission.locationAlways,
-                      ].request();
-                      if(statuses[Permission.locationAlways]==PermissionStatus.granted){
-                        (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
-                      }
-                      // Geofence.initialize();
+                      /*final Map<Permission, PermissionStatus> status = await [Permission.locationAlways,].request();
+                      print(status[Permission.locationAlways]); */
+                      geo.Geofence.initialize();
+                      geo.Geofence.requestPermissions();
+                      //AppSettings.openAppSettings(asAnotherTask: true);
+                      //openAppSettings();
                     },
                     child: Text(
                       'Continue',
@@ -155,12 +155,11 @@ class PermissionRationaleView extends State<PermissionRationale> {
                     minWidth: 100,
                     onPressed: () async {
                       Navigator.of(context).pop();
-
                       (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
                       showDeniedDialog();
                     },
                     child: Text(
-                      'No',
+                      'Deny',
                       style: Theme
                           .of(context)
                           .textTheme
@@ -385,43 +384,31 @@ class PermissionRationaleView extends State<PermissionRationale> {
                               primary: Colors.black
                             ),
                             onPressed: () async {
-                              if(await Permission.locationAlways.isGranted){
-
-                                (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  RoutePaths.home,
-                                );
-                                return;
-                              } else {
-                               /* (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  RoutePaths.home,
-                                );
-                                return; */
-                                PermissionStatus permResult =
-                                await
-                                Permission.locationAlways.request();
-                                print(permResult.toString());
-                                if(permResult.isPermanentlyDenied){
-                                  (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
+                              final PermissionStatus locationAlways = await Permission.locationAlways.status;
+                              switch (locationAlways) {
+                                case PermissionStatus.granted:
+                                  print('Granted');
+                                  (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
+                                  //Navigator.of(context).pop();
                                   Navigator.pushReplacementNamed(
                                     context,
                                     RoutePaths.home,
                                   );
-                                  return;
-                                } else if(permResult.isDenied){
+                                  break;
+                                case PermissionStatus.denied:
+                                  print('denied');
                                   (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
                                   showRationale();
-                                }else if(permResult==PermissionStatus.granted){
-                                  (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, true);
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    RoutePaths.home,
-                                  );
-                                  return;
-                                }
+                                  break;
+                                case PermissionStatus.restricted:
+                                  print('restricted');
+                                  break;
+                                case PermissionStatus.permanentlyDenied:
+                                  print('Permanently denied');
+                                  (await PsSharedPreferences.instance.futureShared).setBool(PsConst.GEO_SERVICE_KEY, false);
+                                  showRationale();
+                                  break;
+                                default:
                               }
                             },
                             child: const Text('Begin'),
