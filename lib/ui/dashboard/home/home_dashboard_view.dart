@@ -759,14 +759,13 @@ class _HomeDashboardViewWidgetState extends State<HomeDashboardViewWidget> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
+    geo.Geofence.initialize();
+    //geo.Geofence.requestPermissions();
+    globalCoordinate = await geo.Geofence.getCurrentLocation();
     setState(() {});
   }
 
   Future<void>initializeGeofence() async {
-    geo.Geofence.initialize();
-    geo.Geofence.requestPermissions();
-    globalCoordinate = await geo.Geofence.getCurrentLocation();
-
     print('$TAG Coordinates: $globalCoordinate');
     setState(() {
       _nearMeItemProvider.resetNearMeItemList(globalCoordinate);
