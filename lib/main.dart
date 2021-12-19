@@ -26,10 +26,11 @@ import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'config/ps_colors.dart';
 import 'config/ps_config.dart';
+import 'constant/ps_constants.dart';
 import 'constant/ps_dimens.dart';
+import 'constant/route_paths.dart';
 import 'db/common/ps_shared_preferences.dart';
-// import 'package:awesome_notifications/awesome_notifications.dart';
-
+import 'package:flutter_geofence/geofence.dart' as geo;
 
 Future<void> main() async {
   // add this, and it should be the first line in main method
@@ -127,6 +128,7 @@ Future<void> main() async {
       startLocale: PsConfig.defaultLanguage.toLocale(),
       supportedLocales: getSupportedLanguages(),
       child: PSApp()));
+
 }
 
 List<Locale> getSupportedLanguages() {
@@ -195,139 +197,47 @@ class _PSAppState extends State<PSApp> {
     print('Loaded Languages');
     return localeList;
   }
+  geo.Coordinate globalCoordinate;
+  static String TAG = 'MAIN';
+  Future<void> checkPermissions() async {
+    print('REQUESTING PERMISSION');
 
+    final PermissionStatus locationWhenInUse = await Permission.locationWhenInUse.status;
+    switch (locationWhenInUse) {
+      case PermissionStatus.granted:
+        print('Granted');
+        break;
+      case PermissionStatus.denied:
+        print('denied');
+        final Map<Permission, PermissionStatus> status = await [
+          Permission.locationWhenInUse
+        ].request();
+        print(status[Permission.locationWhenInUse]);
+
+        break;
+      case PermissionStatus.restricted:
+        print('restricted');
+        final Map<Permission, PermissionStatus> status = await [
+          Permission.locationWhenInUse
+        ].request();
+        print(status[Permission.locationWhenInUse]);
+        break;
+      case PermissionStatus.permanentlyDenied:
+        print('Permanently denied');
+        (await PsSharedPreferences.instance.futureShared).setBool(
+            PsConst.GEO_SERVICE_KEY, false);
+        break;
+      default:
+    }
+  }
   @override
   Widget build(BuildContext context) {
     // return Container();
     // init Color
     PsColors.loadColor(context);
     Utils.psPrint(EasyLocalization.of(context).locale.languageCode);
-
-    Future<void> requestPermission() async {
-
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.storage,
-        Permission.camera,
-      ].request();
-      print(statuses[Permission.storage]);
-
-      if(await Permission.locationAlways.isDenied) {
-        showDialog<void>(context: context, builder: (context) {
-          return Dialog(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0)),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Container(
-                      height: 60,
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(PsDimens.space8),
-                      decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(5),
-                              topRight: Radius.circular(5)),
-                          color: PsColors.mainColor),
-                      child: Row(
-                        children: <Widget>[
-                          const SizedBox(width: PsDimens.space4),
-                          Icon(
-                            Icons.pin_drop,
-                            color: PsColors.white,
-                          ),
-                          const SizedBox(width: PsDimens.space4),
-                          Text(
-                            'Special Permission',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              color: PsColors.white,
-                            ),
-                          ),
-                        ],
-                      )),
-                  const SizedBox(height: PsDimens.space20),
-                  Container(
-                    padding: const EdgeInsets.only(
-                        left: PsDimens.space16,
-                        right: PsDimens.space16,
-                        top: PsDimens.space8,
-                        bottom: PsDimens.space8),
-                    child: Text(
-                      'To alert you when you are near a registered business, '
-                          'this app requires special permission to access your location while working in the background. '
-                          'We respect user privacy. Your location will never be recorded or shared for any reason.'
-                          "Tap 'Deny' to proceed without receiving notification alerts. "
-                          "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .subtitle2,
-                    ),
-                  ),
-                  const SizedBox(height: PsDimens.space20),
-                  Divider(
-                    thickness: 0.5,
-                    height: 1,
-                    color: Theme
-                        .of(context)
-                        .iconTheme
-                        .color,
-                  ),
-                  ButtonBar(
-                    children: [
-                      MaterialButton(
-                        height: 50,
-                        minWidth: 100,
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-
-                          Map<Permission, PermissionStatus> statuses = await [
-                            Permission.locationAlways,
-                          ].request();
-                          print(statuses[Permission.locationAlways]);
-
-                          // Geofence.initialize();
-                        },
-                        child: Text(
-                          'Continue',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .button
-                              .copyWith(color: PsColors.mainColor),
-                        ),
-                      ),
-                      MaterialButton(
-                        height: 50,
-                        minWidth: 100,
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          showDeniedDialog();
-                        },
-                        child: Text(
-                          'No',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .button
-                              .copyWith(color: PsColors.mainColor),
-                        ),
-                      )
-                    ],
-                  )
-
-                ],
-              ),
-            ),
-          );
-        },);
-      }else{
-
-        // Geofence.initialize();
-      }
-    }
-    // requestPermission();
+    //check location permissions
+    checkPermissions();
     return MultiProvider(
         providers: <SingleChildWidget>[
           ...providers,
@@ -359,106 +269,5 @@ class _PSAppState extends State<PSApp> {
                 locale: EasyLocalization.of(context).locale,
               );
             }));
-
-
-  }
-
-  void showDeniedDialog() {
-
-    showDialog<void>(context: context, builder: (context) {
-
-      return Dialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                  height: 60,
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(PsDimens.space8),
-                  decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(5),
-                          topRight: Radius.circular(5)),
-                      color: PsColors.mainColor),
-                  child: Row(
-                    children: <Widget>[
-                      const SizedBox(width: PsDimens.space4),
-                      Icon(
-                        Icons.pin_drop,
-                        color: PsColors.white,
-                      ),
-                      const SizedBox(width: PsDimens.space4),
-                      Text(
-                        'Special Permissions Required',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          color: PsColors.white,
-                        ),
-                      ),
-                    ],
-                  )),
-              const SizedBox(height: PsDimens.space20),
-              Container(
-                padding: const EdgeInsets.only(
-                    left: PsDimens.space16,
-                    right: PsDimens.space16,
-                    top: PsDimens.space8,
-                    bottom: PsDimens.space8),
-                child: Text(
-                  "You will not be alerted when you are near a registered black owned business.\n"
-                      "We respect user privacy. You location will never be recorded or shared for any reason.\n"
-                      "Tap 'Continue' to proceed without receiving alerts.\n"
-                      "To enable alerts when near a registered black owned business select 'allow all the time' at [Go to Settings] > [Permissions]\n"
-                      "Tap 'Continue' and select 'Allow all the time' from the next screen to receive alerts.",
-                  style: Theme.of(context).textTheme.subtitle2,
-                ),
-              ),
-              const SizedBox(height: PsDimens.space20),
-              Divider(
-                thickness: 0.5,
-                height: 1,
-                color: Theme.of(context).iconTheme.color,
-              ),
-              ButtonBar(
-                children: [
-                  MaterialButton(
-                    height: 50,
-                    minWidth: 100,
-                    onPressed: () async {
-                      Navigator.of(context).pop();
-                      AppSettings.openAppSettings(asAnotherTask: true);
-                    },
-                    child: Text(
-                      'Go to Settings',
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(color: PsColors.mainColor),
-                    ),
-                  ),
-                  MaterialButton(
-                    height: 50,
-                    minWidth: 100,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      'No',
-                      style: Theme.of(context)
-                          .textTheme
-                          .button
-                          .copyWith(color: PsColors.mainColor),
-                    ),
-                  )
-                ],
-              )
-
-            ],
-          ),
-        ),
-      );
-    },);
   }
 }
